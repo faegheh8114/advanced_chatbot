@@ -1,0 +1,24 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": ["hi", "hello", "hey"],
+      "responses": ["Hello! How can I help you today?", "Hi there! 😊"]
+    },
+    {
+      "tag": "pricing",
+      "patterns": ["price", "cost", "pricing"],
+      "responses": ["Our pricing depends on your needs. Please contact sales."]
+    },
+    {
+      "tag": "hours",
+      "patterns": ["working hours", "open", "available"],
+      "responses": ["We are available from 9 AM to 5 PM, Monday to Friday."]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": ["bye", "goodbye"],
+      "responses": ["Goodbye! Have a great day!"]
+    }
+  ]
+}
