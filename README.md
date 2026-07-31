@@ -73,12 +73,10 @@ python chatbot.py
 ##  How the Matching Works
 
 For each incoming message, `chatbot.py` scores it against every known pattern using three
-signals, and picks the best match above a confidence threshold:
-
-1. **Substring match** — exact phrase found in the message → highest confidence.
-2. **Token overlap** — how many words the message shares with a pattern (handles reordering
+1. **Substring match**  exact phrase found in the message → highest confidence.
+2. **Token overlap** ,how many words the message shares with a pattern (handles reordering
    and extra words).
-3. **Fuzzy similarity** (`difflib.SequenceMatcher`) — catches typos and near-matches.
+3. **Fuzzy similarity** (`difflib.SequenceMatcher`)  catches typos and near-matches.
 
 If nothing scores high enough, the bot returns a fallback response, and after two fallbacks in
 a row it proactively suggests what it *can* help with.
@@ -94,7 +92,7 @@ a row it proactively suggests what it *can* help with.
 ## Why I built this
 
 I built this project to get hands-on with Flask and understand how a chatbot actually
-decides what to say — not just calling an API, but writing the matching logic myself.
+decides what to say not just calling an API, but writing the matching logic myself.
 The first version only matched exact substrings, so I went back and added token-overlap
 and fuzzy-string scoring to handle typos and reworded questions. I also learned the hard
 way why templates/static folders matter in Flask (my first version silently failed to
