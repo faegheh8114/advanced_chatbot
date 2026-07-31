@@ -2,102 +2,80 @@
   "intents": [
     {
       "tag": "greeting",
-      "patterns": ["hi", "hello", "hey", "good morning", "good afternoon", "good evening", "hiya", "what's up", "yo"],
-      "responses": [
-        "Hello! How can I help you today? 😊",
-        "Hi there! What can I do for you?",
-        "Hey! Great to see you. What's on your mind?"
-      ]
+      "patterns": ["hi", "hello", "hey", "good morning", "good afternoon", "good evening", "hiya", "what's up", "yo",
+                   "سلام", "سلام علیک", "درود", "سلام خوبی"],
+      "responses_en": ["Hello! How can I help you today? 😊", "Hi there! What can I do for you?", "Hey! Great to see you. What's on your mind?"],
+      "responses_fa": ["سلام! چطور می‌تونم کمکت کنم؟ 😊", "سلام! خوش اومدی، چی می‌خوای بدونی؟", "درود! خوشحالم که اینجایی، چطور می‌تونم کمک کنم؟"]
     },
     {
       "tag": "goodbye",
-      "patterns": ["bye", "goodbye", "see you", "see ya", "talk later", "farewell", "catch you later"],
-      "responses": [
-        "Goodbye! Have a great day! 👋",
-        "See you later! Feel free to come back anytime.",
-        "Take care! It was nice chatting with you."
-      ]
+      "patterns": ["bye", "goodbye", "see you", "see ya", "talk later", "farewell", "catch you later",
+                   "خداحافظ", "بدرود", "فعلا", "خدانگهدار"],
+      "responses_en": ["Goodbye! Have a great day! 👋", "See you later! Feel free to come back anytime.", "Take care! It was nice chatting with you."],
+      "responses_fa": ["خداحافظ! روز خوبی داشته باشی 👋", "به امید دیدار! هر وقت خواستی برگرد.", "مراقب خودت باش! از گفتگو باهات خوشحال شدم."]
     },
     {
       "tag": "thanks",
-      "patterns": ["thanks", "thank you", "appreciate it", "thx", "much appreciated"],
-      "responses": [
-        "You're very welcome! 😊",
-        "Happy to help!",
-        "Anytime! Let me know if you need anything else."
-      ]
+      "patterns": ["thanks", "thank you", "appreciate it", "thx", "much appreciated",
+                   "ممنون", "مرسی", "متشکرم", "سپاسگزارم"],
+      "responses_en": ["You're very welcome! 😊", "Happy to help!", "Anytime! Let me know if you need anything else."],
+      "responses_fa": ["خواهش می‌کنم! 😊", "خوشحالم که تونستم کمک کنم!", "هر وقت خواستی در خدمتم."]
     },
     {
       "tag": "how_are_you",
-      "patterns": ["how are you", "how's it going", "how do you do", "how are you doing", "you good"],
-      "responses": [
-        "I'm doing great, thanks for asking! How about you?",
-        "All good on my end! What can I help you with today?"
-      ]
+      "patterns": ["how are you", "how's it going", "how do you do", "how are you doing", "you good",
+                   "چطوری", "حالت چطوره", "خوبی"],
+      "responses_en": ["I'm doing great, thanks for asking! How about you?", "All good on my end! What can I help you with today?"],
+      "responses_fa": ["خوبم، ممنون که پرسیدی! تو چطوری؟", "همه‌چیز خوبه! امروز چطور می‌تونم کمکت کنم؟"]
     },
     {
       "tag": "name",
-      "patterns": ["what is your name", "who are you", "what should i call you", "your name"],
-      "responses": [
-        "I'm your friendly virtual assistant! You can just call me Bot 🤖.",
-        "I go by Bot — nice to meet you!"
-      ]
+      "patterns": ["what is your name", "who are you", "what should i call you", "your name",
+                   "اسمت چیه", "تو کی هستی", "چی صدات کنم"],
+      "responses_en": ["I'm your friendly virtual assistant! You can just call me Bot 🤖.", "I go by Bot — nice to meet you!"],
+      "responses_fa": ["من دستیار مجازی دوستانه‌ت هستم! می‌تونی بات صدام کنی 🤖", "اسمم باته — خوشحالم که آشنا شدیم!"]
     },
     {
       "tag": "capabilities",
-      "patterns": ["what can you do", "help me", "what do you do", "how can you help", "your features"],
-      "responses": [
-        "I can answer questions about pricing, hours, and general info. I'm also learning to chat more naturally over time!",
-        "I'm here to help with common questions — try asking about pricing, our hours, or just say hi!"
-      ]
+      "patterns": ["what can you do", "help me", "what do you do", "how can you help", "your features",
+                   "چیکار میتونی بکنی", "کمکم کن", "چه کارهایی بلدی"],
+      "responses_en": ["I can answer questions about pricing, hours, and general info. I'm also learning to chat more naturally over time!", "I'm here to help with common questions — try asking about pricing, our hours, or just say hi!"],
+      "responses_fa": ["می‌تونم درباره‌ی قیمت، ساعت کاری و اطلاعات عمومی جواب بدم. دارم یاد می‌گیرم طبیعی‌تر هم صحبت کنم!", "برای سؤالات رایج اینجام — درباره‌ی قیمت یا ساعت کاری بپرس، یا فقط سلام کن!"]
     },
     {
       "tag": "pricing",
-      "patterns": ["price", "cost", "pricing", "how much", "rates", "fees"],
-      "responses": [
-        "Our pricing depends on your specific needs. Could you tell me a bit more about what you're looking for?",
-        "Pricing varies by plan. Would you like me to connect you with our sales team for a custom quote?"
-      ]
+      "patterns": ["price", "cost", "pricing", "how much", "rates", "fees",
+                   "قیمت", "هزینه", "چند", "قیمتش چقدره"],
+      "responses_en": ["Our pricing depends on your specific needs. Could you tell me a bit more about what you're looking for?", "Pricing varies by plan. Would you like me to connect you with our sales team for a custom quote?"],
+      "responses_fa": ["قیمت بستگی به نیاز شما داره. می‌تونی بیشتر توضیح بدی دنبال چی هستی؟", "قیمت‌ها بسته به پلن متفاوته. می‌خوای وصلت کنم به تیم فروش برای قیمت دقیق‌تر؟"]
     },
     {
       "tag": "hours",
-      "patterns": ["working hours", "open", "available", "opening hours", "when are you open", "business hours"],
-      "responses": [
-        "We're available from 9 AM to 5 PM, Monday to Friday.",
-        "Our team works 9-5, Mon-Fri. Outside those hours, I'm still here to help though!"
-      ]
+      "patterns": ["working hours", "open", "available", "opening hours", "when are you open", "business hours",
+                   "ساعت کاری", "باز هستید", "کی بازه"],
+      "responses_en": ["We're available from 9 AM to 5 PM, Monday to Friday.", "Our team works 9-5, Mon-Fri. Outside those hours, I'm still here to help though!"],
+      "responses_fa": ["ما از ساعت ۹ صبح تا ۵ عصر، دوشنبه تا جمعه در دسترسیم.", "تیم ما ۹ تا ۵ کار می‌کنه، ولی من بیرون از اون ساعت‌ها هم اینجام تا کمک کنم!"]
     },
     {
       "tag": "contact",
-      "patterns": ["contact", "email", "phone number", "reach you", "get in touch", "support"],
-      "responses": [
-        "You can reach our support team at support@example.com — happy to help however I can too!",
-        "Feel free to email us anytime, or just keep chatting with me for quick answers."
-      ]
-    },
-    {
-      "tag": "small_talk_weather",
-      "patterns": ["weather", "is it raining", "is it sunny", "how's the weather"],
-      "responses": [
-        "I can't check live weather yet, but I hope it's nice where you are! ☀️",
-        "No weather sensors here, sadly! What else can I help with?"
-      ]
+      "patterns": ["contact", "email", "phone number", "reach you", "get in touch", "support",
+                   "تماس", "ایمیل", "شماره تماس", "پشتیبانی"],
+      "responses_en": ["You can reach our support team at support@example.com — happy to help however I can too!", "Feel free to email us anytime, or just keep chatting with me for quick answers."],
+      "responses_fa": ["می‌تونی با تیم پشتیبانی از طریق support@example.com تماس بگیری — منم خوشحال می‌شم کمک کنم!", "هر وقت خواستی ایمیل بزن، یا همینجا با من صحبت کن برای جواب سریع."]
     },
     {
       "tag": "compliment",
-      "patterns": ["you are smart", "good bot", "nice bot", "you're helpful", "well done", "great job"],
-      "responses": [
-        "Aw, thank you! That made my day 😊",
-        "I appreciate that! I'll keep trying my best."
-      ]
+      "patterns": ["you are smart", "good bot", "nice bot", "you're helpful", "well done", "great job",
+                   "خیلی خوبی", "دمت گرم", "عالی بودی", "آفرین"],
+      "responses_en": ["Aw, thank you! That made my day 😊", "I appreciate that! I'll keep trying my best."],
+      "responses_fa": ["وای ممنون! حسابی خوشحالم کردی 😊", "لطف داری! همیشه سعی می‌کنم بهترین باشم."]
     },
     {
       "tag": "fallback_joke",
-      "patterns": ["tell me a joke", "make me laugh", "joke please", "say something funny"],
-      "responses": [
-        "Why did the developer go broke? Because they used up all their cache! 😄",
-        "I told my computer I needed a break, and it said 'no problem, I'll go to sleep.' 💤"
-      ]
+      "patterns": ["tell me a joke", "make me laugh", "joke please", "say something funny",
+                   "یه جوک بگو", "بخندونم", "جوک بگو"],
+      "responses_en": ["Why did the developer go broke? Because they used up all their cache! 😄", "I told my computer I needed a break, and it said 'no problem, I'll go to sleep.' 💤"],
+      "responses_fa": ["می‌دونی چرا برنامه‌نویس‌ها عینک نمی‌زنن؟ چون C# می‌بینن! 😄", "به کامپیوترم گفتم خسته‌ام، گفت مشکلی نیست من که همیشه در حال Sleep هستم! 💤"]
     }
   ]
 }

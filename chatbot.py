@@ -20,16 +20,32 @@ class Chatbot:
     little more naturally, e.g. offering help after repeated fallbacks.
     """
 
-    FALLBACK_RESPONSES = [
+    FALLBACK_RESPONSES_EN = [
         "Sorry, I didn't quite catch that. Could you rephrase?",
         "Hmm, I'm not sure I understand. Can you try saying that differently?",
         "I don't have an answer for that yet — could you ask in another way?",
     ]
+    FALLBACK_RESPONSES_FA = [
+        "ببخشید، متوجه نشدم. می‌شه یه‌جور دیگه بگی؟",
+        "هوم، مطمئن نیستم درست فهمیدم. می‌تونی جور دیگه‌ای بپرسی؟",
+        "هنوز جوابی برای این ندارم — می‌شه به شکل دیگه‌ای بپرسی؟",
+    ]
 
-    FALLBACK_HELP_HINT = (
+    FALLBACK_HELP_HINT_EN = (
         "It looks like I'm struggling with that one. Try asking about "
         "our pricing, hours, or just say 'hi' to start over 🙂"
     )
+    FALLBACK_HELP_HINT_FA = (
+        "به نظر میاد این یکی رو متوجه نمی‌شم. می‌تونی درباره‌ی قیمت یا "
+        "ساعت کاری بپرسی، یا فقط بنویس «سلام» تا از اول شروع کنیم 🙂"
+    )
+
+    # Unicode range for Persian/Arabic-script characters.
+    _PERSIAN_RE = re.compile(r"[\u0600-\u06FF]")
+
+    @classmethod
+    def _is_persian(cls, text):
+        return bool(cls._PERSIAN_RE.search(text))
 
     def __init__(self, intents_file="intents.json", fuzzy_threshold=0.78):
         with open(intents_file, "r", encoding="utf-8") as file:
@@ -44,7 +60,10 @@ class Chatbot:
     @staticmethod
     def clean_input(text):
         text = text.lower().strip()
-        text = re.sub(r"[^a-z0-9\s]", "", text)
+        # Keep Latin letters/digits AND Persian/Arabic-script characters
+        # (\u0600-\u06FF covers standard Arabic-script Unicode block, which
+        # includes Persian letters). Everything else (punctuation, emoji) is stripped.
+        text = re.sub(r"[^a-z0-9\u0600-\u06FF\s]", "", text)
         return re.sub(r"\s+", " ", text)
 
     def _token_overlap_score(self, user_tokens, pattern):
@@ -90,20 +109,22 @@ class Chatbot:
         if not user_input or not user_input.strip():
             return "I didn't receive any message — could you type something?"
 
+        is_fa = self._is_persian(user_input)
         user_input_clean = self.clean_input(user_input)
         intent, confidence = self._best_match(user_input_clean)
 
         if intent and confidence >= self.fuzzy_threshold:
             self.last_intent = intent["tag"]
             self.fallback_streak = 0
-            return random.choice(intent["responses"])
+            responses = intent["responses_fa"] if is_fa else intent["responses_en"]
+            return random.choice(responses)
 
         # Fallback path
         self.fallback_streak += 1
         if self.fallback_streak >= 2:
             self.fallback_streak = 0
-            return self.FALLBACK_HELP_HINT
-        return random.choice(self.FALLBACK_RESPONSES)
+            return self.FALLBACK_HELP_HINT_FA if is_fa else self.FALLBACK_HELP_HINT_EN
+        return random.choice(self.FALLBACK_RESPONSES_FA if is_fa else self.FALLBACK_RESPONSES_EN)
 
     def reset_conversation(self):
         self.last_intent = None
