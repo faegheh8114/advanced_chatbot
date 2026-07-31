@@ -1,4 +1,21 @@
+# Python
 __pycache__/
 *.pyc
+*.pyo
+.venv/
 venv/
+env/
+
+# Environment / secrets
 .env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Packaging artifacts (do not commit build zips)
+*.zip
