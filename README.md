@@ -1,5 +1,5 @@
-# 🤖 Advanced Chatbot
-
+# Advanced Chatbot
+**[Live Demo](https://advanced-chatbot-16cy.onrender.com)** — try it out (may take ~30s to wake up on first load)
 A rule-based conversational chatbot built with **Flask**, featuring a clean chat-widget UI,
 fuzzy intent matching (handles typos and rephrased questions), and a lightweight per-session
 conversation state.
@@ -7,7 +7,7 @@ conversation state.
 Built as a portfolio project to demonstrate backend (Python/Flask), frontend (vanilla JS/CSS),
 and basic NLP techniques.
 
-## ✨ Features
+##  Features
 
 - **Fuzzy intent matching** — combines substring matching, token overlap, and `difflib`
   similarity scoring, so the bot understands typos and reworded questions, not just exact phrases.
@@ -19,7 +19,7 @@ and basic NLP techniques.
 - **Graceful fallback** — after repeated misunderstandings, the bot proactively suggests topics
   it can help with instead of repeating the same "I don't understand" message.
 
-## 🖥️ Tech Stack
+##  Tech Stack
 
 | Layer | Tech |
 |---|---|
@@ -28,7 +28,7 @@ and basic NLP techniques.
 | Frontend | HTML, CSS, vanilla JavaScript |
 | Fonts | Sora (headings), Inter (body) |
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 advanced_chatbot/
@@ -43,7 +43,7 @@ advanced_chatbot/
     └── script.js
 ```
 
-## 🚀 Getting Started
+##  Getting Started
 
 ```bash
 # 1. Clone the repo
@@ -69,7 +69,7 @@ You can also chat with the bot directly in the terminal without the web UI:
 python chatbot.py
 ```
 
-## 🧠 How the Matching Works
+##  How the Matching Works
 
 For each incoming message, `chatbot.py` scores it against every known pattern using three
 signals, and picks the best match above a confidence threshold:
@@ -82,7 +82,7 @@ signals, and picks the best match above a confidence threshold:
 If nothing scores high enough, the bot returns a fallback response, and after two fallbacks in
 a row it proactively suggests what it *can* help with.
 
-## 🗺️ Roadmap / Ideas for Future Improvement
+## Roadmap / Ideas for Future Improvement
 
 - [ ] Persist conversation history to a database
 - [ ] Add multi-language support (e.g. Persian/English)
