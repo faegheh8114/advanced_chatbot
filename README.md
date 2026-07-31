@@ -18,6 +18,7 @@ and basic NLP techniques.
 - **Easy to extend** — add new topics by editing `intents.json`, no code changes required.
 - **Graceful fallback** — after repeated misunderstandings, the bot proactively suggests topics
   it can help with instead of repeating the same "I don't understand" message.
+ - **Bilingual (English/Persian)** — detects whether a message is in Persian or English and replies in the same language.
 
 ##  Tech Stack
 
@@ -85,9 +86,10 @@ a row it proactively suggests what it *can* help with.
 ## Roadmap / Ideas for Future Improvement
 
 - [ ] Persist conversation history to a database
-- [ ] Add multi-language support (e.g. Persian/English)
+- [x] Add multi-language support (Persian/English)
+- [x] Deploy to Render with a live demo link
 - [ ] Swap rule-based matching for an embeddings-based intent classifier
-- [ ] Deploy to Render/Railway with a live demo link
+
 
 ## Why I built this
 
