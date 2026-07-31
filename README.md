@@ -9,7 +9,7 @@ and basic NLP techniques.
 
 ##  Features
 
-- **Fuzzy intent matching** — combines substring matching, token overlap, and `difflib`
+- **Fuzzy intent matching** combines substring matching, token overlap, and `difflib`
   similarity scoring, so the bot understands typos and reworded questions, not just exact phrases.
 - **Per-session context** each visitor gets their own conversation state (no context bleeding
   between users), tracked via a Flask session cookie.
