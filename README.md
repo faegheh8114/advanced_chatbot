@@ -89,6 +89,19 @@ a row it proactively suggests what it *can* help with.
 - [ ] Swap rule-based matching for an embeddings-based intent classifier
 - [ ] Deploy to Render/Railway with a live demo link
 
+## Why I built this
+
+I built this project to get hands-on with Flask and understand how a chatbot actually
+decides what to say — not just calling an API, but writing the matching logic myself.
+The first version only matched exact substrings, so I went back and added token-overlap
+and fuzzy-string scoring to handle typos and reworded questions. I also learned the hard
+way why templates/static folders matter in Flask (my first version silently failed to
+find the HTML file), and picked up the basics of deploying a Python app to production
+with Gunicorn on Render.
+
+Next, I'd like to add multi-language support and swap the rule-based matching for a
+small embeddings-based classifier.
+
 ## 📄 License
 
 This project is open source and available for learning and portfolio purposes.
