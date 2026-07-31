@@ -1,32 +1,94 @@
-# Advanced Python Chatbot 🤖
+# 🤖 Advanced Chatbot
 
-A simple yet advanced Python chatbot with NLP-based intent recognition and a web interface using Flask.
+A rule-based conversational chatbot built with **Flask**, featuring a clean chat-widget UI,
+fuzzy intent matching (handles typos and rephrased questions), and a lightweight per-session
+conversation state.
 
-## Features
-- Terminal-based chatbot for quick testing
-- NLP-based intent recognition (simple token matching)
-- Web interface with Flask
-- Easy to customize intents and responses
-- Ready for GitHub and Upwork portfolio
+Built as a portfolio project to demonstrate backend (Python/Flask), frontend (vanilla JS/CSS),
+and basic NLP techniques.
 
-## Installation
-1. Clone the repository
-2. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
-3. Run terminal version:
-   ```
-   python chatbot.py
-   ```
-4. Run web version:
-   ```
-   python app.py
-   ```
-   Open your browser at http://127.0.0.1:5000
+## ✨ Features
 
-## Customization
-Edit `intents.json` to add new patterns and responses.
+- **Fuzzy intent matching** — combines substring matching, token overlap, and `difflib`
+  similarity scoring, so the bot understands typos and reworded questions, not just exact phrases.
+- **Per-session context** — each visitor gets their own conversation state (no context bleeding
+  between users), tracked via a Flask session cookie.
+- **Human-like chat UI** — message bubbles, avatar, timestamps, and a typing indicator with a
+  short randomized delay before replies.
+- **Easy to extend** — add new topics by editing `intents.json`, no code changes required.
+- **Graceful fallback** — after repeated misunderstandings, the bot proactively suggests topics
+  it can help with instead of repeating the same "I don't understand" message.
 
-## License
-MIT License
+## 🖥️ Tech Stack
+
+| Layer | Tech |
+|---|---|
+| Backend | Python, Flask |
+| Matching | `difflib` (standard library) |
+| Frontend | HTML, CSS, vanilla JavaScript |
+| Fonts | Sora (headings), Inter (body) |
+
+## 📁 Project Structure
+
+```
+advanced_chatbot/
+├── app.py              # Flask routes & session handling
+├── chatbot.py          # Intent matching engine
+├── intents.json        # Conversation topics & responses
+├── requirements.txt
+├── templates/
+│   └── index.html
+└── static/
+    ├── style.css
+    └── script.js
+```
+
+## 🚀 Getting Started
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/faegheh8114/advanced_chatbot.git
+cd advanced_chatbot
+
+# 2. Create a virtual environment (recommended)
+python -m venv venv
+source venv/bin/activate      # Windows: venv\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Run the app
+python app.py
+```
+
+Then open **http://127.0.0.1:5000** in your browser.
+
+You can also chat with the bot directly in the terminal without the web UI:
+
+```bash
+python chatbot.py
+```
+
+## 🧠 How the Matching Works
+
+For each incoming message, `chatbot.py` scores it against every known pattern using three
+signals, and picks the best match above a confidence threshold:
+
+1. **Substring match** — exact phrase found in the message → highest confidence.
+2. **Token overlap** — how many words the message shares with a pattern (handles reordering
+   and extra words).
+3. **Fuzzy similarity** (`difflib.SequenceMatcher`) — catches typos and near-matches.
+
+If nothing scores high enough, the bot returns a fallback response, and after two fallbacks in
+a row it proactively suggests what it *can* help with.
+
+## 🗺️ Roadmap / Ideas for Future Improvement
+
+- [ ] Persist conversation history to a database
+- [ ] Add multi-language support (e.g. Persian/English)
+- [ ] Swap rule-based matching for an embeddings-based intent classifier
+- [ ] Deploy to Render/Railway with a live demo link
+
+## 📄 License
+
+This project is open source and available for learning and portfolio purposes.
