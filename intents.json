@@ -2,23 +2,102 @@
   "intents": [
     {
       "tag": "greeting",
-      "patterns": ["hi", "hello", "hey"],
-      "responses": ["Hello! How can I help you today?", "Hi there! 😊"]
-    },
-    {
-      "tag": "pricing",
-      "patterns": ["price", "cost", "pricing"],
-      "responses": ["Our pricing depends on your needs. Please contact sales."]
-    },
-    {
-      "tag": "hours",
-      "patterns": ["working hours", "open", "available"],
-      "responses": ["We are available from 9 AM to 5 PM, Monday to Friday."]
+      "patterns": ["hi", "hello", "hey", "good morning", "good afternoon", "good evening", "hiya", "what's up", "yo"],
+      "responses": [
+        "Hello! How can I help you today? 😊",
+        "Hi there! What can I do for you?",
+        "Hey! Great to see you. What's on your mind?"
+      ]
     },
     {
       "tag": "goodbye",
-      "patterns": ["bye", "goodbye"],
-      "responses": ["Goodbye! Have a great day!"]
+      "patterns": ["bye", "goodbye", "see you", "see ya", "talk later", "farewell", "catch you later"],
+      "responses": [
+        "Goodbye! Have a great day! 👋",
+        "See you later! Feel free to come back anytime.",
+        "Take care! It was nice chatting with you."
+      ]
+    },
+    {
+      "tag": "thanks",
+      "patterns": ["thanks", "thank you", "appreciate it", "thx", "much appreciated"],
+      "responses": [
+        "You're very welcome! 😊",
+        "Happy to help!",
+        "Anytime! Let me know if you need anything else."
+      ]
+    },
+    {
+      "tag": "how_are_you",
+      "patterns": ["how are you", "how's it going", "how do you do", "how are you doing", "you good"],
+      "responses": [
+        "I'm doing great, thanks for asking! How about you?",
+        "All good on my end! What can I help you with today?"
+      ]
+    },
+    {
+      "tag": "name",
+      "patterns": ["what is your name", "who are you", "what should i call you", "your name"],
+      "responses": [
+        "I'm your friendly virtual assistant! You can just call me Bot 🤖.",
+        "I go by Bot — nice to meet you!"
+      ]
+    },
+    {
+      "tag": "capabilities",
+      "patterns": ["what can you do", "help me", "what do you do", "how can you help", "your features"],
+      "responses": [
+        "I can answer questions about pricing, hours, and general info. I'm also learning to chat more naturally over time!",
+        "I'm here to help with common questions — try asking about pricing, our hours, or just say hi!"
+      ]
+    },
+    {
+      "tag": "pricing",
+      "patterns": ["price", "cost", "pricing", "how much", "rates", "fees"],
+      "responses": [
+        "Our pricing depends on your specific needs. Could you tell me a bit more about what you're looking for?",
+        "Pricing varies by plan. Would you like me to connect you with our sales team for a custom quote?"
+      ]
+    },
+    {
+      "tag": "hours",
+      "patterns": ["working hours", "open", "available", "opening hours", "when are you open", "business hours"],
+      "responses": [
+        "We're available from 9 AM to 5 PM, Monday to Friday.",
+        "Our team works 9-5, Mon-Fri. Outside those hours, I'm still here to help though!"
+      ]
+    },
+    {
+      "tag": "contact",
+      "patterns": ["contact", "email", "phone number", "reach you", "get in touch", "support"],
+      "responses": [
+        "You can reach our support team at support@example.com — happy to help however I can too!",
+        "Feel free to email us anytime, or just keep chatting with me for quick answers."
+      ]
+    },
+    {
+      "tag": "small_talk_weather",
+      "patterns": ["weather", "is it raining", "is it sunny", "how's the weather"],
+      "responses": [
+        "I can't check live weather yet, but I hope it's nice where you are! ☀️",
+        "No weather sensors here, sadly! What else can I help with?"
+      ]
+    },
+    {
+      "tag": "compliment",
+      "patterns": ["you are smart", "good bot", "nice bot", "you're helpful", "well done", "great job"],
+      "responses": [
+        "Aw, thank you! That made my day 😊",
+        "I appreciate that! I'll keep trying my best."
+      ]
+    },
+    {
+      "tag": "fallback_joke",
+      "patterns": ["tell me a joke", "make me laugh", "joke please", "say something funny"],
+      "responses": [
+        "Why did the developer go broke? Because they used up all their cache! 😄",
+        "I told my computer I needed a break, and it said 'no problem, I'll go to sleep.' 💤"
+      ]
     }
   ]
 }
