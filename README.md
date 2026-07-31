@@ -1,5 +1,5 @@
 # Advanced Chatbot
-**[Live Demo](https://advanced-chatbot-16cy.onrender.com)** — try it out (may take ~30s to wake up on first load)
+**[Live Demo](https://advanced-chatbot-16cy.onrender.com)**,try it out (may take ~30s to wake up on first load)
 A rule-based conversational chatbot built with **Flask**, featuring a clean chat-widget UI,
 fuzzy intent matching (handles typos and rephrased questions), and a lightweight per-session
 conversation state.
@@ -11,14 +11,14 @@ and basic NLP techniques.
 
 - **Fuzzy intent matching** — combines substring matching, token overlap, and `difflib`
   similarity scoring, so the bot understands typos and reworded questions, not just exact phrases.
-- **Per-session context** — each visitor gets their own conversation state (no context bleeding
+- **Per-session context** each visitor gets their own conversation state (no context bleeding
   between users), tracked via a Flask session cookie.
-- **Human-like chat UI** — message bubbles, avatar, timestamps, and a typing indicator with a
+- **Human-like chat UI** message bubbles, avatar, timestamps, and a typing indicator with a
   short randomized delay before replies.
-- **Easy to extend** — add new topics by editing `intents.json`, no code changes required.
-- **Graceful fallback** — after repeated misunderstandings, the bot proactively suggests topics
+- **Easy to extend** add new topics by editing `intents.json`, no code changes required.
+- **Graceful fallback** after repeated misunderstandings, the bot proactively suggests topics
   it can help with instead of repeating the same "I don't understand" message.
- - **Bilingual (English/Persian)** — detects whether a message is in Persian or English and replies in the same language.
+ - **Bilingual (English/Persian)**  detects whether a message is in Persian or English and replies in the same language.
 
 ##  Tech Stack
 
