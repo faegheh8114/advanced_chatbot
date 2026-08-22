@@ -47,7 +47,10 @@
       "patterns": ["price", "cost", "pricing", "how much", "rates", "fees",
                    "قیمت", "هزینه", "چند", "قیمتش چقدره"],
       "responses_en": ["Our pricing depends on your specific needs. Could you tell me a bit more about what you're looking for?", "Pricing varies by plan. Would you like me to connect you with our sales team for a custom quote?"],
-      "responses_fa": ["قیمت بستگی به نیاز شما داره. می‌تونی بیشتر توضیح بدی دنبال چی هستی؟", "قیمت‌ها بسته به پلن متفاوته. می‌خوای وصلت کنم به تیم فروش برای قیمت دقیق‌تر؟"]
+      "responses_fa": ["قیمت بستگی به نیاز شما داره. می‌تونی بیشتر توضیح بدی دنبال چی هستی؟", "قیمت‌ها بسته به پلن متفاوته. می‌خوای وصلت کنم به تیم فروش برای قیمت دقیق‌تر؟"],
+      "awaits_clarification": true,
+      "context_followup_en": ["Got it — for a specific quote like that, the best next step is our sales team at support@example.com. They'll walk you through the exact plan pricing.", "Sure thing — that depends on the plan, so I'd recommend emailing support@example.com and they'll send over exact numbers."],
+      "context_followup_fa": ["باشه — برای قیمت دقیق بهتره با تیم فروش از طریق support@example.com در تماس باشی، اونا قیمت دقیق پلن رو بهت می‌گن.", "حتماً — چون به پلن بستگی داره، پیشنهاد می‌کنم به support@example.com ایمیل بزنی تا عدد دقیق رو بگیری."]
     },
     {
       "tag": "hours",

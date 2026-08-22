@@ -1,0 +1,13 @@
+# Optional: install this on top of requirements.txt to enable the
+# semantic (embedding-based) intent matching layer, then set
+# SEMANTIC_MATCHING=1 in the environment.
+#
+# NOT included in requirements.txt by default. sentence-transformers pulls
+# in PyTorch, which alone is well over 1 GB installed - measured locally at
+# ~1.2 GB for torch, ~5 GB for the full venv including CUDA-capable wheels.
+# That comfortably exceeds Render's free-tier memory (512 MB) and would
+# make cold starts very slow even on a paid instance, so it is not
+# appropriate as a default dependency for this deployment target. See the
+# project report for the full reasoning.
+-r requirements.txt
+sentence-transformers==6.0.0
