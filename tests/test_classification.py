@@ -105,3 +105,85 @@ def test_semantic_layer_ignored_when_rules_already_confident(intents):
 def test_semantic_layer_disabled_by_default(intents):
     bot = Chatbot(intents=intents)
     assert bot.semantic_matcher is None
+
+
+# --- Regression: short/common words must not "borrow" confidence from a
+# longer pattern they merely happen to be a fragment of --------------------
+#
+# "you" is a fragment of "how are you" / "see you" / "you good"; "help" is
+# a fragment of "help me". Neither says with any confidence which (if any)
+# of those intents the user meant, so neither should classify at all - they
+# should fall through to token-overlap/fuzzy scoring like any other partial
+# match, which correctly keeps them below the confidence threshold.
+
+
+def test_short_fragment_you_does_not_match_any_intent(bot):
+    tag, confidence = bot.classify("you")
+    assert tag is None
+    assert confidence < bot.confidence_threshold
+
+
+def test_short_fragment_help_does_not_match_any_intent(bot):
+    tag, confidence = bot.classify("help")
+    assert tag is None
+    assert confidence < bot.confidence_threshold
+
+
+@pytest.mark.parametrize("word", ["yes", "no"])
+def test_other_short_common_words_do_not_match_any_intent(bot, word):
+    # Neither "yes" nor "no" appears in any pattern at all, but they're
+    # exactly the kind of short, generic word this fix targets - included
+    # per the regression request even though they were never the specific
+    # bug (unlike "you"/"help", which used to score 1.0/0.8 respectively).
+    tag, confidence = bot.classify(word)
+    assert tag is None
+    assert confidence < bot.confidence_threshold
+
+
+def test_short_input_can_still_match_when_it_is_a_real_pattern(bot):
+    # The fix must not simply reject all short input: "hi" is itself a
+    # deliberate, standalone greeting pattern (not a fragment of a longer
+    # one), so it should still classify immediately and with full
+    # confidence via the exact/forward-substring path.
+    tag, confidence = bot.classify("hi")
+    assert tag == "greeting"
+    assert confidence == 1.0
+
+
+def test_short_pattern_typo_tolerance_is_preserved(bot):
+    # "bye" is a 3-character pattern - long enough that fuzzy matching is
+    # still trusted for it (unlike the 2-character "yo"/"hi" patterns), so
+    # a typo like "byee" should still be recognized via fuzzy similarity.
+    tag, confidence = bot.classify("byee")
+    assert tag == "goodbye"
+    assert confidence >= bot.confidence_threshold
+
+
+def test_tie_breaking_does_not_depend_on_intents_json_order():
+    # Two intents sharing the exact same pattern is a genuine tie: same
+    # score, same matched-pattern length. "zzz_topic" is listed FIRST to
+    # prove the winner isn't simply "whichever intent appears first" -
+    # ties are resolved by alphabetically-first tag, deterministically.
+    tied_intents = [
+        {
+            "tag": "zzz_topic",
+            "patterns": ["book a flight"],
+            "responses_en": ["z"],
+            "responses_fa": ["z"],
+        },
+        {
+            "tag": "aaa_topic",
+            "patterns": ["book a flight"],
+            "responses_en": ["a"],
+            "responses_fa": ["a"],
+        },
+    ]
+    bot = Chatbot(intents=tied_intents, semantic_matcher=None)
+    tag, confidence = bot.classify("book a flight")
+    assert tag == "aaa_topic"
+    assert confidence == 1.0
+
+    # Reversing the list order must not change the outcome.
+    reordered_bot = Chatbot(intents=list(reversed(tied_intents)), semantic_matcher=None)
+    tag, confidence = reordered_bot.classify("book a flight")
+    assert tag == "aaa_topic"
