@@ -1,2 +1,8 @@
 Flask==2.3.2
+# Flask 2.3.2 does not pin an upper bound on Werkzeug, so a plain
+# `pip install` can resolve a Werkzeug release too new for it (3.1+ removed
+# `werkzeug.__version__`, which Flask's test client relies on, breaking
+# `flask.testing`/pytest even though the app itself still runs). Pinned
+# explicitly to the last release known compatible with Flask 2.3.2.
+Werkzeug==2.3.8
 gunicorn==21.2.0
