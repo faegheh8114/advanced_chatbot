@@ -10,9 +10,14 @@ from semantic_matcher import load_semantic_matcher
 logger = logging.getLogger(__name__)
 
 # --- Confidence thresholds --------------------------------------------------
-# A substring match (the user's text contains a whole known pattern, or
-# vice versa) is treated as certain - there's no ambiguity to weigh against
-# other candidates, so it short-circuits the rest of the scoring pipeline.
+# A known pattern appearing whole inside the user's message is treated as
+# certain - there's no ambiguity to weigh against other candidates, so it
+# short-circuits the rest of the scoring pipeline. This is deliberately
+# one-directional: patterns are short, curated keyword signatures, so
+# finding one intact inside a longer message is meaningful, but a short
+# message merely being a fragment of some longer pattern is not (see
+# _rule_based_score) - that case is scored by the normal token-overlap /
+# fuzzy path below instead, like any other partial match.
 SUBSTRING_MATCH_CONFIDENCE = 1.0
 
 # Minimum combined confidence required to accept an intent instead of
@@ -23,6 +28,17 @@ SUBSTRING_MATCH_CONFIDENCE = 1.0
 # value. It was 0.78 before this refactor and is kept unchanged so existing
 # behavior isn't disturbed without evidence a different number is better.
 INTENT_CONFIDENCE_THRESHOLD = 0.78
+
+# Below this many characters, difflib's character-level ratio becomes an
+# unreliable signal: on very short strings, one or two incidentally shared
+# characters already produce a high ratio even between unrelated words
+# (e.g. "you" vs the pattern "yo" scores 0.8 purely on shared characters,
+# despite being different words). Patterns shorter than this are still
+# matched normally through the exact/substring and token-overlap paths -
+# this only withholds the *fuzzy* signal for them, since fuzzy matching is
+# meant to catch typos of a word, and there isn't enough signal in one or
+# two characters to distinguish "typo" from "coincidentally similar".
+MIN_FUZZY_PATTERN_LENGTH = 3
 
 # Requests longer than this are truncated before matching. difflib's
 # similarity ratio is roughly O(n*m) in the length of the two strings, so
@@ -205,32 +221,79 @@ class Chatbot:
 
     def _rule_based_score(self, user_input_clean, user_tokens, pattern_clean):
         """Score one (message, pattern) pair using substring / token-overlap
-        / fuzzy matching. Returns a value in [0, 1]."""
+        / fuzzy matching. Returns a value in [0, 1].
+
+        Only *forward* containment - a known pattern appearing inside the
+        user's message (e.g. pattern "hi" inside "hi there, quick
+        question") - is treated as an instant, maximally confident match.
+        Patterns are short, curated keyword signatures, so finding one
+        intact inside a longer message is a strong signal.
+
+        The reverse is deliberately NOT given the same automatic
+        confidence: a short message merely being a fragment of some
+        longer, more specific pattern (e.g. "you" is a substring of "how
+        are you") says little about what the user meant - "you" is a
+        fragment of dozens of unrelated sentences. That case instead falls
+        through to token overlap / fuzzy similarity below, which score it
+        in proportion to how much of the pattern the message actually
+        covers - a one-word fragment of a four-word pattern scores low,
+        while a message missing only one filler word still scores high
+        enough to pass the normal confidence threshold - a direct
+        consequence of using the same scoring the pipeline already uses
+        for partial matches, no extra threshold needed.
+
+        The one exception is the fuzzy (character-similarity) signal
+        against very short patterns, which is withheld below
+        MIN_FUZZY_PATTERN_LENGTH - see that constant's comment.
+        """
         if not pattern_clean:
             return 0.0
-        if self._contains_as_phrase(pattern_clean, user_input_clean) or self._contains_as_phrase(
-            user_input_clean, pattern_clean
-        ):
+        if self._contains_as_phrase(pattern_clean, user_input_clean):
             return SUBSTRING_MATCH_CONFIDENCE
 
         overlap_score = self._token_overlap_score(user_tokens, set(pattern_clean.split()))
-        fuzzy_score = difflib.SequenceMatcher(None, user_input_clean, pattern_clean).ratio()
+        fuzzy_score = 0.0
+        if len(pattern_clean) >= MIN_FUZZY_PATTERN_LENGTH:
+            fuzzy_score = difflib.SequenceMatcher(None, user_input_clean, pattern_clean).ratio()
         return max(overlap_score, fuzzy_score)
 
+    @staticmethod
+    def _is_better_candidate(candidate, current_best):
+        """Compare two (score, pattern_length, tag) candidates.
+
+        Ties are broken deterministically instead of silently favoring
+        whichever intent happens to appear first in intents.json:
+        1. Higher score wins.
+        2. On a tied score, the longer matched pattern wins - it's more
+           specific, so it carries more information than a short one.
+        3. If that's still tied, the alphabetically first intent tag wins.
+           This case is rare in practice, but it guarantees a stable,
+           reproducible result rather than depending on iteration order.
+        """
+        score, pattern_len, tag = candidate
+        best_score, best_len, best_tag = current_best
+        if score != best_score:
+            return score > best_score
+        if pattern_len != best_len:
+            return pattern_len > best_len
+        return tag < best_tag
+
     def _best_rule_match(self, user_input_clean, user_tokens):
-        """Return (intent, score) for the best rule-based candidate."""
+        """Return (intent, score) for the best rule-based candidate, using
+        _is_better_candidate to resolve ties deterministically."""
         best_intent = None
-        best_score = 0.0
+        best_candidate = (0.0, 0, "")
         for intent in self.intents:
             for pattern in intent["patterns"]:
                 pattern_clean = self.clean_input(pattern)
                 score = self._rule_based_score(user_input_clean, user_tokens, pattern_clean)
-                if score > best_score:
-                    best_score = score
+                if score <= 0:
+                    continue
+                candidate = (score, len(pattern_clean), intent["tag"])
+                if best_intent is None or self._is_better_candidate(candidate, best_candidate):
+                    best_candidate = candidate
                     best_intent = intent
-                    if best_score >= SUBSTRING_MATCH_CONFIDENCE:
-                        return best_intent, best_score
-        return best_intent, best_score
+        return best_intent, best_candidate[0]
 
     def _best_match(self, user_input_clean):
         """Run the full candidate-matching + scoring pipeline and return
