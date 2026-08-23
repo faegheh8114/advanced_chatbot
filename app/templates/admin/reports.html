@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Reports — {{ ORG_FULL_NAME }} Admin Panel{% endblock %}
+{% block page_title %}Reports & Analytics{% endblock %}
+{% block content %}
+
+<div class="section-grid" style="grid-template-columns: 1fr 1fr;">
+  <div class="card chart-card">
+    <div class="card-header"><span class="card-title">Ticket Volume (last 14 days)</span></div>
+    <canvas id="chart-volume"></canvas>
+  </div>
+  <div class="card chart-card">
+    <div class="card-header"><span class="card-title">Tickets by Status</span></div>
+    <div class="flex items-center gap-12">
+      <canvas id="chart-status" style="max-width:180px;"></canvas>
+      <div class="chart-legend" id="status-legend" style="flex-direction:column;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="section-grid mt-16" style="grid-template-columns: 1fr 1fr;">
+  <div class="card chart-card">
+    <div class="card-header"><span class="card-title">Tickets by Department</span></div>
+    <canvas id="chart-department"></canvas>
+  </div>
+  <div class="card chart-card">
+    <div class="card-header"><span class="card-title">Tickets by Priority</span></div>
+    <canvas id="chart-priority"></canvas>
+  </div>
+</div>
+
+<div class="card mt-16">
+  <div class="card-header"><span class="card-title">Department Performance</span></div>
+  <p class="text-muted text-sm mb-16">Open vs. resolved/closed tickets per department — a quick read on where backlog is building up.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Department</th><th>Open</th><th>In Progress</th><th>Waiting</th><th>Resolved</th><th>Closed</th></tr></thead>
+      <tbody>
+        {% for d in departments %}
+        <tr>
+          <td style="font-weight:600;">{{ d.name }}</td>
+          <td>{{ d.tickets | selectattr('status', 'equalto', 'open') | list | length }}</td>
+          <td>{{ d.tickets | selectattr('status', 'equalto', 'in_progress') | list | length }}</td>
+          <td>{{ d.tickets | selectattr('status', 'equalto', 'waiting_response') | list | length }}</td>
+          <td>{{ d.tickets | selectattr('status', 'equalto', 'resolved') | list | length }}</td>
+          <td>{{ d.tickets | selectattr('status', 'equalto', 'closed') | list | length }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>
+fetch("/api/analytics/overview").then(r => r.json()).then(data => {
+  drawLineChart(document.getElementById("chart-volume"), data.volume);
+  drawBarChart(document.getElementById("chart-department"), data.by_department, { color: "#7c3aed" });
+  drawBarChart(document.getElementById("chart-priority"), data.by_priority, { color: "#d97706" });
+  drawDonutChart(document.getElementById("chart-status"), data.by_status);
+  const legend = document.getElementById("status-legend");
+  legend.innerHTML = data.by_status.map((s, i) => `
+    <div class="chart-legend-item"><span class="dot" style="background:${CHART_COLORS[i % CHART_COLORS.length]}"></span>${s.label}: <strong>${s.value}</strong></div>
+  `).join("");
+});
+</script>
+{% endblock %}

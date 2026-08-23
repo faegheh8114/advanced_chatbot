@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit Department' if department else 'New Department' }} — {{ ORG_FULL_NAME }} Admin Panel{% endblock %}
+{% block page_title %}{{ 'Edit Department' if department else 'New Department' }}{% endblock %}
+{% block content %}
+
+<div class="card form-card">
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-group">
+      <label for="name">Department name</label>
+      <input type="text" id="name" name="name" required value="{{ department.name if department else '' }}">
+    </div>
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea id="description" name="description">{{ department.description if department else '' }}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="manager_id">Manager</label>
+      <select id="manager_id" name="manager_id">
+        <option value="">No manager assigned</option>
+        {% for m in managers %}
+        <option value="{{ m.id }}" {% if department and department.manager_id == m.id %}selected{% endif %}>{{ m.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="flex gap-8">
+      <button type="submit" class="btn btn-primary">{{ 'Save changes' if department else 'Create department' }}</button>
+      <a href="{{ url_for('admin.departments') }}" class="btn btn-ghost">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

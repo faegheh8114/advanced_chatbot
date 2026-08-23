@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}{{ ORG_NAME }} {{ ORG_CODE }}{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/design-system.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+{% block extra_head %}{% endblock %}
+</head>
+<body class="{% if not current_user.is_authenticated %}auth-body{% endif %}">
+{% if current_user.is_authenticated %}
+<div class="app-shell">
+  <input type="checkbox" id="sidebar-toggle" class="sidebar-toggle-input">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">SM</div>
+      <div class="brand-text">
+        <span class="brand-name">SAIPA MASHAYEKH</span>
+        <span class="brand-code">CODE {{ ORG_CODE }}</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Workspace</div>
+      <a href="{{ url_for('dashboard.index') }}" class="nav-link {% if request.endpoint == 'dashboard.index' %}active{% endif %}">
+        <span class="nav-icon">&#9635;</span> Dashboard
+      </a>
+      <a href="{{ url_for('tickets.my_tickets') }}" class="nav-link {% if request.endpoint == 'tickets.my_tickets' %}active{% endif %}">
+        <span class="nav-icon">&#9776;</span> My Tickets
+      </a>
+      <a href="{{ url_for('tickets.create') }}" class="nav-link {% if request.endpoint == 'tickets.create' %}active{% endif %}">
+        <span class="nav-icon">&#10133;</span> Create Request
+      </a>
+      <a href="{{ url_for('tickets.inbox') }}" class="nav-link {% if request.endpoint == 'tickets.inbox' %}active{% endif %}">
+        <span class="nav-icon">&#128229;</span> Inbox
+      </a>
+      <a href="{{ url_for('notifications.index') }}" class="nav-link {% if request.endpoint == 'notifications.index' %}active{% endif %}">
+        <span class="nav-icon">&#128276;</span> Notifications
+        {% if unread_notification_count %}<span class="nav-badge">{{ unread_notification_count }}</span>{% endif %}
+      </a>
+      <a href="{{ url_for('admin.departments') if current_user.is_admin_like() else url_for('profile.view') }}" class="nav-link {% if request.endpoint in ['admin.departments', 'admin.department_detail'] %}active{% endif %}">
+        <span class="nav-icon">&#127970;</span> Departments
+      </a>
+      <a href="{{ url_for('profile.view') }}" class="nav-link {% if request.endpoint == 'profile.view' %}active{% endif %}">
+        <span class="nav-icon">&#128100;</span> Profile
+      </a>
+      <a href="{{ url_for('profile.settings') }}" class="nav-link {% if request.endpoint == 'profile.settings' %}active{% endif %}">
+        <span class="nav-icon">&#9881;</span> Settings
+      </a>
+
+      {% if current_user.is_admin_like() %}
+      <div class="nav-section-label">Admin Panel</div>
+      <a href="{{ url_for('admin.dashboard') }}" class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+        <span class="nav-icon">&#128202;</span> Dashboard
+      </a>
+      <a href="{{ url_for('admin.tickets') }}" class="nav-link {% if request.endpoint == 'admin.tickets' %}active{% endif %}">
+        <span class="nav-icon">&#127915;</span> Tickets
+      </a>
+      <a href="{{ url_for('admin.users') }}" class="nav-link {% if request.endpoint in ['admin.users', 'admin.user_create', 'admin.user_edit', 'admin.user_detail'] %}active{% endif %}">
+        <span class="nav-icon">&#128101;</span> Users
+      </a>
+      <a href="{{ url_for('admin.departments') }}" class="nav-link {% if request.endpoint in ['admin.departments', 'admin.department_create', 'admin.department_edit'] %}active{% endif %}">
+        <span class="nav-icon">&#127970;</span> Departments
+      </a>
+      <a href="{{ url_for('admin.categories') }}" class="nav-link {% if request.endpoint == 'admin.categories' %}active{% endif %}">
+        <span class="nav-icon">&#127991;</span> Categories
+      </a>
+      <a href="{{ url_for('admin.reports') }}" class="nav-link {% if request.endpoint == 'admin.reports' %}active{% endif %}">
+        <span class="nav-icon">&#128200;</span> Reports
+      </a>
+      <a href="{{ url_for('admin.activity_logs') }}" class="nav-link {% if request.endpoint == 'admin.activity_logs' %}active{% endif %}">
+        <span class="nav-icon">&#128220;</span> Activity Logs
+      </a>
+      <a href="{{ url_for('admin.settings') }}" class="nav-link {% if request.endpoint == 'admin.settings' %}active{% endif %}">
+        <span class="nav-icon">&#9881;</span> Settings
+      </a>
+      {% endif %}
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <span class="avatar" style="background:{{ current_user.avatar_color }}">{{ current_user.initials }}</span>
+        <div class="sidebar-user-info">
+          <span class="sidebar-user-name">{{ current_user.name }}</span>
+          <span class="sidebar-user-role">{{ Role.LABELS[current_user.role] }}</span>
+        </div>
+      </div>
+      <form method="post" action="{{ url_for('auth.logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-ghost btn-sm btn-block">Log out</button>
+      </form>
+    </div>
+  </aside>
+
+  <label for="sidebar-toggle" class="sidebar-backdrop"></label>
+
+  <div class="main-column">
+    <header class="topbar">
+      <label for="sidebar-toggle" class="mobile-menu-btn" aria-label="Toggle menu">&#9776;</label>
+      <div class="topbar-title">{% block page_title %}{% endblock %}</div>
+      <div class="topbar-actions">
+        <a href="{{ url_for('tickets.create') }}" class="btn btn-primary btn-sm">+ Create New Request</a>
+        <div class="notif-bell" id="notif-bell">
+          <button type="button" class="icon-btn" id="notif-bell-btn" aria-label="Notifications">
+            &#128276;
+            <span class="notif-count" id="notif-count" {% if not unread_notification_count %}hidden{% endif %}>{{ unread_notification_count }}</span>
+          </button>
+          <div class="notif-dropdown" id="notif-dropdown" hidden>
+            <div class="notif-dropdown-header">
+              <span>Notifications</span>
+              <button type="button" class="link-btn" id="mark-all-read-btn">Mark all read</button>
+            </div>
+            <div class="notif-dropdown-list" id="notif-dropdown-list">
+              <div class="empty-hint-sm">Loading…</div>
+            </div>
+            <a href="{{ url_for('notifications.index') }}" class="notif-dropdown-footer">View all notifications</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-content">
+      {% include "partials/_flash.html" %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% else %}
+  {% block auth_content %}{% endblock %}
+{% endif %}
+
+<div class="toast-stack" id="toast-stack"></div>
+
+<script>window.CSRF_TOKEN = "{{ csrf_token() }}";</script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% if current_user.is_authenticated %}
+<script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+{% endif %}
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

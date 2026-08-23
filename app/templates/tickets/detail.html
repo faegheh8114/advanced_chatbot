@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}{{ ticket.ticket_number }} {{ ticket.title }} — {{ ORG_FULL_NAME }}{% endblock %}
+{% block page_title %}{{ ticket.ticket_number }} — {{ ticket.title }}{% endblock %}
+{% block content %}
+
+<div class="ticket-detail-header">
+  <div class="flex gap-8 items-center">
+    <span class="badge badge-{{ 'blue' if ticket.status in ['open','in_progress'] else 'amber' if ticket.status == 'waiting_response' else 'green' if ticket.status == 'resolved' else 'gray' }}">{{ ticket.status_label }}</span>
+    <span class="badge badge-{{ 'red' if ticket.priority == 'urgent' else 'amber' if ticket.priority == 'high' else 'blue' if ticket.priority == 'medium' else 'gray' }}">{{ ticket.priority_label }}</span>
+    {% if ticket.category %}<span class="badge badge-gray">{{ ticket.category.name }}</span>{% endif %}
+  </div>
+  <a href="javascript:history.back()" class="link-btn">&larr; Back</a>
+</div>
+
+<div class="ticket-meta-grid card">
+  <div class="ticket-meta-item"><div class="meta-label">Ticket ID</div><div class="meta-value">{{ ticket.ticket_number }}</div></div>
+  <div class="ticket-meta-item"><div class="meta-label">Creator</div><div class="meta-value">{{ ticket.creator.name }}</div></div>
+  <div class="ticket-meta-item"><div class="meta-label">Assigned to</div><div class="meta-value">{{ ticket.assignee.name if ticket.assignee else 'Unassigned' }}</div></div>
+  <div class="ticket-meta-item"><div class="meta-label">Department</div><div class="meta-value">{{ ticket.department.name if ticket.department else '—' }}</div></div>
+  <div class="ticket-meta-item"><div class="meta-label">Created</div><div class="meta-value">{{ ticket.created_at.strftime('%b %d, %Y %H:%M') }}</div></div>
+  <div class="ticket-meta-item"><div class="meta-label">Last updated</div><div class="meta-value">{{ ticket.updated_at | timeago }}</div></div>
+</div>
+
+<div class="ticket-layout mt-16">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Conversation</span></div>
+
+    <div class="chat-thread" id="chat-thread"
+         data-ticket-id="{{ ticket.id }}"
+         data-current-user-id="{{ current_user.id }}"
+         data-last-message-id="{{ messages[-1].id if messages else 0 }}">
+      {% for m in messages %}
+      <div class="chat-message {{ 'own' if m.sender_id == current_user.id else '' }} {{ 'note' if m.is_internal_note else '' }}">
+        <span class="avatar avatar-sm" style="background:{{ m.sender.avatar_color }}">{{ m.sender.initials }}</span>
+        <div class="chat-bubble-col">
+          <div class="chat-bubble">{{ m.body }}</div>
+          {% if m.attachments %}
+          <div class="chat-attachments">
+            {% for a in m.attachments %}
+            <a class="chat-attachment" href="{{ url_for('tickets.download_attachment', attachment_id=a.id) }}">
+              {{ '🖼' if a.is_image else '📎' }} {{ a.original_filename }} <span class="text-faint">({{ a.human_size() }})</span>
+            </a>
+            {% endfor %}
+          </div>
+          {% endif %}
+          <div class="chat-meta">
+            <strong>{{ m.sender.name }}</strong>
+            {% if m.is_internal_note %}<span class="badge badge-amber">Internal note</span>{% endif %}
+            <span>{{ m.created_at.strftime('%b %d, %H:%M') }}</span>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <p class="empty-hint-sm">No messages yet.</p>
+      {% endfor %}
+    </div>
+
+    {% if ticket.status != TicketStatus.CLOSED %}
+    <div class="chat-composer">
+      <form method="post" action="{{ url_for('tickets.reply', ticket_id=ticket.id) }}" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <textarea id="composer-body" name="body" placeholder="Write a reply…" rows="3"></textarea>
+        <div class="file-chip-row" id="file-chip-row"></div>
+        <div class="composer-actions">
+          <div class="flex gap-8 items-center" style="position:relative;">
+            <label for="composer-files" class="icon-btn" title="Attach files" style="cursor:pointer;">📎</label>
+            <input type="file" id="composer-files" name="attachments" multiple hidden>
+            <button type="button" class="icon-btn" id="emoji-btn" title="Emoji">🙂</button>
+            <div class="notif-dropdown" id="emoji-panel" hidden style="top:calc(100% + 4px); left:0; width:220px; padding:8px; display:flex; flex-wrap:wrap;"></div>
+            {% if can_manage %}
+            <label class="checkbox-row" style="margin-left:8px;">
+              <input type="checkbox" name="is_internal_note"> <span class="text-sm">Internal note</span>
+            </label>
+            {% endif %}
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm">Send</button>
+        </div>
+      </form>
+    </div>
+    {% else %}
+    <p class="empty-hint-sm">This ticket is closed. Reopen it by changing its status to continue the conversation.</p>
+    {% endif %}
+  </div>
+
+  <div>
+    {% if can_manage %}
+    <div class="card side-panel-card">
+      <div class="card-header"><span class="card-title">Manage Ticket</span></div>
+
+      <form method="post" action="{{ url_for('tickets.change_status', ticket_id=ticket.id) }}" class="form-group">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label for="status">Status</label>
+        <div class="flex gap-8">
+          <select name="status" id="status">
+            {% for s in TicketStatus.ORDER %}
+            <option value="{{ s }}" {% if ticket.status == s %}selected{% endif %}>{{ TicketStatus.LABELS[s] }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" class="btn btn-secondary btn-sm">Update</button>
+        </div>
+      </form>
+
+      <form method="post" action="{{ url_for('tickets.change_priority', ticket_id=ticket.id) }}" class="form-group">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label for="priority-select">Priority</label>
+        <div class="flex gap-8">
+          <select name="priority" id="priority-select">
+            {% for p in TicketPriority.ORDER %}
+            <option value="{{ p }}" {% if ticket.priority == p %}selected{% endif %}>{{ TicketPriority.LABELS[p] }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" class="btn btn-secondary btn-sm">Update</button>
+        </div>
+      </form>
+
+      {% if assignable_users %}
+      <form method="post" action="{{ url_for('tickets.assign', ticket_id=ticket.id) }}" class="form-group">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label for="assignee_id">Assign / Reassign</label>
+        <div class="flex gap-8">
+          <select name="assignee_id" id="assignee_id">
+            <option value="">Unassigned</option>
+            {% for u in assignable_users %}
+            <option value="{{ u.id }}" {% if ticket.assignee_id == u.id %}selected{% endif %}>{{ u.name }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" class="btn btn-secondary btn-sm">Assign</button>
+        </div>
+      </form>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="card side-panel-card">
+      <div class="card-header"><span class="card-title">Request Details</span></div>
+      <div class="list-item"><div class="list-item-meta">Recipient</div></div>
+      <p class="text-sm">{{ ticket.recipient_user.name if ticket.recipient_user else (ticket.department.name + ' Department' if ticket.department else 'Not set') }}</p>
+      {% if ticket.resolved_at %}<p class="text-sm text-muted">Resolved {{ ticket.resolved_at | timeago }}</p>{% endif %}
+      {% if ticket.closed_at %}<p class="text-sm text-muted">Closed {{ ticket.closed_at | timeago }}</p>{% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/ticket-chat.js') }}"></script>
+{% endblock %}

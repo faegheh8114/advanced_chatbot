@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ code }} — {{ ORG_FULL_NAME }}{% endblock %}
+{% block page_title %}Error {{ code }}{% endblock %}
+{% block content %}
+<div class="empty-state card">
+  <div class="empty-state-icon">&#9888;</div>
+  <div class="empty-state-title">{{ code }} — {{ message }}</div>
+  <a href="{{ url_for('dashboard.index') if current_user.is_authenticated else url_for('auth.login') }}" class="btn btn-primary mt-16">
+    {{ 'Back to Dashboard' if current_user.is_authenticated else 'Back to Login' }}
+  </a>
+</div>
+{% endblock %}
+{% block auth_content %}
+<div class="login-card">
+  <div class="empty-state">
+    <div class="empty-state-icon">&#9888;</div>
+    <div class="empty-state-title">{{ code }} — {{ message }}</div>
+    <a href="{{ url_for('auth.login') }}" class="btn btn-primary mt-16">Back to Login</a>
+  </div>
+</div>
+{% endblock %}

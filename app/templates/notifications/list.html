@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Notifications — {{ ORG_FULL_NAME }}{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+{% block content %}
+
+<div class="flex justify-between items-center mb-16">
+  <p class="text-muted">Stay on top of replies, assignments, and status changes.</p>
+  {% if notifications %}
+  <form method="post" action="{{ url_for('notifications.mark_all_read') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit" class="btn btn-secondary btn-sm">Mark all read</button>
+  </form>
+  {% endif %}
+</div>
+
+<div class="card">
+  {% if notifications %}
+    {% for n in notifications %}
+    <a href="{{ url_for('notifications.open_notification', notification_id=n.id) }}" class="list-item" style="text-decoration:none; color:inherit;">
+      <span class="dot {{ 'dot-blue' if not n.is_read else 'dot-gray' }}"></span>
+      <div style="flex:1; min-width:0;">
+        <div class="list-item-title">{{ n.title }}</div>
+        {% if n.body %}<div class="list-item-meta">{{ n.body }}</div>{% endif %}
+        <div class="list-item-meta text-faint">{{ n.created_at | timeago }}</div>
+      </div>
+      {% if not n.is_read %}<span class="badge badge-blue">New</span>{% endif %}
+    </a>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">&#128276;</div>
+      <div class="empty-state-title">No notifications yet</div>
+      <p class="text-muted">You'll see updates on your requests here.</p>
+    </div>
+  {% endif %}
+</div>
+
+{% include "partials/_pagination.html" %}
+{% endblock %}

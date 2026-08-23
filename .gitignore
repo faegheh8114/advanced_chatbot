@@ -19,3 +19,9 @@ Thumbs.db
 
 # Packaging artifacts (do not commit build zips)
 *.zip
+
+# App runtime data
+instance/*.db
+instance/uploads/
+.pytest_cache/
+*.egg-info/

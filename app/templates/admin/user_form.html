@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit User' if user else 'New User' }} — {{ ORG_FULL_NAME }} Admin Panel{% endblock %}
+{% block page_title %}{{ 'Edit User' if user else 'New User' }}{% endblock %}
+{% block content %}
+{% set selected_department_id = (form.get('department_id', '') if form else (user.department_id or '')) | string %}
+{% set selected_role = (form.get('role') if form else user.role) %}
+
+<div class="card form-card">
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-group">
+      <label for="name">Full name</label>
+      <input type="text" id="name" name="name" required value="{{ (form.get('name') if form else user.name) or '' }}">
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required value="{{ (form.get('email') if form else user.email) or '' }}">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="role">Role</label>
+        <select id="role" name="role">
+          {% for r in Role.ALL %}
+          <option value="{{ r }}" {% if selected_role == r %}selected{% endif %}>{{ Role.LABELS[r] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="department_id">Department</label>
+        <select id="department_id" name="department_id">
+          <option value="">No department</option>
+          {% for d in departments %}
+          <option value="{{ d.id }}" {% if selected_department_id == d.id|string %}selected{% endif %}>{{ d.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    {% if not user %}
+    <div class="form-group">
+      <label for="password">Temporary password</label>
+      <input type="text" id="password" name="password" required minlength="8" placeholder="At least 8 characters">
+      <div class="form-hint">Share this with the employee securely. They can change it after logging in.</div>
+    </div>
+    {% endif %}
+    <div class="flex gap-8">
+      <button type="submit" class="btn btn-primary">{{ 'Save changes' if user else 'Create user' }}</button>
+      <a href="{{ url_for('admin.users') }}" class="btn btn-ghost">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

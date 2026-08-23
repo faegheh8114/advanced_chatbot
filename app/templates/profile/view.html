@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}My Profile — {{ ORG_FULL_NAME }}{% endblock %}
+{% block page_title %}Profile{% endblock %}
+{% block content %}
+
+<div class="section-grid">
+  <div class="card">
+    <div class="card-header"><span class="card-title">My Information</span></div>
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="form-group">
+        <label for="name">Full name</label>
+        <input type="text" id="name" name="name" value="{{ current_user.name }}" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" value="{{ current_user.email }}" disabled>
+        <div class="form-hint">Contact an administrator to change your email.</div>
+      </div>
+      <button type="submit" class="btn btn-primary">Save changes</button>
+    </form>
+  </div>
+
+  <div>
+    <div class="card side-panel-card" style="text-align:center;">
+      <span class="avatar avatar-lg" style="background:{{ current_user.avatar_color }}; margin:0 auto 10px;">{{ current_user.initials }}</span>
+      <h3>{{ current_user.name }}</h3>
+      <p class="text-muted text-sm">{{ Role.LABELS[current_user.role] }}{% if current_user.department %} &middot; {{ current_user.department.name }}{% endif %}</p>
+    </div>
+    <div class="card side-panel-card">
+      <div class="list-item"><span class="list-item-meta">Requests created</span><strong style="margin-left:auto;">{{ ticket_count }}</strong></div>
+      <div class="list-item"><span class="list-item-meta">Tickets assigned to me</span><strong style="margin-left:auto;">{{ assigned_count }}</strong></div>
+    </div>
+  </div>
+</div>
+{% endblock %}

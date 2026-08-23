@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Login — {{ ORG_FULL_NAME }}{% endblock %}
+{% block auth_content %}
+<div class="login-card">
+  <div class="login-brand">
+    <div class="brand-mark">SM</div>
+    <h1>Welcome to Saipa Mashayekh {{ ORG_CODE }}</h1>
+    <p>Internal Automation Platform</p>
+  </div>
+
+  {% include "partials/_flash.html" %}
+
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" value="{{ email }}" required autofocus placeholder="you@saipamashayekh.local">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required placeholder="••••••••">
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+  </form>
+
+  <div class="login-demo-hint">
+    Demo accounts (seeded): <strong>admin@saipamashayekh.local</strong> / <strong>Admin@12345</strong><br>
+    or any seeded employee — see the seed script for the full roster.
+  </div>
+</div>
+{% endblock %}

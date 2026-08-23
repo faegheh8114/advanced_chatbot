@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} — {{ ORG_FULL_NAME }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block content %}
+
+<form class="ticket-filters card" method="get">
+  <input type="search" name="q" placeholder="Search tickets…" value="{{ request.args.get('q', '') }}">
+  <select name="status">
+    <option value="">All statuses</option>
+    {% for s in TicketStatus.ORDER %}
+    <option value="{{ s }}" {% if request.args.get('status') == s %}selected{% endif %}>{{ TicketStatus.LABELS[s] }}</option>
+    {% endfor %}
+  </select>
+  <select name="priority">
+    <option value="">All priorities</option>
+    {% for p in TicketPriority.ORDER %}
+    <option value="{{ p }}" {% if request.args.get('priority') == p %}selected{% endif %}>{{ TicketPriority.LABELS[p] }}</option>
+    {% endfor %}
+  </select>
+  <select name="category">
+    <option value="">All categories</option>
+    {% for c in categories %}
+    <option value="{{ c.id }}" {% if request.args.get('category', type=int) == c.id %}selected{% endif %}>{{ c.name }}</option>
+    {% endfor %}
+  </select>
+  <select name="department">
+    <option value="">All departments</option>
+    {% for d in departments %}
+    <option value="{{ d.id }}" {% if request.args.get('department', type=int) == d.id %}selected{% endif %}>{{ d.name }}</option>
+    {% endfor %}
+  </select>
+  <select name="sort">
+    <option value="newest" {% if request.args.get('sort', 'newest') == 'newest' %}selected{% endif %}>Newest</option>
+    <option value="oldest" {% if request.args.get('sort') == 'oldest' %}selected{% endif %}>Oldest</option>
+    <option value="updated" {% if request.args.get('sort') == 'updated' %}selected{% endif %}>Recently updated</option>
+    <option value="priority" {% if request.args.get('sort') == 'priority' %}selected{% endif %}>Highest priority</option>
+  </select>
+  <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+  {% if request.args %}<a href="{{ url_for(endpoint) }}" class="btn btn-ghost btn-sm">Clear</a>{% endif %}
+</form>
+
+<div class="table-wrap mt-16">
+  {% if tickets %}
+    {% for t in tickets %}
+    <a href="{{ url_for('tickets.detail', ticket_id=t.id) }}" class="ticket-row" style="display:flex; border-bottom:1px solid var(--color-border); text-decoration:none; color:inherit;">
+      <div class="ticket-row-main">
+        <div class="ticket-row-title">{{ t.ticket_number }} · {{ t.title }}</div>
+        <div class="ticket-row-meta">
+          <span>{{ t.creator.name }}</span>
+          <span>&rarr;</span>
+          <span>{{ t.recipient_user.name if t.recipient_user else (t.department.name if t.department else 'Unassigned') }}</span>
+          {% if t.category %}<span>{{ t.category.name }}</span>{% endif %}
+          <span>{{ t.updated_at | timeago }}</span>
+        </div>
+      </div>
+      <div class="ticket-row-badges">
+        <span class="badge badge-{{ 'red' if t.priority == 'urgent' else 'amber' if t.priority == 'high' else 'blue' if t.priority == 'medium' else 'gray' }}">{{ t.priority_label }}</span>
+        <span class="badge badge-{{ 'blue' if t.status in ['open','in_progress'] else 'amber' if t.status == 'waiting_response' else 'green' if t.status == 'resolved' else 'gray' }}">{{ t.status_label }}</span>
+      </div>
+    </a>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">&#128203;</div>
+      <div class="empty-state-title">{{ empty_hint }}</div>
+      <a href="{{ url_for('tickets.create') }}" class="btn btn-primary mt-16">+ Create New Request</a>
+    </div>
+  {% endif %}
+</div>
+
+{% include "partials/_pagination.html" %}
+{% endblock %}

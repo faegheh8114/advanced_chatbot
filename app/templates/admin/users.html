@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Users — {{ ORG_FULL_NAME }} Admin Panel{% endblock %}
+{% block page_title %}Users{% endblock %}
+{% block content %}
+
+<div class="flex justify-between items-center mb-16">
+  <form class="ticket-filters" method="get" style="margin-bottom:0;">
+    <input type="search" name="q" placeholder="Search name or email…" value="{{ request.args.get('q', '') }}">
+    <select name="role">
+      <option value="">All roles</option>
+      {% for r in Role.ALL %}
+      <option value="{{ r }}" {% if request.args.get('role') == r %}selected{% endif %}>{{ Role.LABELS[r] }}</option>
+      {% endfor %}
+    </select>
+    <select name="department">
+      <option value="">All departments</option>
+      {% for d in departments %}
+      <option value="{{ d.id }}" {% if request.args.get('department', type=int) == d.id %}selected{% endif %}>{{ d.name }}</option>
+      {% endfor %}
+    </select>
+    <select name="status">
+      <option value="">Any status</option>
+      <option value="active" {% if request.args.get('status') == 'active' %}selected{% endif %}>Active</option>
+      <option value="inactive" {% if request.args.get('status') == 'inactive' %}selected{% endif %}>Inactive</option>
+    </select>
+    <select name="sort">
+      <option value="name" {% if request.args.get('sort', 'name') == 'name' %}selected{% endif %}>Name</option>
+      <option value="recent" {% if request.args.get('sort') == 'recent' %}selected{% endif %}>Newest</option>
+      <option value="activity" {% if request.args.get('sort') == 'activity' %}selected{% endif %}>Last activity</option>
+    </select>
+    <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+  </form>
+  <a href="{{ url_for('admin.user_create') }}" class="btn btn-primary btn-sm">+ New User</a>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>User</th><th>Department</th><th>Role</th><th>Status</th><th>Last Activity</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>
+          <div class="flex items-center gap-8">
+            <span class="avatar avatar-sm" style="background:{{ u.avatar_color }}">{{ u.initials }}</span>
+            <div>
+              <div style="font-weight:600;"><a href="{{ url_for('admin.user_detail', user_id=u.id) }}">{{ u.name }}</a></div>
+              <div class="text-faint text-sm">{{ u.email }}</div>
+            </div>
+          </div>
+        </td>
+        <td>{{ u.department.name if u.department else '—' }}</td>
+        <td><span class="badge badge-blue">{{ Role.LABELS[u.role] }}</span></td>
+        <td><span class="badge badge-{{ 'green' if u.is_active else 'gray' }}">{{ 'Active' if u.is_active else 'Inactive' }}</span></td>
+        <td class="text-sm text-muted">{{ u.last_active_at | timeago if u.last_active_at else 'Never' }}</td>
+        <td>
+          <div class="actions-bar">
+            <a href="{{ url_for('admin.user_edit', user_id=u.id) }}" class="btn btn-ghost btn-sm">Edit</a>
+            <form method="post" action="{{ url_for('admin.user_toggle_active', user_id=u.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-ghost btn-sm">{{ 'Deactivate' if u.is_active else 'Activate' }}</button>
+            </form>
+            <form method="post" action="{{ url_for('admin.user_reset_password', user_id=u.id) }}" data-confirm="Reset the password for {{ u.name }}? A new temporary password will be generated.">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-ghost btn-sm">Reset PW</button>
+            </form>
+            <form method="post" action="{{ url_for('admin.user_delete', user_id=u.id) }}" data-confirm="Delete {{ u.name }}? This cannot be undone.">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--color-danger);">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6"><div class="empty-state"><div class="empty-state-title">No users match these filters</div></div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% include "partials/_pagination.html" %}
+{% endblock %}

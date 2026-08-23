@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Saipa Mashayekh {{ ORG_CODE }} Admin Panel{% endblock %}
+{% block page_title %}Saipa Mashayekh {{ ORG_CODE }} — Management Dashboard{% endblock %}
+{% block content %}
+
+<div class="stat-grid">
+  <div class="stat-card accent-blue"><div class="stat-value">{{ total_users }}</div><div class="stat-label">Total Users</div></div>
+  <div class="stat-card accent-green"><div class="stat-value">{{ active_users }}</div><div class="stat-label">Active Users</div></div>
+  <div class="stat-card"><div class="stat-value">{{ total_tickets }}</div><div class="stat-label">Total Tickets</div></div>
+  <div class="stat-card accent-blue"><div class="stat-value">{{ counts.open }}</div><div class="stat-label">Open Tickets</div></div>
+  <div class="stat-card accent-blue"><div class="stat-value">{{ counts.in_progress }}</div><div class="stat-label">In Progress</div></div>
+  <div class="stat-card accent-amber"><div class="stat-value">{{ counts.waiting_response }}</div><div class="stat-label">Waiting for Response</div></div>
+  <div class="stat-card accent-green"><div class="stat-value">{{ counts.resolved }}</div><div class="stat-label">Resolved</div></div>
+  <div class="stat-card"><div class="stat-value">{{ counts.closed }}</div><div class="stat-label">Closed</div></div>
+  <div class="stat-card accent-red"><div class="stat-value">{{ urgent_tickets }}</div><div class="stat-label">Urgent Tickets</div></div>
+  <div class="stat-card accent-amber"><div class="stat-value">{{ unread_requests }}</div><div class="stat-label">Unread Requests</div></div>
+</div>
+
+<div class="section-grid">
+  <div>
+    <div class="card chart-card">
+      <div class="card-header"><span class="card-title">Ticket Volume (last 14 days)</span></div>
+      <canvas id="chart-volume"></canvas>
+    </div>
+
+    <div class="section-grid mt-16" style="grid-template-columns: 1fr 1fr;">
+      <div class="card chart-card">
+        <div class="card-header"><span class="card-title">Tickets by Department</span></div>
+        <canvas id="chart-department"></canvas>
+      </div>
+      <div class="card chart-card">
+        <div class="card-header"><span class="card-title">Tickets by Priority</span></div>
+        <canvas id="chart-priority"></canvas>
+      </div>
+    </div>
+
+    <div class="card mt-16">
+      <div class="card-header">
+        <span class="card-title">Departments</span>
+        <a href="{{ url_for('admin.departments') }}" class="link-btn">Manage</a>
+      </div>
+      {% for d in departments[:6] %}
+      <div class="list-item">
+        <div style="flex:1;">
+          <a href="{{ url_for('admin.department_detail', department_id=d.id) }}" class="list-item-title">{{ d.name }}</a>
+          <div class="list-item-meta">{{ d.member_count() }} members &middot; {{ d.open_ticket_count() }} open tickets</div>
+        </div>
+        <span class="badge badge-{{ 'green' if d.is_active else 'gray' }}">{{ 'Active' if d.is_active else 'Disabled' }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Activity Feed</span>
+      <a href="{{ url_for('admin.activity_logs') }}" class="link-btn">View all</a>
+    </div>
+    {% if recent_activity %}
+      {% for a in recent_activity %}
+      <div class="list-item">
+        <div style="flex:1;">
+          <div class="list-item-meta">{{ a.description }}</div>
+          <div class="list-item-meta text-faint">{{ a.created_at | timeago }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p class="empty-hint-sm">No activity recorded yet.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>
+fetch("/api/analytics/overview").then(r => r.json()).then(data => {
+  drawLineChart(document.getElementById("chart-volume"), data.volume);
+  drawBarChart(document.getElementById("chart-department"), data.by_department, { color: "#7c3aed" });
+  drawBarChart(document.getElementById("chart-priority"), data.by_priority, { color: "#d97706" });
+});
+</script>
+{% endblock %}

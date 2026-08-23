@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ department.name }} — {{ ORG_FULL_NAME }} Admin Panel{% endblock %}
+{% block page_title %}{{ department.name }}{% endblock %}
+{% block content %}
+
+<div class="section-grid">
+  <div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Members</span></div>
+      {% if members %}
+        {% for m in members %}
+        <div class="list-item">
+          <span class="avatar avatar-sm" style="background:{{ m.avatar_color }}">{{ m.initials }}</span>
+          <div style="flex:1;">
+            <a href="{{ url_for('admin.user_detail', user_id=m.id) }}" class="list-item-title">{{ m.name }}</a>
+            <div class="list-item-meta">{{ Role.LABELS[m.role] }}</div>
+          </div>
+          <span class="badge badge-{{ 'green' if m.is_active else 'gray' }}">{{ 'Active' if m.is_active else 'Inactive' }}</span>
+        </div>
+        {% endfor %}
+      {% else %}<p class="empty-hint-sm">No members assigned to this department yet.</p>{% endif %}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">Ticket Statistics</span></div>
+    {% for s in TicketStatus.ORDER %}
+    <div class="list-item">
+      <span style="flex:1;">{{ TicketStatus.LABELS[s] }}</span>
+      <strong>{{ stats[s] }}</strong>
+    </div>
+    {% endfor %}
+    <a href="{{ url_for('admin.department_edit', department_id=department.id) }}" class="btn btn-secondary btn-block mt-16">Edit department</a>
+  </div>
+</div>
+{% endblock %}
