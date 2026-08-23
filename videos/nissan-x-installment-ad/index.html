@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="fa">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Nissan X Tak-Souz — Installment Ad</title>
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Vazirmatn";
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: block;
+        src: url("assets/fonts/vazirmatn-2.woff2") format("woff2");
+        unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+      }
+      @font-face {
+        font-family: "Vazirmatn";
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: block;
+        src: url("assets/fonts/vazirmatn-3.woff2") format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122;
+      }
+      @font-face {
+        font-family: "Vazirmatn";
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: block;
+        src: url("assets/fonts/vazirmatn-1.woff2") format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB;
+      }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1080px; height: 1920px; overflow: hidden;
+        background: #000; font-family: "Vazirmatn", "Tahoma", sans-serif;
+      }
+      .clip { position: absolute; inset: 0; }
+
+      /* ============ shared ============ */
+      .hero-img {
+        position: absolute;
+        left: 50%;
+        opacity: 0;
+        filter: drop-shadow(0 40px 60px rgba(0, 0, 0, 0.55));
+      }
+      .glow-ring {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* ============ SCENE: outdoor ============ */
+      #scene-outdoor { background: #0b1a2b; overflow: hidden; }
+      #outdoor-cam { position: absolute; inset: 0; transform-origin: 50% 60%; }
+
+      .sky {
+        position: absolute; inset: 0;
+        background: linear-gradient(
+          to bottom,
+          #0f2a4a 0%,
+          #386088 22%,
+          #a9744a 46%,
+          #e8a355 58%,
+          #ffce87 68%,
+          #ffe0a3 74%
+        );
+      }
+      .sun {
+        position: absolute; left: 50%; top: 62%; width: 460px; height: 460px;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background: radial-gradient(circle, #fff8e0 0%, #ffdf95 30%, #ffbf5e 55%, rgba(255,191,94,0) 72%);
+        filter: blur(2px);
+      }
+      .mountains {
+        position: absolute; left: -5%; right: -5%; top: 66%; height: 220px;
+        background: #4a5e78;
+        opacity: 0.55;
+        clip-path: polygon(0% 100%, 0% 55%, 12% 30%, 24% 60%, 38% 15%, 52% 50%, 68% 25%, 82% 58%, 100% 35%, 100% 100%);
+      }
+      .sand {
+        position: absolute; left: 0; right: 0; bottom: 0; top: 74%;
+        background: linear-gradient(to bottom, #d9a86a 0%, #c48f52 45%, #a9773f 100%);
+      }
+      .sand-tex {
+        position: absolute; inset: 0;
+        background: repeating-linear-gradient(
+          92deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 2px, transparent 2px, transparent 46px
+        );
+      }
+      .palm {
+        position: absolute; bottom: 26%; width: 340px; height: 640px;
+        filter: drop-shadow(0 20px 20px rgba(0,0,0,0.35));
+      }
+      .palm.left { left: -70px; transform: scaleX(-1); }
+      .palm.right { right: -110px; }
+      .vignette-out {
+        position: absolute; inset: 0;
+        background: radial-gradient(ellipse at 50% 55%, rgba(0,0,0,0) 45%, rgba(10,10,15,0.55) 100%);
+      }
+
+      /* HUD card */
+      #hud-card {
+        position: absolute; top: 150px; right: 56px; width: 560px;
+        padding: 34px 36px;
+        border-radius: 26px;
+        background: rgba(8,16,26,0.46);
+        border: 1px solid rgba(255,255,255,0.28);
+        backdrop-filter: blur(18px) saturate(140%);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.18);
+        opacity: 0;
+      }
+      .hud-title {
+        direction: rtl; text-align: right;
+        font-family: "Vazirmatn", sans-serif; font-weight: 700; font-size: 30px;
+        color: #fff; line-height: 1.5;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+        margin-bottom: 18px;
+      }
+      .hud-row {
+        font-family: "JetBrains Mono", monospace; font-size: 20px; font-weight: 700;
+        letter-spacing: 0.03em; color: #ffe9c7;
+        margin-bottom: 10px;
+      }
+      .hud-material { position: relative; height: 30px; }
+      .hud-material span {
+        position: absolute; right: 0; left: 0;
+        font-family: "JetBrains Mono", monospace; font-size: 17px; font-weight: 700;
+        letter-spacing: 0.02em; color: #7df3e6;
+      }
+      .hud-material .m-diamond { opacity: 0; }
+      .hud-edition { margin-top: 14px; font-family: "JetBrains Mono", monospace; font-size: 16px; font-weight: 700; color: rgba(255,255,255,0.8); letter-spacing: 0.08em; }
+
+      /* orbs */
+      #orb-row { position: absolute; left: 66px; top: 900px; width: 220px; height: 760px; opacity: 0; }
+      .orb {
+        position: absolute; left: 0; width: 116px; height: 116px; border-radius: 50%;
+        box-shadow: 0 18px 30px rgba(0,0,0,0.4);
+      }
+      .orb.orange   { top: 0px;   background: radial-gradient(circle at 34% 30%, #fff2c2, #ff8a3d 45%, #b34700 100%); }
+      .orb.graphite { top: 156px; background: repeating-linear-gradient(135deg, #4a4a4a 0 7px, #1c1c1c 7px 14px); box-shadow: inset 0 0 24px rgba(255,255,255,0.15), 0 18px 30px rgba(0,0,0,0.4); }
+      .orb.chrome   { top: 312px; background: linear-gradient(135deg, #f2f8fb 0%, #9db4c4 22%, #374c5e 48%, #dbe8ef 70%, #6f8494 100%); }
+      .orb.black    { top: 468px; background: radial-gradient(circle at 34% 30%, #3d3d3d, #050505 72%); }
+      .orb.diamond  {
+        top: 624px;
+        background: radial-gradient(circle at 32% 28%, #eafffb 0%, #7ff0e0 30%, #1fb7ab 62%, #0a6e69 100%);
+        box-shadow: 0 0 50px 8px rgba(70, 230, 210, 0.75), 0 18px 30px rgba(0,0,0,0.4);
+      }
+
+      /* cursor */
+      #cursor { position: absolute; left: 540px; top: 2208px; width: 108px; height: 108px; z-index: 30; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.45)); }
+
+      /* color burst */
+      #color-burst {
+        position: absolute; left: 94px; top: 1552px; width: 60px; height: 60px;
+        border-radius: 50%; opacity: 0;
+        background: radial-gradient(circle, rgba(220,255,250,0.95) 0%, rgba(70,230,210,0.7) 30%, rgba(70,230,210,0) 70%);
+      }
+
+      /* exhaust + dust for shot 4b */
+      .exhaust-glow {
+        position: absolute; width: 200px; height: 200px; border-radius: 50%; opacity: 0;
+        background: radial-gradient(circle, #fff3d0 0%, #ffab4a 35%, #ff5a1f 60%, rgba(255,90,31,0) 75%);
+        filter: blur(4px);
+      }
+      .dust-puff {
+        position: absolute; border-radius: 50%; opacity: 0;
+        background: radial-gradient(circle, rgba(214,180,132,0.55) 0%, rgba(214,180,132,0) 70%);
+        filter: blur(6px);
+      }
+      .lens-flare {
+        position: absolute; top: 0; left: -30%; width: 40%; height: 100%;
+        background: linear-gradient(100deg, rgba(255,255,255,0) 40%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0) 60%);
+        opacity: 0; pointer-events: none;
+      }
+
+      /* ============ SCENE: glitch transition ============ */
+      #scene-glitch { background: #05070a; overflow: hidden; }
+      .g-band {
+        position: absolute; left: 0; width: 100%; opacity: 0;
+      }
+      .g-flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
+      .g-noise {
+        position: absolute; inset: -4%; opacity: 0; mix-blend-mode: screen;
+      }
+
+      /* ============ SCENE: indoor / laptop ============ */
+      #scene-indoor { background: #05070c; overflow: hidden; }
+      .indoor-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, #10151f 0%, #05060a 70%); }
+      .rim-glow { position: absolute; width: 700px; height: 900px; border-radius: 50%; filter: blur(90px); opacity: 0.55; }
+      .rim-glow.warm { left: -220px; top: 480px; background: #ff7a2e; }
+      .rim-glow.cool { right: -220px; top: 260px; background: #2ea7ff; }
+      .desk { position: absolute; left: 0; right: 0; bottom: 560px; height: 500px; background: linear-gradient(to bottom, rgba(30,36,48,0.0), rgba(15,18,26,0.9)); }
+
+      #laptop-rig { position: absolute; left: 50%; bottom: 780px; width: 640px; height: 800px; margin-left: -320px; }
+      #lap-base {
+        position: absolute; bottom: 0; left: 0; width: 640px; height: 380px;
+        background: linear-gradient(160deg, #cfd6dd 0%, #9aa4ae 45%, #6b757f 100%);
+        border-radius: 14px 14px 30px 30px;
+        clip-path: polygon(4% 0%, 96% 0%, 100% 92%, 0% 92%);
+        box-shadow: 0 40px 60px rgba(0,0,0,0.55);
+      }
+      #lap-lid {
+        position: absolute; left: 0; bottom: 378px; width: 640px; height: 420px;
+        background: linear-gradient(160deg, #b9c1c9 0%, #838d97 100%);
+        border-radius: 16px 16px 4px 4px;
+        transform-origin: 50% 100%;
+      }
+      #lap-screen {
+        position: absolute; left: 24px; right: 24px; top: 22px; bottom: 22px;
+        border-radius: 6px; background: #050608;
+        box-shadow: 0 0 0 rgba(120,200,255,0);
+      }
+      #lap-screen-glow { position: absolute; inset: 0; border-radius: 6px; background: linear-gradient(160deg, #dff3ff 0%, #a9d6ff 60%, #6fb3f2 100%); opacity: 0; }
+
+      /* full screen zoom + text panel */
+      #screen-fullscreen {
+        position: absolute; left: 50%; top: 50%; width: 1080px; height: 1920px;
+        background: linear-gradient(170deg, #0a0d12 0%, #060810 60%, #030407 100%);
+        opacity: 0;
+      }
+      .screen-scanlines {
+        position: absolute; inset: 0; pointer-events: none;
+        background: repeating-linear-gradient(rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 4px);
+      }
+      #copy-wrap {
+        position: absolute; inset: 0; padding: 110px 70px 90px 70px;
+        direction: rtl; text-align: right; color: #f2f5f8;
+        font-family: "Vazirmatn", sans-serif;
+      }
+      .g1, .g2, .g3, .g4, .g5, .g6, .g7 { opacity: 0; }
+      .headline {
+        font-weight: 900; font-size: 46px; line-height: 1.5; color: #ff5a3c;
+        text-shadow: 0 0 24px rgba(255,90,60,0.75), 0 0 4px rgba(255,90,60,0.9);
+        margin-bottom: 34px;
+      }
+      .p-line { font-size: 30px; font-weight: 600; line-height: 1.65; color: #eef2f5; margin-bottom: 8px; }
+      .p-strong { font-weight: 800; color: #ffd27a; }
+      .sec-head {
+        font-size: 32px; font-weight: 800; color: #7df3e6;
+        text-shadow: 0 0 16px rgba(60,230,210,0.6);
+        margin: 20px 0 10px 0;
+      }
+      .bullet { font-size: 27px; font-weight: 600; line-height: 1.55; color: #dfe6ea; margin-bottom: 6px; }
+      .truck-badge { font-size: 30px; font-weight: 800; color: #ffb15e; margin: 22px 0 12px 0; }
+      .cta { font-size: 27px; font-weight: 600; line-height: 1.6; color: #eef2f5; margin: 18px 0 10px 0; }
+      .phone { display: inline-block; font-family: "JetBrains Mono", monospace; font-size: 30px; font-weight: 700; color: #0a0d12; background: #ffd27a; border-radius: 10px; padding: 6px 18px; margin-bottom: 10px; direction: ltr; }
+      .addr { font-size: 25px; font-weight: 600; color: #b9c3cc; margin-top: 6px; }
+      .tags { font-size: 20px; font-weight: 600; color: #5e97b8; line-height: 1.9; margin-top: 22px; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="16" data-width="1080" data-height="1920" data-fps="30">
+
+      <!-- ============ SCENE 1: outdoor configurator (0 - 9.0) ============ -->
+      <div id="scene-outdoor" class="clip" data-start="0" data-duration="9" data-track-index="1">
+        <div id="outdoor-cam" data-layout-allow-overflow="true">
+          <div class="sky"></div>
+          <div class="sun"></div>
+          <div class="mountains"></div>
+          <div class="sand"><div class="sand-tex"></div></div>
+
+          <svg class="palm left" viewBox="0 0 200 380" xmlns="http://www.w3.org/2000/svg">
+            <path d="M100 380 C 92 260, 96 160, 118 70" stroke="#241a12" stroke-width="14" fill="none" stroke-linecap="round"/>
+            <g fill="#1c140d">
+              <ellipse cx="118" cy="70" rx="90" ry="20" transform="rotate(-18 118 70)"/>
+              <ellipse cx="118" cy="70" rx="90" ry="20" transform="rotate(15 118 70)"/>
+              <ellipse cx="118" cy="70" rx="86" ry="18" transform="rotate(46 118 70)"/>
+              <ellipse cx="118" cy="70" rx="86" ry="18" transform="rotate(-52 118 70)"/>
+              <ellipse cx="118" cy="70" rx="70" ry="16" transform="rotate(84 118 70)"/>
+            </g>
+          </svg>
+          <svg class="palm right" viewBox="0 0 200 380" xmlns="http://www.w3.org/2000/svg">
+            <path d="M100 380 C 108 250, 102 150, 84 60" stroke="#241a12" stroke-width="15" fill="none" stroke-linecap="round"/>
+            <g fill="#1c140d">
+              <ellipse cx="84" cy="60" rx="96" ry="21" transform="rotate(-20 84 60)"/>
+              <ellipse cx="84" cy="60" rx="96" ry="21" transform="rotate(14 84 60)"/>
+              <ellipse cx="84" cy="60" rx="90" ry="19" transform="rotate(48 84 60)"/>
+              <ellipse cx="84" cy="60" rx="90" ry="19" transform="rotate(-54 84 60)"/>
+              <ellipse cx="84" cy="60" rx="74" ry="17" transform="rotate(86 84 60)"/>
+            </g>
+          </svg>
+
+          <!-- hero truck images -->
+          <img id="t-shot1" class="hero-img" src="assets/truck-front34.png" style="top:520px;width:900px;height:734px;margin-left:-450px;" />
+          <img id="t-shot2-base" class="hero-img" src="assets/truck-side.png" style="top:920px;width:1000px;height:816px;margin-left:-500px;" />
+          <img id="t-shot2-diamond" class="hero-img" src="assets/truck-side-diamond.png" style="top:920px;width:1000px;height:816px;margin-left:-500px;" />
+          <img id="t-shot3" class="hero-img" src="assets/truck-wheel-diamond.png" style="top:760px;width:1180px;height:963px;margin-left:-620px;" />
+          <img id="t-shot4a" class="hero-img" src="assets/truck-hood-diamond.png" style="top:640px;width:1080px;height:882px;margin-left:-560px;" />
+          <img id="t-shot4b" class="hero-img" src="assets/truck-rear34-diamond.png" style="top:900px;width:960px;height:784px;margin-left:-480px;" />
+
+          <div class="exhaust-glow" id="exhaust1" style="left:300px;top:1560px;"></div>
+          <div class="exhaust-glow" id="exhaust2" style="left:700px;top:1600px;width:150px;height:150px;"></div>
+          <div class="dust-puff" id="dust1" style="left:180px;top:1580px;width:340px;height:140px;"></div>
+          <div class="dust-puff" id="dust2" style="left:640px;top:1620px;width:300px;height:130px;"></div>
+          <div class="lens-flare" id="flare1"></div>
+
+          <div id="hud-card">
+            <div class="hud-title">NISSAN X — تک‌سوز | نسخه اقساطی ۰۲/۰۴</div>
+            <div class="hud-row">POWER: —— HP&nbsp;&nbsp;&nbsp;&nbsp;TORQUE: —— NM</div>
+            <div class="hud-material" data-layout-allow-overlap="true">
+              <span class="m-gray">MATERIAL: GRAY METALLIC → DIAMOND FINISH</span>
+              <span class="m-diamond">MATERIAL: DIAMOND TURQUOISE — CRUSHED DIAMOND</span>
+            </div>
+            <div class="hud-edition">EDITION: 01/25</div>
+          </div>
+
+          <div id="orb-row">
+            <div class="orb orange"></div>
+            <div class="orb graphite"></div>
+            <div class="orb chrome"></div>
+            <div class="orb black"></div>
+            <div class="orb diamond"></div>
+          </div>
+
+          <div id="color-burst"></div>
+
+          <svg id="cursor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 2 L4 19 L8.2 15.2 L11 21.5 L14 20.1 L11.2 14 L17 13.6 Z" fill="#ffffff" stroke="#1c1c1c" stroke-width="1.4" stroke-linejoin="round"/>
+          </svg>
+
+          <div class="vignette-out"></div>
+        </div>
+      </div>
+
+      <!-- ============ SCENE 2: glitch transition (9.0 - 9.7) ============ -->
+      <div id="scene-glitch" class="clip" data-start="9" data-duration="0.7" data-track-index="1">
+        <div class="g-noise" id="gnoise1" style="background: repeating-linear-gradient(0deg, rgba(255,20,110,0.85) 0 2px, transparent 2px 4px);"></div>
+        <div class="g-noise" id="gnoise2" style="background: repeating-linear-gradient(0deg, rgba(20,235,255,0.85) 0 2px, transparent 2px 4px);"></div>
+        <div class="g-band" id="gb1" style="top:180px;height:60px;background:#3a3f6b;"></div>
+        <div class="g-band" id="gb2" style="top:520px;height:120px;background:#6b2f4a;"></div>
+        <div class="g-band" id="gb3" style="top:900px;height:44px;background:#2f6b63;"></div>
+        <div class="g-band" id="gb4" style="top:1180px;height:90px;background:#5a4a2f;"></div>
+        <div class="g-band" id="gb5" style="top:1500px;height:56px;background:#3a3f6b;"></div>
+        <div class="g-flash" id="gflash"></div>
+      </div>
+
+      <!-- ============ SCENE 3: indoor laptop + sales reveal (9.7 - 16.0) ============ -->
+      <div id="scene-indoor" class="clip" data-start="9.7" data-duration="6.3" data-track-index="1">
+        <div class="indoor-bg"></div>
+        <div class="rim-glow warm" data-layout-allow-overflow="true"></div>
+        <div class="rim-glow cool" data-layout-allow-overflow="true"></div>
+        <div class="desk"></div>
+
+        <div id="laptop-rig" data-layout-allow-overflow="true">
+          <div id="lap-base"></div>
+          <div id="lap-lid">
+            <div id="lap-screen"><div id="lap-screen-glow"></div></div>
+          </div>
+        </div>
+
+        <div id="screen-fullscreen" data-layout-allow-overflow="true">
+          <div class="screen-scanlines"></div>
+          <div id="copy-wrap">
+            <div class="g1">
+              <div class="headline">🚨 شرایط جدید فروش اقساطی نیسان X تک‌سوز</div>
+            </div>
+            <div class="g2">
+              <div class="p-line">خبر خوب برای متقاضیان نیسان! 🔥</div>
+              <div class="p-line">تحویل فوری با چند طرح اقساطی:</div>
+            </div>
+            <div class="g3">
+              <div class="sec-head">🔹 بدون باربند</div>
+              <div class="bullet">▫️ پیش‌پرداخت ۹۷۲ میلیون تومان + ۳ چک ۴ماهه، هر چک ۳۲۷ میلیون تومان</div>
+              <div class="bullet">▫️ پیش‌پرداخت ۱ میلیارد و صدوسی‌ونه میلیون تومان + ۶ چک ۴ماهه، هر چک ۱۴۹ میلیون تومان</div>
+            </div>
+            <div class="g4">
+              <div class="sec-head">🔹 با باربند</div>
+              <div class="bullet">▫️ پیش‌پرداخت ۱ میلیارد و ۸۹ میلیون تومان + ۳ چک ۴ماهه، هر چک ۳۲۷ میلیون تومان</div>
+              <div class="bullet">▫️ پیش‌پرداخت ۱ میلیارد و ۲۶۲ میلیون تومان + ۶ چک ۴ماهه، هر چک ۱۴۹ میلیون تومان</div>
+            </div>
+            <div class="g5">
+              <div class="truck-badge">🚚 تحویل فوری</div>
+            </div>
+            <div class="g6">
+              <div class="cta">اگر قصد خرید نیسان X تک‌سوز رو داری، برای دریافت جزئیات و ثبت درخواست با ما در ارتباط باش. 📞</div>
+              <div class="phone">۰۹۱۳ ۳۱۲ ۰۱۳۶</div><br/>
+              <div class="phone">۰۳۱-۴۵۲۷۴۶۳۰</div>
+              <div class="addr">📍 نمایندگی رسمی سایپا مشایخ | شاهین‌شهر</div>
+              <div class="addr">💬 برای اطلاعات بیشتر با ما تماس بگیر.</div>
+            </div>
+            <div class="g7">
+              <div class="tags">#نیسان #نیسان_تک‌سوز #نیسان_اقساطی #فروش_اقساطی #تحویل_فوری #سایپا #نمایندگی_سایپا_مشایخ #شاهین_شهر</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* ---------- SCENE 1: outdoor (absolute times 0 - 9.0) ---------- */
+
+      // slow cinematic drift on the whole scene
+      tl.fromTo("#outdoor-cam", { scale: 1.1 }, { scale: 1.0, duration: 9.0, ease: "none" }, 0);
+
+      // shot 1: entrance (0 - 2.0)
+      tl.fromTo("#t-shot1",
+        { opacity: 0, y: -520, x: 30, scale: 0.6, rotation: -10, filter: "blur(14px)" },
+        { opacity: 1, y: 0, x: 0, scale: 1, rotation: 0, filter: "blur(0px)", duration: 1.05, ease: "power3.out" },
+        0.15
+      );
+      // tiny glitch flicker before hard cut out
+      tl.to("#t-shot1", { opacity: 0.55, duration: 0.05, ease: "none" }, 1.65)
+        .to("#t-shot1", { opacity: 1, duration: 0.05, ease: "none" }, 1.70)
+        .to("#t-shot1", { opacity: 0.4, duration: 0.05, ease: "none" }, 1.80)
+        .to("#t-shot1", { opacity: 0, duration: 0.1, ease: "none" }, 1.90);
+
+      // shot 2: side beauty shot lands (2.0 - 5.2)
+      tl.fromTo("#t-shot2-base",
+        { opacity: 0, y: 40, scale: 0.97 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power2.out" },
+        2.0
+      );
+      tl.to("#t-shot2-base", { opacity: 0, duration: 0.3, ease: "power1.in" }, 5.0);
+
+      // HUD card in
+      tl.fromTo("#hud-card", { opacity: 0, x: 60, y: -20 }, { opacity: 1, x: 0, y: 0, duration: 0.6, ease: "power2.out" }, 2.15);
+      tl.to("#hud-card", { opacity: 0, duration: 0.3, ease: "power1.in" }, 5.0);
+
+      // orbs in with stagger + idle bob
+      tl.fromTo("#orb-row", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 2.3);
+      tl.fromTo(".orb", { opacity: 0, x: -50, scale: 0.6 }, { opacity: 1, x: 0, scale: 1, duration: 0.45, ease: "back.out(1.6)", stagger: 0.08 }, 2.35);
+      tl.to(".orb.orange",   { y: -14, duration: 0.9, ease: "sine.inOut", repeat: 3, yoyo: true }, 2.9);
+      tl.to(".orb.graphite", { y: -10, duration: 1.0, ease: "sine.inOut", repeat: 3, yoyo: true }, 3.0);
+      tl.to(".orb.chrome",   { y: -12, duration: 0.85, ease: "sine.inOut", repeat: 3, yoyo: true }, 2.95);
+      tl.to(".orb.black",    { y: -9,  duration: 1.05, ease: "sine.inOut", repeat: 3, yoyo: true }, 3.05);
+      tl.to(".orb.diamond",  { y: -16, duration: 0.8,  ease: "sine.inOut", repeat: 4, yoyo: true }, 2.85);
+      tl.to("#orb-row", { opacity: 0, duration: 0.35, ease: "power1.in" }, 4.05);
+
+      // cursor: enter, travel to diamond orb, click, exit
+      tl.fromTo("#cursor",
+        { xPercent: -50, x: 0, y: 0 },
+        { xPercent: -50, x: -415.8, y: -626, duration: 0.7, ease: "power3.out", immediateRender: false },
+        2.55
+      );
+      tl.to("#cursor", { scale: 0.82, duration: 0.09, ease: "power2.in", transformOrigin: "18% 10%" }, 3.35)
+        .to("#cursor", { scale: 1, duration: 0.2, ease: "power2.out", transformOrigin: "18% 10%" }, 3.44);
+      tl.to("#cursor", { xPercent: -50, y: 249.6, duration: 0.5, ease: "power2.in" }, 3.75);
+
+      // click ignites: color burst + truck recolor + HUD material swap
+      tl.fromTo("#color-burst", { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.25, ease: "power2.out" }, 3.35);
+      tl.to("#color-burst", { scale: 14, opacity: 0, duration: 0.9, ease: "power2.out" }, 3.60);
+      tl.fromTo("#t-shot2-diamond", { opacity: 0 }, { opacity: 1, duration: 0.55, ease: "power1.inOut" }, 3.55);
+      tl.to("#t-shot2-diamond", { opacity: 0, duration: 0.3, ease: "power1.in" }, 5.0);
+      tl.to(".hud-material .m-gray", { opacity: 0, duration: 0.3 }, 3.6);
+      tl.fromTo(".hud-material .m-diamond", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 3.7);
+
+      // shot 3: wheel closeup (5.2 - 7.0)
+      tl.fromTo("#t-shot3",
+        { opacity: 0, scale: 1.12, y: 20 },
+        { opacity: 1, scale: 1, y: 0, duration: 0.35, ease: "power2.out" },
+        5.2
+      );
+      tl.to("#t-shot3", { scale: 1.05, duration: 1.3, ease: "none" }, 5.55);
+      tl.to("#t-shot3", { opacity: 0, duration: 0.2, ease: "power1.in" }, 6.85);
+      tl.fromTo("#flare1", { opacity: 0, x: -500 }, { opacity: 1, x: 1400, duration: 0.8, ease: "power1.inOut" }, 5.6);
+      tl.to("#flare1", { opacity: 0, duration: 0.2 }, 6.4);
+
+      // shot 4a: hood closeup (7.0 - 8.0)
+      tl.fromTo("#t-shot4a",
+        { opacity: 0, scale: 1.1, y: 30 },
+        { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: "power2.out" },
+        7.0
+      );
+      tl.to("#t-shot4a", { opacity: 0, duration: 0.2, ease: "power1.in" }, 7.85);
+
+      // shot 4b: rear 3/4 + exhaust + dust (8.0 - 9.0)
+      tl.fromTo("#t-shot4b",
+        { opacity: 0, scale: 1.06, y: 24 },
+        { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: "power2.out" },
+        8.0
+      );
+      tl.fromTo("#exhaust1", { opacity: 0, scale: 0.6 }, { opacity: 0.9, scale: 1, duration: 0.29, ease: "power1.out" }, 8.3);
+      tl.to("#exhaust1", { opacity: 0.55, scale: 1.25, duration: 0.16, ease: "sine.inOut", repeat: 3, yoyo: true }, 8.61);
+      tl.fromTo("#exhaust2", { opacity: 0, scale: 0.6 }, { opacity: 0.7, scale: 1, duration: 0.25, ease: "power1.out" }, 8.4);
+      tl.to("#exhaust2", { opacity: 0.4, scale: 1.2, duration: 0.14, ease: "sine.inOut", repeat: 3, yoyo: true }, 8.65);
+      tl.fromTo("#dust1", { opacity: 0, scale: 0.7 }, { opacity: 0.6, scale: 1.15, duration: 0.9, ease: "power1.out" }, 8.2);
+      tl.fromTo("#dust2", { opacity: 0, scale: 0.7 }, { opacity: 0.5, scale: 1.2, duration: 0.9, ease: "power1.out" }, 8.35);
+      tl.to(["#t-shot4b", "#exhaust1", "#exhaust2", "#dust1", "#dust2"], { opacity: 0, duration: 0.25, ease: "power1.in" }, 8.9);
+
+      /* ---------- SCENE 2: glitch (9.0 - 9.7) ---------- */
+      tl.to("#gflash", { opacity: 0.9, duration: 0.04 }, 9.02)
+        .to("#gflash", { opacity: 0, duration: 0.1 }, 9.06);
+      tl.to("#gnoise1", { opacity: 0.95, duration: 0.03 }, 9.05)
+        .to("#gnoise1", { x: 18, opacity: 0.8, duration: 0.05 }, 9.10)
+        .to("#gnoise1", { x: -12, opacity: 0.9, duration: 0.05 }, 9.18)
+        .to("#gnoise1", { x: 0, opacity: 0, duration: 0.1 }, 9.35);
+      tl.to("#gnoise2", { opacity: 0.9, duration: 0.03 }, 9.08)
+        .to("#gnoise2", { x: -20, opacity: 0.75, duration: 0.05 }, 9.13)
+        .to("#gnoise2", { x: 10, opacity: 0.8, duration: 0.05 }, 9.22)
+        .to("#gnoise2", { x: 0, opacity: 0, duration: 0.1 }, 9.4);
+      [["#gb1", 9.05], ["#gb2", 9.10], ["#gb3", 9.15], ["#gb4", 9.20], ["#gb5", 9.24]].forEach(function (pair) {
+        tl.fromTo(pair[0], { opacity: 0.9, x: -30 }, { opacity: 0, x: 40, duration: 0.22, ease: "power1.out" }, pair[1]);
+      });
+      tl.to("#gflash", { opacity: 0.6, duration: 0.03 }, 9.5)
+        .to("#gflash", { opacity: 0, duration: 0.12 }, 9.53);
+
+      /* ---------- SCENE 3: indoor laptop + reveal (9.7 - 16.0) ---------- */
+      tl.fromTo("#laptop-rig", { opacity: 0, y: 40, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "power2.out" }, 9.75);
+      tl.fromTo("#lap-lid", { scaleY: 0.035 }, { scaleY: 1, duration: 1.3, ease: "power2.out" }, 10.0);
+      tl.fromTo("#lap-screen-glow", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.in" }, 10.85);
+      tl.to("#lap-screen", { boxShadow: "0 0 90px 30px rgba(140,200,255,0.55)", duration: 0.6, ease: "power1.in" }, 10.85);
+      tl.to("#laptop-rig", { opacity: 0, duration: 0.4, ease: "power1.in" }, 12.0);
+      tl.to(".rim-glow", { opacity: 0.25, duration: 0.5 }, 11.8);
+
+      // zoom from screen into full-bleed panel
+      tl.fromTo("#screen-fullscreen",
+        { opacity: 0, scale: 0.34, y: -280, xPercent: -50, yPercent: -50 },
+        { opacity: 1, scale: 1, y: 0, xPercent: -50, yPercent: -50, duration: 0.6, ease: "power2.inOut" },
+        11.75
+      );
+      tl.to("#screen-fullscreen", { scale: 1.05, duration: 3.65, ease: "none" }, 12.35);
+
+      // line-group reveals with glow-in
+      var groups = ["#screen-fullscreen .g1", "#screen-fullscreen .g2", "#screen-fullscreen .g3", "#screen-fullscreen .g4", "#screen-fullscreen .g5", "#screen-fullscreen .g6", "#screen-fullscreen .g7"];
+      var groupStarts = [12.3, 12.75, 13.15, 13.65, 14.1, 14.35, 14.95];
+      groups.forEach(function (sel, i) {
+        tl.fromTo(sel,
+          { opacity: 0, y: 26, filter: "brightness(2.4)" },
+          { opacity: 1, y: 0, filter: "brightness(1)", duration: 0.4, ease: "power2.out" },
+          groupStarts[i]
+        );
+      });
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

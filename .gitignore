@@ -19,3 +19,8 @@ Thumbs.db
 
 # Packaging artifacts (do not commit build zips)
 *.zip
+
+# HyperFrames skill tooling (installed locally, not project content)
+.agents/
+.claude/
+skills-lock.json
