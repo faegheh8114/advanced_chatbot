@@ -37,6 +37,7 @@
   --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.14);
 
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-fa: Tahoma, "Vazirmatn", "Segoe UI", var(--font-sans);
 
   --sidebar-width: 256px;
   --topbar-height: 64px;
@@ -55,6 +56,9 @@ html, body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
+
+[dir="rtl"] body { font-family: var(--font-fa); font-size: 14.5px; }
+[dir="rtl"] .brand-name, [dir="rtl"] .brand-code { font-family: var(--font-sans); } /* keep the Latin brand mark crisp */
 
 h1, h2, h3, h4 { margin: 0 0 4px 0; font-weight: 650; letter-spacing: -0.01em; }
 p { margin: 0 0 8px 0; }
@@ -163,7 +167,7 @@ textarea { resize: vertical; min-height: 90px; }
 .table-wrap { overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); }
 table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 640px; }
 thead th {
-  text-align: left; padding: 12px 16px; font-size: 11.5px; text-transform: uppercase;
+  text-align: start; padding: 12px 16px; font-size: 11.5px; text-transform: uppercase;
   letter-spacing: 0.04em; color: var(--color-text-muted); border-bottom: 1px solid var(--color-border);
   background: var(--color-surface-alt);
 }
@@ -181,7 +185,7 @@ tbody tr:hover { background: var(--color-surface-alt); }
 .avatar-lg { width: 52px; height: 52px; font-size: 17px; }
 
 /* ---------------------------------------------------------------- Toast */
-.toast-stack { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
+.toast-stack { position: fixed; bottom: 20px; inset-inline-end: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
 .toast {
   background: var(--color-text); color: #fff; padding: 12px 18px; border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg); font-size: 13px; font-weight: 500; max-width: 320px;

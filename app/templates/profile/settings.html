@@ -1,28 +1,29 @@
 {% extends "base.html" %}
-{% block title %}Settings — {{ ORG_FULL_NAME }}{% endblock %}
-{% block page_title %}Settings{% endblock %}
+{% block title %}{{ t('settings_title') }} — {{ ORG_FULL_NAME }}{% endblock %}
+{% block page_title %}{{ t('settings_title') }}{% endblock %}
 {% block content %}
 
 <div class="card form-card">
-  <div class="card-header"><span class="card-title">Account Security</span></div>
+  <div class="card-header"><span class="card-title">{{ t('account_security') }}</span></div>
   <p class="text-muted text-sm mb-16">Update your password regularly to keep your Saipa Mashayekh {{ ORG_CODE }} account secure.</p>
-  <a href="{{ url_for('auth.change_password') }}" class="btn btn-secondary">Change password</a>
+  <a href="{{ url_for('auth.change_password') }}" class="btn btn-secondary">{{ t('change_password') }}</a>
 </div>
 
 <div class="card form-card mt-16">
-  <div class="card-header"><span class="card-title">Preferences</span></div>
+  <div class="card-header"><span class="card-title">{{ t('preferences') }}</span></div>
+  <div class="list-item">
+    <div style="flex:1;">
+      <div class="list-item-title">{{ t('language') }}</div>
+      <div class="list-item-meta">{{ t('language_pref_hint') }}</div>
+    </div>
+    {% include "partials/_language_switch.html" %}
+  </div>
   <div class="list-item">
     <div style="flex:1;">
       <div class="list-item-title">Email notifications</div>
       <div class="list-item-meta">Not yet implemented — notifications currently appear in-app only.</div>
     </div>
     <span class="badge badge-gray">Coming soon</span>
-  </div>
-  <div class="list-item">
-    <div style="flex:1;">
-      <div class="list-item-title">Language</div>
-      <div class="list-item-meta">English (default)</div>
-    </div>
   </div>
 </div>
 {% endblock %}

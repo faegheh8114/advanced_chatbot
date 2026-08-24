@@ -1,81 +1,81 @@
 {% extends "base.html" %}
-{% block title %}Saipa Mashayekh {{ ORG_CODE }} Dashboard{% endblock %}
-{% block page_title %}Saipa Mashayekh {{ ORG_CODE }} — My Dashboard{% endblock %}
+{% block title %}{{ t('my_dashboard_title', code=ORG_CODE) }}{% endblock %}
+{% block page_title %}{{ t('my_dashboard_title', code=ORG_CODE) }}{% endblock %}
 {% block content %}
 
 <div class="dashboard-hero">
   <div>
-    <h1>Welcome back, {{ current_user.name.split(' ')[0] }}</h1>
-    <p class="text-muted">Here's what's happening with your requests today.</p>
+    <h1>{{ t('welcome_back', name=current_user.name.split(' ')[0]) }}</h1>
+    <p class="text-muted">{{ t('dashboard_subtitle') }}</p>
   </div>
-  <a href="{{ url_for('tickets.create') }}" class="btn btn-primary">+ Create New Request</a>
+  <a href="{{ url_for('tickets.create') }}" class="btn btn-primary">{{ t('create_new_request') }}</a>
 </div>
 
 <div class="stat-grid">
   <div class="stat-card accent-blue">
     <div class="stat-value">{{ counts.open }}</div>
-    <div class="stat-label">Open</div>
+    <div class="stat-label">{{ t('stat.open') }}</div>
   </div>
   <div class="stat-card accent-blue">
     <div class="stat-value">{{ counts.in_progress }}</div>
-    <div class="stat-label">In Progress</div>
+    <div class="stat-label">{{ t('stat.in_progress') }}</div>
   </div>
   <div class="stat-card accent-amber">
     <div class="stat-value">{{ counts.waiting }}</div>
-    <div class="stat-label">Waiting for Response</div>
+    <div class="stat-label">{{ t('stat.waiting') }}</div>
   </div>
   <div class="stat-card accent-green">
     <div class="stat-value">{{ counts.resolved }}</div>
-    <div class="stat-label">Resolved</div>
+    <div class="stat-label">{{ t('stat.resolved') }}</div>
   </div>
   <div class="stat-card">
     <div class="stat-value">{{ counts.closed }}</div>
-    <div class="stat-label">Closed</div>
+    <div class="stat-label">{{ t('stat.closed') }}</div>
   </div>
   <div class="stat-card accent-red">
     <div class="stat-value">{{ counts.urgent }}</div>
-    <div class="stat-label">Urgent Requests</div>
+    <div class="stat-label">{{ t('stat.urgent') }}</div>
   </div>
   <div class="stat-card accent-red">
     <div class="stat-value">{{ unread_messages_count }}</div>
-    <div class="stat-label">Unread Messages</div>
+    <div class="stat-label">{{ t('stat.unread_messages') }}</div>
   </div>
   <div class="stat-card accent-blue">
     <div class="stat-value">{{ unread_notification_count }}</div>
-    <div class="stat-label">New Notifications</div>
+    <div class="stat-label">{{ t('stat.new_notifications') }}</div>
   </div>
 </div>
 
 <div class="section-grid">
   <div class="card">
     <div class="card-header">
-      <span class="card-title">Recent Tickets</span>
-      <a href="{{ url_for('tickets.my_tickets') }}" class="link-btn">View all</a>
+      <span class="card-title">{{ t('recent_tickets') }}</span>
+      <a href="{{ url_for('tickets.my_tickets') }}" class="link-btn">{{ t('view_all') }}</a>
     </div>
     {% if recent_tickets %}
-      {% for t in recent_tickets %}
+      {% for tk in recent_tickets %}
       <div class="list-item">
-        <span class="dot dot-{{ 'red' if t.priority == 'urgent' else 'blue' if t.status in TicketStatus.ACTIVE else 'green' if t.status == 'resolved' else 'gray' }}"></span>
+        <span class="dot dot-{{ 'red' if tk.priority == 'urgent' else 'blue' if tk.status in TicketStatus.ACTIVE else 'green' if tk.status == 'resolved' else 'gray' }}"></span>
         <div style="flex:1; min-width:0;">
-          <a href="{{ url_for('tickets.detail', ticket_id=t.id) }}" class="list-item-title">{{ t.ticket_number }} · {{ t.title }}</a>
-          <div class="list-item-meta">{{ t.status_label }} &middot; updated {{ t.updated_at | timeago }}</div>
+          <a href="{{ url_for('tickets.detail', ticket_id=tk.id) }}" class="list-item-title">{{ tk.ticket_number }} · {{ tk.title }}</a>
+          <div class="list-item-meta">{{ status_label(tk.status) }} &middot; {{ tk.updated_at | timeago }}</div>
         </div>
-        <span class="badge badge-{{ 'red' if t.priority == 'urgent' else 'amber' if t.priority == 'high' else 'blue' if t.priority == 'medium' else 'gray' }}">{{ t.priority_label }}</span>
+        <span class="badge badge-{{ 'red' if tk.priority == 'urgent' else 'amber' if tk.priority == 'high' else 'blue' if tk.priority == 'medium' else 'gray' }}">{{ priority_label(tk.priority) }}</span>
       </div>
       {% endfor %}
     {% else %}
       <div class="empty-state">
         <div class="empty-state-icon">&#128203;</div>
-        <div class="empty-state-title">No requests yet</div>
-        <p class="text-muted">Create your first request to get started.</p>
-        <a href="{{ url_for('tickets.create') }}" class="btn btn-primary mt-16">+ Create New Request</a>
+        <div class="empty-state-title">{{ t('no_requests_yet') }}</div>
+        <p class="text-muted">{{ t('no_requests_hint') }}</p>
+        <a href="{{ url_for('tickets.create') }}" class="btn btn-primary mt-16">{{ t('create_new_request') }}</a>
       </div>
     {% endif %}
   </div>
 
   <div>
     <div class="card side-panel-card">
-      <div class="card-header"><span class="card-title">Recent Replies</span></div>
+      <div class="card-header"><span class="card-title">{{ t('recent_replies') }}</span></div>
       {% if recent_replies %}
         {% for m in recent_replies %}
         <div class="list-item">
@@ -87,14 +87,14 @@
         </div>
         {% endfor %}
       {% else %}
-        <p class="empty-hint-sm">No one has replied to your requests yet.</p>
+        <p class="empty-hint-sm">{{ t('no_replies_yet') }}</p>
       {% endif %}
     </div>
 
     <div class="card side-panel-card">
       <div class="card-header">
-        <span class="card-title">New Notifications</span>
-        <a href="{{ url_for('notifications.index') }}" class="link-btn">View all</a>
+        <span class="card-title">{{ t('stat.new_notifications') }}</span>
+        <a href="{{ url_for('notifications.index') }}" class="link-btn">{{ t('view_all') }}</a>
       </div>
       {% if unread_notifications %}
         {% for n in unread_notifications %}
@@ -106,12 +106,12 @@
         </div>
         {% endfor %}
       {% else %}
-        <p class="empty-hint-sm">Nothing new right now.</p>
+        <p class="empty-hint-sm">{{ t('nothing_new') }}</p>
       {% endif %}
     </div>
 
     <div class="card side-panel-card">
-      <div class="card-header"><span class="card-title">Recent Activity</span></div>
+      <div class="card-header"><span class="card-title">{{ t('recent_activity') }}</span></div>
       {% if recent_activity %}
         {% for a in recent_activity %}
         <div class="list-item">
@@ -122,7 +122,7 @@
         </div>
         {% endfor %}
       {% else %}
-        <p class="empty-hint-sm">No recent activity.</p>
+        <p class="empty-hint-sm">{{ t('no_activity_yet') }}</p>
       {% endif %}
     </div>
   </div>

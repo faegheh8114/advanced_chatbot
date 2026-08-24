@@ -10,6 +10,8 @@ from app.models import (
     TicketStatus, TicketPriority, Role,
 )
 from app.decorators import admin_required
+from app.template_helpers import get_locale
+from app.translations import STATUS_LABELS, PRIORITY_LABELS, DEFAULT_LOCALE
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -114,9 +116,13 @@ def analytics_overview():
     by_status = (
         db.session.query(Ticket.status, func.count(Ticket.id)).group_by(Ticket.status).all()
     )
+    locale = get_locale()
+    status_labels = STATUS_LABELS.get(locale, STATUS_LABELS[DEFAULT_LOCALE])
+    priority_labels = PRIORITY_LABELS.get(locale, PRIORITY_LABELS[DEFAULT_LOCALE])
+
     status_map = dict(by_status)
     status_series = [
-        {"label": TicketStatus.LABELS[s], "value": status_map.get(s, 0)} for s in TicketStatus.ORDER
+        {"label": status_labels[s], "value": status_map.get(s, 0)} for s in TicketStatus.ORDER
     ]
 
     by_priority = (
@@ -124,7 +130,7 @@ def analytics_overview():
     )
     priority_map = dict(by_priority)
     priority_series = [
-        {"label": TicketPriority.LABELS[p], "value": priority_map.get(p, 0)} for p in TicketPriority.ORDER
+        {"label": priority_labels[p], "value": priority_map.get(p, 0)} for p in TicketPriority.ORDER
     ]
 
     return jsonify({

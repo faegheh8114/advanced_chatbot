@@ -30,6 +30,7 @@ def create_app(config_class=Config):
     from app.blueprints.notifications import notifications_bp
     from app.blueprints.profile import profile_bp
     from app.blueprints.api import api_bp
+    from app.blueprints.locale import locale_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
@@ -38,6 +39,7 @@ def create_app(config_class=Config):
     app.register_blueprint(notifications_bp)
     app.register_blueprint(profile_bp)
     app.register_blueprint(api_bp)
+    app.register_blueprint(locale_bp)
 
     from app.template_helpers import register_template_helpers
 

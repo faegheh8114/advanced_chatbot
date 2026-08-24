@@ -1,31 +1,31 @@
 {% extends "base.html" %}
-{% block title %}{{ 'Edit Department' if department else 'New Department' }} — {{ ORG_FULL_NAME }} Admin Panel{% endblock %}
-{% block page_title %}{{ 'Edit Department' if department else 'New Department' }}{% endblock %}
+{% block title %}{{ t('edit_department_title') if department else t('new_department_title') }} — {{ ORG_FULL_NAME }} {{ t('admin_panel_label') }}{% endblock %}
+{% block page_title %}{{ t('edit_department_title') if department else t('new_department_title') }}{% endblock %}
 {% block content %}
 
 <div class="card form-card">
   <form method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="form-group">
-      <label for="name">Department name</label>
+      <label for="name">{{ t('department_name') }}</label>
       <input type="text" id="name" name="name" required value="{{ department.name if department else '' }}">
     </div>
     <div class="form-group">
-      <label for="description">Description</label>
+      <label for="description">{{ t('description') }}</label>
       <textarea id="description" name="description">{{ department.description if department else '' }}</textarea>
     </div>
     <div class="form-group">
-      <label for="manager_id">Manager</label>
+      <label for="manager_id">{{ t('manager') }}</label>
       <select id="manager_id" name="manager_id">
-        <option value="">No manager assigned</option>
+        <option value="">{{ t('no_manager_assigned') }}</option>
         {% for m in managers %}
         <option value="{{ m.id }}" {% if department and department.manager_id == m.id %}selected{% endif %}>{{ m.name }}</option>
         {% endfor %}
       </select>
     </div>
     <div class="flex gap-8">
-      <button type="submit" class="btn btn-primary">{{ 'Save changes' if department else 'Create department' }}</button>
-      <a href="{{ url_for('admin.departments') }}" class="btn btn-ghost">Cancel</a>
+      <button type="submit" class="btn btn-primary">{{ t('save_changes') if department else t('create_department') }}</button>
+      <a href="{{ url_for('admin.departments') }}" class="btn btn-ghost">{{ t('cancel') }}</a>
     </div>
   </form>
 </div>

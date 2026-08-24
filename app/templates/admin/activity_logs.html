@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Activity Logs — {{ ORG_FULL_NAME }} Admin Panel{% endblock %}
-{% block page_title %}Activity Logs{% endblock %}
+{% block title %}{{ t('activity_logs_title') }} — {{ ORG_FULL_NAME }} {{ t('admin_panel_label') }}{% endblock %}
+{% block page_title %}{{ t('activity_logs_title') }}{% endblock %}
 {% block content %}
 
 <form class="ticket-filters card" method="get">
   <select name="action" onchange="this.form.submit()">
-    <option value="">All actions</option>
+    <option value="">{{ t('all_actions') }}</option>
     {% for a in action_types %}
     <option value="{{ a }}" {% if selected_action == a %}selected{% endif %}>{{ a.replace('_', ' ') | title }}</option>
     {% endfor %}
@@ -14,7 +14,7 @@
 
 <div class="table-wrap mt-16">
   <table>
-    <thead><tr><th>Actor</th><th>Action</th><th>Description</th><th>When</th></tr></thead>
+    <thead><tr><th>{{ t('col.actor') }}</th><th>{{ t('col.action') }}</th><th>{{ t('col.description') }}</th><th>{{ t('col.when') }}</th></tr></thead>
     <tbody>
       {% for log in logs %}
       <tr>
@@ -24,7 +24,7 @@
         <td class="text-sm text-muted">{{ log.created_at.strftime('%b %d, %Y %H:%M') }}</td>
       </tr>
       {% else %}
-      <tr><td colspan="4"><div class="empty-state"><div class="empty-state-title">No activity recorded yet</div></div></td></tr>
+      <tr><td colspan="4"><div class="empty-state"><div class="empty-state-title">{{ t('no_activity_recorded') }}</div></div></td></tr>
       {% endfor %}
     </tbody>
   </table>

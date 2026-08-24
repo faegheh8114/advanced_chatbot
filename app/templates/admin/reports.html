@@ -1,15 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Reports — {{ ORG_FULL_NAME }} Admin Panel{% endblock %}
-{% block page_title %}Reports & Analytics{% endblock %}
+{% block title %}{{ t('reports_title') }} — {{ ORG_FULL_NAME }} {{ t('admin_panel_label') }}{% endblock %}
+{% block page_title %}{{ t('reports_title') }}{% endblock %}
 {% block content %}
 
 <div class="section-grid" style="grid-template-columns: 1fr 1fr;">
   <div class="card chart-card">
-    <div class="card-header"><span class="card-title">Ticket Volume (last 14 days)</span></div>
+    <div class="card-header"><span class="card-title">{{ t('ticket_volume') }}</span></div>
     <canvas id="chart-volume"></canvas>
   </div>
   <div class="card chart-card">
-    <div class="card-header"><span class="card-title">Tickets by Status</span></div>
+    <div class="card-header"><span class="card-title">{{ t('by_status') }}</span></div>
     <div class="flex items-center gap-12">
       <canvas id="chart-status" style="max-width:180px;"></canvas>
       <div class="chart-legend" id="status-legend" style="flex-direction:column;"></div>
@@ -19,21 +19,21 @@
 
 <div class="section-grid mt-16" style="grid-template-columns: 1fr 1fr;">
   <div class="card chart-card">
-    <div class="card-header"><span class="card-title">Tickets by Department</span></div>
+    <div class="card-header"><span class="card-title">{{ t('by_department') }}</span></div>
     <canvas id="chart-department"></canvas>
   </div>
   <div class="card chart-card">
-    <div class="card-header"><span class="card-title">Tickets by Priority</span></div>
+    <div class="card-header"><span class="card-title">{{ t('by_priority') }}</span></div>
     <canvas id="chart-priority"></canvas>
   </div>
 </div>
 
 <div class="card mt-16">
-  <div class="card-header"><span class="card-title">Department Performance</span></div>
-  <p class="text-muted text-sm mb-16">Open vs. resolved/closed tickets per department — a quick read on where backlog is building up.</p>
+  <div class="card-header"><span class="card-title">{{ t('department_performance') }}</span></div>
+  <p class="text-muted text-sm mb-16">{{ t('department_performance_hint') }}</p>
   <div class="table-wrap">
     <table>
-      <thead><tr><th>Department</th><th>Open</th><th>In Progress</th><th>Waiting</th><th>Resolved</th><th>Closed</th></tr></thead>
+      <thead><tr><th>{{ t('department') }}</th><th>{{ t('stat.open') }}</th><th>{{ t('stat.in_progress') }}</th><th>{{ t('col.waiting') }}</th><th>{{ t('stat.resolved') }}</th><th>{{ t('stat.closed') }}</th></tr></thead>
       <tbody>
         {% for d in departments %}
         <tr>

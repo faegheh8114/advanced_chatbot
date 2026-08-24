@@ -70,7 +70,7 @@ def apply_filters(query):
     return query
 
 
-def _render_list(base_query, title, empty_hint, endpoint):
+def _render_list(base_query, title_key, empty_hint_key, endpoint):
     query = apply_filters(base_query)
     page = request.args.get("page", 1, type=int)
     per_page = current_app.config["ITEMS_PER_PAGE"]
@@ -80,8 +80,8 @@ def _render_list(base_query, title, empty_hint, endpoint):
         "tickets/list.html",
         tickets=pagination.items,
         pagination=pagination,
-        title=title,
-        empty_hint=empty_hint,
+        title_key=title_key,
+        empty_hint_key=empty_hint_key,
         endpoint=endpoint,
         categories=Category.query.filter_by(is_active=True).order_by(Category.name).all(),
         departments=Department.query.filter_by(is_active=True).order_by(Department.name).all(),
@@ -92,7 +92,7 @@ def _render_list(base_query, title, empty_hint, endpoint):
 @login_required
 def my_tickets():
     base = Ticket.query.filter(Ticket.creator_id == current_user.id)
-    return _render_list(base, "My Tickets", "You haven't created any requests yet.", "tickets.my_tickets")
+    return _render_list(base, "my_tickets_title", "my_tickets_empty", "tickets.my_tickets")
 
 
 @tickets_bp.route("/inbox")
@@ -102,7 +102,7 @@ def inbox():
     if current_user.department_id:
         conditions.append(Ticket.department_id == current_user.department_id)
     base = Ticket.query.filter(or_(*conditions))
-    return _render_list(base, "Inbox", "No incoming requests right now.", "tickets.inbox")
+    return _render_list(base, "inbox_title", "inbox_empty", "tickets.inbox")
 
 
 @tickets_bp.route("/create", methods=["GET", "POST"])

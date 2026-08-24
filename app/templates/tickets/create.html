@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Create Request — {{ ORG_FULL_NAME }}{% endblock %}
-{% block page_title %}Create New Request{% endblock %}
+{% block title %}{{ t('create_request_title') }} — {{ ORG_FULL_NAME }}{% endblock %}
+{% block page_title %}{{ t('create_request_title') }}{% endblock %}
 {% block content %}
 
 <div class="card form-card">
@@ -8,54 +8,54 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
     <div class="form-group">
-      <label for="title">Title</label>
-      <input type="text" id="title" name="title" required maxlength="200" placeholder="Short summary of your request" value="{{ form.get('title', '') }}">
+      <label for="title">{{ t('title_label') }}</label>
+      <input type="text" id="title" name="title" required maxlength="200" placeholder="{{ t('title_placeholder') }}" value="{{ form.get('title', '') }}">
     </div>
 
     <div class="form-group">
-      <label for="description">Description</label>
-      <textarea id="description" name="description" required placeholder="Explain the request in detail…">{{ form.get('description', '') }}</textarea>
+      <label for="description">{{ t('description_label') }}</label>
+      <textarea id="description" name="description" required placeholder="{{ t('description_placeholder') }}">{{ form.get('description', '') }}</textarea>
     </div>
 
     <div class="form-row">
       <div class="form-group">
-        <label for="category_id">Category</label>
+        <label for="category_id">{{ t('category_label') }}</label>
         <select id="category_id" name="category_id">
-          <option value="">Select a category</option>
+          <option value="">{{ t('select_category') }}</option>
           {% for c in categories %}
           <option value="{{ c.id }}" {% if form.get('category_id')|string == c.id|string %}selected{% endif %}>{{ c.name }}</option>
           {% endfor %}
         </select>
       </div>
       <div class="form-group">
-        <label for="priority">Priority</label>
+        <label for="priority">{{ t('priority_label') }}</label>
         <select id="priority" name="priority">
           {% for p in TicketPriority.ORDER %}
-          <option value="{{ p }}" {% if form.get('priority', 'medium') == p %}selected{% endif %}>{{ TicketPriority.LABELS[p] }}</option>
+          <option value="{{ p }}" {% if form.get('priority', 'medium') == p %}selected{% endif %}>{{ priority_label(p) }}</option>
           {% endfor %}
         </select>
       </div>
     </div>
 
     <div class="form-group">
-      <label>Send to</label>
+      <label>{{ t('send_to') }}</label>
       <div class="checkbox-row mb-16">
         <input type="radio" id="rt-user" name="recipient_type" value="user" {% if form.get('recipient_type', 'user') == 'user' %}checked{% endif %} onchange="document.getElementById('recipient-user-field').hidden=false; document.getElementById('recipient-dept-field').hidden=true;">
-        <label for="rt-user" style="margin:0;">A specific employee</label>
-        <input type="radio" id="rt-dept" name="recipient_type" value="department" {% if form.get('recipient_type') == 'department' %}checked{% endif %} onchange="document.getElementById('recipient-user-field').hidden=true; document.getElementById('recipient-dept-field').hidden=false;" style="margin-left:16px;">
-        <label for="rt-dept" style="margin:0;">A department</label>
+        <label for="rt-user" style="margin:0;">{{ t('send_to_employee') }}</label>
+        <input type="radio" id="rt-dept" name="recipient_type" value="department" {% if form.get('recipient_type') == 'department' %}checked{% endif %} onchange="document.getElementById('recipient-user-field').hidden=true; document.getElementById('recipient-dept-field').hidden=false;" style="margin-inline-start:16px;">
+        <label for="rt-dept" style="margin:0;">{{ t('send_to_department') }}</label>
       </div>
       <div id="recipient-user-field" {% if form.get('recipient_type') == 'department' %}hidden{% endif %}>
         <select name="recipient_user_id">
-          <option value="">Select an employee</option>
+          <option value="">{{ t('select_employee') }}</option>
           {% for e in employees %}
-          <option value="{{ e.id }}" {% if form.get('recipient_user_id')|string == e.id|string %}selected{% endif %}>{{ e.name }} — {{ e.department.name if e.department else 'No department' }}</option>
+          <option value="{{ e.id }}" {% if form.get('recipient_user_id')|string == e.id|string %}selected{% endif %}>{{ e.name }} — {{ e.department.name if e.department else t('no_department') }}</option>
           {% endfor %}
         </select>
       </div>
       <div id="recipient-dept-field" {% if form.get('recipient_type', 'user') != 'department' %}hidden{% endif %}>
         <select name="recipient_department_id">
-          <option value="">Select a department</option>
+          <option value="">{{ t('select_department') }}</option>
           {% for d in departments %}
           <option value="{{ d.id }}" {% if form.get('recipient_department_id')|string == d.id|string %}selected{% endif %}>{{ d.name }}</option>
           {% endfor %}
@@ -64,14 +64,14 @@
     </div>
 
     <div class="form-group">
-      <label for="attachments">Attachments</label>
+      <label for="attachments">{{ t('attachments_label') }}</label>
       <input type="file" id="attachments" name="attachments" multiple>
-      <div class="form-hint">Up to 5 files. Images and common office/document formats accepted.</div>
+      <div class="form-hint">{{ t('attachments_hint') }}</div>
     </div>
 
     <div class="flex gap-8">
-      <button type="submit" class="btn btn-primary">Send Request</button>
-      <a href="{{ url_for('dashboard.index') }}" class="btn btn-ghost">Cancel</a>
+      <button type="submit" class="btn btn-primary">{{ t('send_request') }}</button>
+      <a href="{{ url_for('dashboard.index') }}" class="btn btn-ghost">{{ t('cancel') }}</a>
     </div>
   </form>
 </div>

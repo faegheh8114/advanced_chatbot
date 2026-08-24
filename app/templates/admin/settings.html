@@ -1,31 +1,31 @@
 {% extends "base.html" %}
-{% block title %}Settings — {{ ORG_FULL_NAME }} Admin Panel{% endblock %}
-{% block page_title %}System Settings{% endblock %}
+{% block title %}{{ t('system_settings_title') }} — {{ ORG_FULL_NAME }} {{ t('admin_panel_label') }}{% endblock %}
+{% block page_title %}{{ t('system_settings_title') }}{% endblock %}
 {% block content %}
 
 <div class="card form-card">
-  <div class="card-header"><span class="card-title">Organization</span></div>
+  <div class="card-header"><span class="card-title">{{ t('organization') }}</span></div>
   <div class="form-group">
-    <label>Platform name</label>
+    <label>{{ t('platform_name') }}</label>
     <input type="text" value="{{ ORG_FULL_NAME }}" disabled>
   </div>
   <div class="form-group">
-    <label>Organization code</label>
+    <label>{{ t('organization_code') }}</label>
     <input type="text" value="{{ ORG_CODE }}" disabled>
   </div>
-  <p class="text-muted text-sm">Branding is fixed for this deployment. Categories and departments below are configurable.</p>
+  <p class="text-muted text-sm">{{ t('branding_fixed_hint') }}</p>
 </div>
 
 <div class="section-grid mt-16">
   <div class="card">
-    <div class="card-header"><span class="card-title">Categories</span></div>
-    <p class="text-muted text-sm mb-16">Ticket categories available when employees create a request.</p>
-    <a href="{{ url_for('admin.categories') }}" class="btn btn-secondary">Manage categories</a>
+    <div class="card-header"><span class="card-title">{{ t('categories_title') }}</span></div>
+    <p class="text-muted text-sm mb-16">{{ t('manage_categories_hint') }}</p>
+    <a href="{{ url_for('admin.categories') }}" class="btn btn-secondary">{{ t('manage_categories') }}</a>
   </div>
   <div class="card">
-    <div class="card-header"><span class="card-title">Departments</span></div>
-    <p class="text-muted text-sm mb-16">Departments, managers, and ticket routing.</p>
-    <a href="{{ url_for('admin.departments') }}" class="btn btn-secondary">Manage departments</a>
+    <div class="card-header"><span class="card-title">{{ t('departments_title') }}</span></div>
+    <p class="text-muted text-sm mb-16">{{ t('manage_departments_hint') }}</p>
+    <a href="{{ url_for('admin.departments') }}" class="btn btn-secondary">{{ t('manage_departments') }}</a>
   </div>
 </div>
 {% endblock %}

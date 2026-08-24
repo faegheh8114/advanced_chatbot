@@ -1,41 +1,41 @@
 {% extends "base.html" %}
-{% block title %}{{ user.name }} — {{ ORG_FULL_NAME }} Admin Panel{% endblock %}
+{% block title %}{{ user.name }} — {{ ORG_FULL_NAME }} {{ t('admin_panel_label') }}{% endblock %}
 {% block page_title %}{{ user.name }}{% endblock %}
 {% block content %}
 
 <div class="section-grid">
   <div>
     <div class="card">
-      <div class="card-header"><span class="card-title">Tickets Created</span></div>
+      <div class="card-header"><span class="card-title">{{ t('tickets_created') }}</span></div>
       {% if tickets_created %}
-        {% for t in tickets_created %}
+        {% for tk in tickets_created %}
         <div class="list-item">
-          <a href="{{ url_for('tickets.detail', ticket_id=t.id) }}" class="list-item-title" style="flex:1;">{{ t.ticket_number }} · {{ t.title }}</a>
-          <span class="badge badge-gray">{{ t.status_label }}</span>
+          <a href="{{ url_for('tickets.detail', ticket_id=tk.id) }}" class="list-item-title" style="flex:1;">{{ tk.ticket_number }} · {{ tk.title }}</a>
+          <span class="badge badge-gray">{{ status_label(tk.status) }}</span>
         </div>
         {% endfor %}
-      {% else %}<p class="empty-hint-sm">No tickets created.</p>{% endif %}
+      {% else %}<p class="empty-hint-sm">{{ t('no_tickets_created') }}</p>{% endif %}
     </div>
 
     <div class="card mt-16">
-      <div class="card-header"><span class="card-title">Tickets Assigned</span></div>
+      <div class="card-header"><span class="card-title">{{ t('tickets_assigned') }}</span></div>
       {% if tickets_assigned %}
-        {% for t in tickets_assigned %}
+        {% for tk in tickets_assigned %}
         <div class="list-item">
-          <a href="{{ url_for('tickets.detail', ticket_id=t.id) }}" class="list-item-title" style="flex:1;">{{ t.ticket_number }} · {{ t.title }}</a>
-          <span class="badge badge-gray">{{ t.status_label }}</span>
+          <a href="{{ url_for('tickets.detail', ticket_id=tk.id) }}" class="list-item-title" style="flex:1;">{{ tk.ticket_number }} · {{ tk.title }}</a>
+          <span class="badge badge-gray">{{ status_label(tk.status) }}</span>
         </div>
         {% endfor %}
-      {% else %}<p class="empty-hint-sm">No tickets assigned.</p>{% endif %}
+      {% else %}<p class="empty-hint-sm">{{ t('no_tickets_assigned') }}</p>{% endif %}
     </div>
 
     <div class="card mt-16">
-      <div class="card-header"><span class="card-title">Activity</span></div>
+      <div class="card-header"><span class="card-title">{{ t('activity') }}</span></div>
       {% if activity %}
         {% for a in activity %}
         <div class="list-item"><div class="list-item-meta">{{ a.description }} &middot; {{ a.created_at | timeago }}</div></div>
         {% endfor %}
-      {% else %}<p class="empty-hint-sm">No activity recorded.</p>{% endif %}
+      {% else %}<p class="empty-hint-sm">{{ t('no_activity_recorded') }}</p>{% endif %}
     </div>
   </div>
 
@@ -45,11 +45,11 @@
       <h3>{{ user.name }}</h3>
       <p class="text-muted text-sm">{{ user.email }}</p>
       <div class="flex gap-8 justify-between mt-16">
-        <span class="badge badge-blue">{{ Role.LABELS[user.role] }}</span>
-        <span class="badge badge-{{ 'green' if user.is_active else 'gray' }}">{{ 'Active' if user.is_active else 'Inactive' }}</span>
+        <span class="badge badge-blue">{{ role_label(user.role) }}</span>
+        <span class="badge badge-{{ 'green' if user.is_active else 'gray' }}">{{ t('active') if user.is_active else t('inactive') }}</span>
       </div>
-      <p class="text-sm text-muted mt-16">{{ user.department.name if user.department else 'No department' }}</p>
-      <a href="{{ url_for('admin.user_edit', user_id=user.id) }}" class="btn btn-secondary btn-block mt-16">Edit user</a>
+      <p class="text-sm text-muted mt-16">{{ user.department.name if user.department else t('no_department') }}</p>
+      <a href="{{ url_for('admin.user_edit', user_id=user.id) }}" class="btn btn-secondary btn-block mt-16">{{ t('edit_user') }}</a>
     </div>
   </div>
 </div>

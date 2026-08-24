@@ -1,43 +1,43 @@
 {% extends "base.html" %}
-{% block title %}Users — {{ ORG_FULL_NAME }} Admin Panel{% endblock %}
-{% block page_title %}Users{% endblock %}
+{% block title %}{{ t('users_title') }} — {{ ORG_FULL_NAME }} {{ t('admin_panel_label') }}{% endblock %}
+{% block page_title %}{{ t('users_title') }}{% endblock %}
 {% block content %}
 
 <div class="flex justify-between items-center mb-16">
   <form class="ticket-filters" method="get" style="margin-bottom:0;">
-    <input type="search" name="q" placeholder="Search name or email…" value="{{ request.args.get('q', '') }}">
+    <input type="search" name="q" placeholder="{{ t('search_users') }}" value="{{ request.args.get('q', '') }}">
     <select name="role">
-      <option value="">All roles</option>
+      <option value="">{{ t('all_roles') }}</option>
       {% for r in Role.ALL %}
-      <option value="{{ r }}" {% if request.args.get('role') == r %}selected{% endif %}>{{ Role.LABELS[r] }}</option>
+      <option value="{{ r }}" {% if request.args.get('role') == r %}selected{% endif %}>{{ role_label(r) }}</option>
       {% endfor %}
     </select>
     <select name="department">
-      <option value="">All departments</option>
+      <option value="">{{ t('all_departments') }}</option>
       {% for d in departments %}
       <option value="{{ d.id }}" {% if request.args.get('department', type=int) == d.id %}selected{% endif %}>{{ d.name }}</option>
       {% endfor %}
     </select>
     <select name="status">
-      <option value="">Any status</option>
-      <option value="active" {% if request.args.get('status') == 'active' %}selected{% endif %}>Active</option>
-      <option value="inactive" {% if request.args.get('status') == 'inactive' %}selected{% endif %}>Inactive</option>
+      <option value="">{{ t('any_status') }}</option>
+      <option value="active" {% if request.args.get('status') == 'active' %}selected{% endif %}>{{ t('active') }}</option>
+      <option value="inactive" {% if request.args.get('status') == 'inactive' %}selected{% endif %}>{{ t('inactive') }}</option>
     </select>
     <select name="sort">
-      <option value="name" {% if request.args.get('sort', 'name') == 'name' %}selected{% endif %}>Name</option>
-      <option value="recent" {% if request.args.get('sort') == 'recent' %}selected{% endif %}>Newest</option>
-      <option value="activity" {% if request.args.get('sort') == 'activity' %}selected{% endif %}>Last activity</option>
+      <option value="name" {% if request.args.get('sort', 'name') == 'name' %}selected{% endif %}>{{ t('sort.name') }}</option>
+      <option value="recent" {% if request.args.get('sort') == 'recent' %}selected{% endif %}>{{ t('sort.recent') }}</option>
+      <option value="activity" {% if request.args.get('sort') == 'activity' %}selected{% endif %}>{{ t('sort.activity') }}</option>
     </select>
-    <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+    <button type="submit" class="btn btn-secondary btn-sm">{{ t('filter') }}</button>
   </form>
-  <a href="{{ url_for('admin.user_create') }}" class="btn btn-primary btn-sm">+ New User</a>
+  <a href="{{ url_for('admin.user_create') }}" class="btn btn-primary btn-sm">{{ t('new_user') }}</a>
 </div>
 
 <div class="table-wrap">
   <table>
     <thead>
       <tr>
-        <th>User</th><th>Department</th><th>Role</th><th>Status</th><th>Last Activity</th><th></th>
+        <th>{{ t('col.user') }}</th><th>{{ t('col.department') }}</th><th>{{ t('col.role') }}</th><th>{{ t('col.status') }}</th><th>{{ t('col.last_activity') }}</th><th></th>
       </tr>
     </thead>
     <tbody>
@@ -53,29 +53,29 @@
           </div>
         </td>
         <td>{{ u.department.name if u.department else '—' }}</td>
-        <td><span class="badge badge-blue">{{ Role.LABELS[u.role] }}</span></td>
-        <td><span class="badge badge-{{ 'green' if u.is_active else 'gray' }}">{{ 'Active' if u.is_active else 'Inactive' }}</span></td>
-        <td class="text-sm text-muted">{{ u.last_active_at | timeago if u.last_active_at else 'Never' }}</td>
+        <td><span class="badge badge-blue">{{ role_label(u.role) }}</span></td>
+        <td><span class="badge badge-{{ 'green' if u.is_active else 'gray' }}">{{ t('active') if u.is_active else t('inactive') }}</span></td>
+        <td class="text-sm text-muted">{{ u.last_active_at | timeago if u.last_active_at else '—' }}</td>
         <td>
           <div class="actions-bar">
-            <a href="{{ url_for('admin.user_edit', user_id=u.id) }}" class="btn btn-ghost btn-sm">Edit</a>
+            <a href="{{ url_for('admin.user_edit', user_id=u.id) }}" class="btn btn-ghost btn-sm">{{ t('edit') }}</a>
             <form method="post" action="{{ url_for('admin.user_toggle_active', user_id=u.id) }}">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button type="submit" class="btn btn-ghost btn-sm">{{ 'Deactivate' if u.is_active else 'Activate' }}</button>
+              <button type="submit" class="btn btn-ghost btn-sm">{{ t('deactivate') if u.is_active else t('activate') }}</button>
             </form>
             <form method="post" action="{{ url_for('admin.user_reset_password', user_id=u.id) }}" data-confirm="Reset the password for {{ u.name }}? A new temporary password will be generated.">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button type="submit" class="btn btn-ghost btn-sm">Reset PW</button>
+              <button type="submit" class="btn btn-ghost btn-sm">{{ t('reset_pw') }}</button>
             </form>
             <form method="post" action="{{ url_for('admin.user_delete', user_id=u.id) }}" data-confirm="Delete {{ u.name }}? This cannot be undone.">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--color-danger);">Delete</button>
+              <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--color-danger);">{{ t('delete') }}</button>
             </form>
           </div>
         </td>
       </tr>
       {% else %}
-      <tr><td colspan="6"><div class="empty-state"><div class="empty-state-title">No users match these filters</div></div></td></tr>
+      <tr><td colspan="6"><div class="empty-state"><div class="empty-state-title">{{ t('no_users_match') }}</div></div></td></tr>
       {% endfor %}
     </tbody>
   </table>

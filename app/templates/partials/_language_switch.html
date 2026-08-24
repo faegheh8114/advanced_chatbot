@@ -1,0 +1,10 @@
+<div class="lang-switch">
+  <form method="post" action="{{ url_for('locale.set_language', lang='en') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit" class="lang-btn {% if CURRENT_LOCALE == 'en' %}active{% endif %}">EN</button>
+  </form>
+  <form method="post" action="{{ url_for('locale.set_language', lang='fa') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit" class="lang-btn {% if CURRENT_LOCALE == 'fa' %}active{% endif %}">فا</button>
+  </form>
+</div>

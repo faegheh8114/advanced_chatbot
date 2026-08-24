@@ -1,36 +1,36 @@
 {% extends "base.html" %}
-{% block title %}Categories — {{ ORG_FULL_NAME }} Admin Panel{% endblock %}
-{% block page_title %}Categories{% endblock %}
+{% block title %}{{ t('categories_title') }} — {{ ORG_FULL_NAME }} {{ t('admin_panel_label') }}{% endblock %}
+{% block page_title %}{{ t('categories_title') }}{% endblock %}
 {% block content %}
 
 <div class="section-grid">
   <div class="card">
-    <div class="card-header"><span class="card-title">All Categories</span></div>
+    <div class="card-header"><span class="card-title">{{ t('all_categories_title') }}</span></div>
     {% if categories %}
       {% for c in categories %}
       <div class="list-item">
         <span style="flex:1; font-weight:600;">{{ c.name }}</span>
-        <span class="badge badge-{{ 'green' if c.is_active else 'gray' }}">{{ 'Active' if c.is_active else 'Disabled' }}</span>
-        <form method="post" action="{{ url_for('admin.category_toggle_active', category_id=c.id) }}" style="margin-left:8px;">
+        <span class="badge badge-{{ 'green' if c.is_active else 'gray' }}">{{ t('active') if c.is_active else t('disabled_status') }}</span>
+        <form method="post" action="{{ url_for('admin.category_toggle_active', category_id=c.id) }}" style="margin-inline-start:8px;">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" class="btn btn-ghost btn-sm">{{ 'Disable' if c.is_active else 'Enable' }}</button>
+          <button type="submit" class="btn btn-ghost btn-sm">{{ t('disable') if c.is_active else t('enable') }}</button>
         </form>
       </div>
       {% endfor %}
     {% else %}
-      <p class="empty-hint-sm">No categories yet.</p>
+      <p class="empty-hint-sm">{{ t('no_categories_yet') }}</p>
     {% endif %}
   </div>
 
   <div class="card">
-    <div class="card-header"><span class="card-title">New Category</span></div>
+    <div class="card-header"><span class="card-title">{{ t('new_category') }}</span></div>
     <form method="post">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div class="form-group">
-        <label for="name">Name</label>
+        <label for="name">{{ t('name') }}</label>
         <input type="text" id="name" name="name" required placeholder="e.g. Procurement">
       </div>
-      <button type="submit" class="btn btn-primary btn-block">Add category</button>
+      <button type="submit" class="btn btn-primary btn-block">{{ t('add_category') }}</button>
     </form>
   </div>
 </div>

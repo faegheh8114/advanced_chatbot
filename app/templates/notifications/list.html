@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Notifications — {{ ORG_FULL_NAME }}{% endblock %}
-{% block page_title %}Notifications{% endblock %}
+{% block title %}{{ t('notifications_title') }} — {{ ORG_FULL_NAME }}{% endblock %}
+{% block page_title %}{{ t('notifications_title') }}{% endblock %}
 {% block content %}
 
 <div class="flex justify-between items-center mb-16">
-  <p class="text-muted">Stay on top of replies, assignments, and status changes.</p>
+  <p class="text-muted">{{ t('notifications_subtitle') }}</p>
   {% if notifications %}
   <form method="post" action="{{ url_for('notifications.mark_all_read') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <button type="submit" class="btn btn-secondary btn-sm">Mark all read</button>
+    <button type="submit" class="btn btn-secondary btn-sm">{{ t('mark_all_read') }}</button>
   </form>
   {% endif %}
 </div>
@@ -23,14 +23,14 @@
         {% if n.body %}<div class="list-item-meta">{{ n.body }}</div>{% endif %}
         <div class="list-item-meta text-faint">{{ n.created_at | timeago }}</div>
       </div>
-      {% if not n.is_read %}<span class="badge badge-blue">New</span>{% endif %}
+      {% if not n.is_read %}<span class="badge badge-blue">{{ t('new_badge') }}</span>{% endif %}
     </a>
     {% endfor %}
   {% else %}
     <div class="empty-state">
       <div class="empty-state-icon">&#128276;</div>
-      <div class="empty-state-title">No notifications yet</div>
-      <p class="text-muted">You'll see updates on your requests here.</p>
+      <div class="empty-state-title">{{ t('no_notifications_yet') }}</div>
+      <p class="text-muted">{{ t('no_notifications_hint') }}</p>
     </div>
   {% endif %}
 </div>

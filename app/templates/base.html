@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ CURRENT_LOCALE }}" dir="{{ 'rtl' if IS_RTL else 'ltr' }}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,58 +22,58 @@
     </div>
 
     <nav class="sidebar-nav">
-      <div class="nav-section-label">Workspace</div>
+      <div class="nav-section-label">{{ t('workspace') }}</div>
       <a href="{{ url_for('dashboard.index') }}" class="nav-link {% if request.endpoint == 'dashboard.index' %}active{% endif %}">
-        <span class="nav-icon">&#9635;</span> Dashboard
+        <span class="nav-icon">&#9635;</span> {{ t('nav.dashboard') }}
       </a>
       <a href="{{ url_for('tickets.my_tickets') }}" class="nav-link {% if request.endpoint == 'tickets.my_tickets' %}active{% endif %}">
-        <span class="nav-icon">&#9776;</span> My Tickets
+        <span class="nav-icon">&#9776;</span> {{ t('nav.my_tickets') }}
       </a>
       <a href="{{ url_for('tickets.create') }}" class="nav-link {% if request.endpoint == 'tickets.create' %}active{% endif %}">
-        <span class="nav-icon">&#10133;</span> Create Request
+        <span class="nav-icon">&#10133;</span> {{ t('nav.create_request') }}
       </a>
       <a href="{{ url_for('tickets.inbox') }}" class="nav-link {% if request.endpoint == 'tickets.inbox' %}active{% endif %}">
-        <span class="nav-icon">&#128229;</span> Inbox
+        <span class="nav-icon">&#128229;</span> {{ t('nav.inbox') }}
       </a>
       <a href="{{ url_for('notifications.index') }}" class="nav-link {% if request.endpoint == 'notifications.index' %}active{% endif %}">
-        <span class="nav-icon">&#128276;</span> Notifications
+        <span class="nav-icon">&#128276;</span> {{ t('nav.notifications') }}
         {% if unread_notification_count %}<span class="nav-badge">{{ unread_notification_count }}</span>{% endif %}
       </a>
       <a href="{{ url_for('admin.departments') if current_user.is_admin_like() else url_for('profile.view') }}" class="nav-link {% if request.endpoint in ['admin.departments', 'admin.department_detail'] %}active{% endif %}">
-        <span class="nav-icon">&#127970;</span> Departments
+        <span class="nav-icon">&#127970;</span> {{ t('nav.departments') }}
       </a>
       <a href="{{ url_for('profile.view') }}" class="nav-link {% if request.endpoint == 'profile.view' %}active{% endif %}">
-        <span class="nav-icon">&#128100;</span> Profile
+        <span class="nav-icon">&#128100;</span> {{ t('nav.profile') }}
       </a>
       <a href="{{ url_for('profile.settings') }}" class="nav-link {% if request.endpoint == 'profile.settings' %}active{% endif %}">
-        <span class="nav-icon">&#9881;</span> Settings
+        <span class="nav-icon">&#9881;</span> {{ t('nav.settings') }}
       </a>
 
       {% if current_user.is_admin_like() %}
-      <div class="nav-section-label">Admin Panel</div>
+      <div class="nav-section-label">{{ t('admin_panel_label') }}</div>
       <a href="{{ url_for('admin.dashboard') }}" class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
-        <span class="nav-icon">&#128202;</span> Dashboard
+        <span class="nav-icon">&#128202;</span> {{ t('nav.dashboard') }}
       </a>
       <a href="{{ url_for('admin.tickets') }}" class="nav-link {% if request.endpoint == 'admin.tickets' %}active{% endif %}">
-        <span class="nav-icon">&#127915;</span> Tickets
+        <span class="nav-icon">&#127915;</span> {{ t('nav.tickets') }}
       </a>
       <a href="{{ url_for('admin.users') }}" class="nav-link {% if request.endpoint in ['admin.users', 'admin.user_create', 'admin.user_edit', 'admin.user_detail'] %}active{% endif %}">
-        <span class="nav-icon">&#128101;</span> Users
+        <span class="nav-icon">&#128101;</span> {{ t('nav.users') }}
       </a>
       <a href="{{ url_for('admin.departments') }}" class="nav-link {% if request.endpoint in ['admin.departments', 'admin.department_create', 'admin.department_edit'] %}active{% endif %}">
-        <span class="nav-icon">&#127970;</span> Departments
+        <span class="nav-icon">&#127970;</span> {{ t('nav.departments') }}
       </a>
       <a href="{{ url_for('admin.categories') }}" class="nav-link {% if request.endpoint == 'admin.categories' %}active{% endif %}">
-        <span class="nav-icon">&#127991;</span> Categories
+        <span class="nav-icon">&#127991;</span> {{ t('nav.categories') }}
       </a>
       <a href="{{ url_for('admin.reports') }}" class="nav-link {% if request.endpoint == 'admin.reports' %}active{% endif %}">
-        <span class="nav-icon">&#128200;</span> Reports
+        <span class="nav-icon">&#128200;</span> {{ t('nav.reports') }}
       </a>
       <a href="{{ url_for('admin.activity_logs') }}" class="nav-link {% if request.endpoint == 'admin.activity_logs' %}active{% endif %}">
-        <span class="nav-icon">&#128220;</span> Activity Logs
+        <span class="nav-icon">&#128220;</span> {{ t('nav.activity_logs') }}
       </a>
       <a href="{{ url_for('admin.settings') }}" class="nav-link {% if request.endpoint == 'admin.settings' %}active{% endif %}">
-        <span class="nav-icon">&#9881;</span> Settings
+        <span class="nav-icon">&#9881;</span> {{ t('nav.settings') }}
       </a>
       {% endif %}
     </nav>
@@ -83,12 +83,12 @@
         <span class="avatar" style="background:{{ current_user.avatar_color }}">{{ current_user.initials }}</span>
         <div class="sidebar-user-info">
           <span class="sidebar-user-name">{{ current_user.name }}</span>
-          <span class="sidebar-user-role">{{ Role.LABELS[current_user.role] }}</span>
+          <span class="sidebar-user-role">{{ role_label(current_user.role) }}</span>
         </div>
       </div>
       <form method="post" action="{{ url_for('auth.logout') }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit" class="btn btn-ghost btn-sm btn-block">Log out</button>
+        <button type="submit" class="btn btn-ghost btn-sm btn-block">{{ t('log_out') }}</button>
       </form>
     </div>
   </aside>
@@ -100,21 +100,22 @@
       <label for="sidebar-toggle" class="mobile-menu-btn" aria-label="Toggle menu">&#9776;</label>
       <div class="topbar-title">{% block page_title %}{% endblock %}</div>
       <div class="topbar-actions">
-        <a href="{{ url_for('tickets.create') }}" class="btn btn-primary btn-sm">+ Create New Request</a>
+        {% include "partials/_language_switch.html" %}
+        <a href="{{ url_for('tickets.create') }}" class="btn btn-primary btn-sm">{{ t('create_new_request') }}</a>
         <div class="notif-bell" id="notif-bell">
-          <button type="button" class="icon-btn" id="notif-bell-btn" aria-label="Notifications">
+          <button type="button" class="icon-btn" id="notif-bell-btn" aria-label="{{ t('nav.notifications') }}">
             &#128276;
             <span class="notif-count" id="notif-count" {% if not unread_notification_count %}hidden{% endif %}>{{ unread_notification_count }}</span>
           </button>
           <div class="notif-dropdown" id="notif-dropdown" hidden>
             <div class="notif-dropdown-header">
-              <span>Notifications</span>
-              <button type="button" class="link-btn" id="mark-all-read-btn">Mark all read</button>
+              <span>{{ t('nav.notifications') }}</span>
+              <button type="button" class="link-btn" id="mark-all-read-btn">{{ t('mark_all_read') }}</button>
             </div>
             <div class="notif-dropdown-list" id="notif-dropdown-list">
-              <div class="empty-hint-sm">Loading…</div>
+              <div class="empty-hint-sm">…</div>
             </div>
-            <a href="{{ url_for('notifications.index') }}" class="notif-dropdown-footer">View all notifications</a>
+            <a href="{{ url_for('notifications.index') }}" class="notif-dropdown-footer">{{ t('view_all') }}</a>
           </div>
         </div>
       </div>

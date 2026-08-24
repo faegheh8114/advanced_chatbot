@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}{{ 'Edit User' if user else 'New User' }} — {{ ORG_FULL_NAME }} Admin Panel{% endblock %}
-{% block page_title %}{{ 'Edit User' if user else 'New User' }}{% endblock %}
+{% block title %}{{ t('edit_user_title') if user else t('new_user_title') }} — {{ ORG_FULL_NAME }} {{ t('admin_panel_label') }}{% endblock %}
+{% block page_title %}{{ t('edit_user_title') if user else t('new_user_title') }}{% endblock %}
 {% block content %}
 {% set selected_department_id = (form.get('department_id', '') if form else (user.department_id or '')) | string %}
 {% set selected_role = (form.get('role') if form else user.role) %}
@@ -9,26 +9,26 @@
   <form method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="form-group">
-      <label for="name">Full name</label>
+      <label for="name">{{ t('full_name') }}</label>
       <input type="text" id="name" name="name" required value="{{ (form.get('name') if form else user.name) or '' }}">
     </div>
     <div class="form-group">
-      <label for="email">Email</label>
+      <label for="email">{{ t('email') }}</label>
       <input type="email" id="email" name="email" required value="{{ (form.get('email') if form else user.email) or '' }}">
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label for="role">Role</label>
+        <label for="role">{{ t('col.role') }}</label>
         <select id="role" name="role">
           {% for r in Role.ALL %}
-          <option value="{{ r }}" {% if selected_role == r %}selected{% endif %}>{{ Role.LABELS[r] }}</option>
+          <option value="{{ r }}" {% if selected_role == r %}selected{% endif %}>{{ role_label(r) }}</option>
           {% endfor %}
         </select>
       </div>
       <div class="form-group">
-        <label for="department_id">Department</label>
+        <label for="department_id">{{ t('department') }}</label>
         <select id="department_id" name="department_id">
-          <option value="">No department</option>
+          <option value="">{{ t('no_department') }}</option>
           {% for d in departments %}
           <option value="{{ d.id }}" {% if selected_department_id == d.id|string %}selected{% endif %}>{{ d.name }}</option>
           {% endfor %}
@@ -37,14 +37,14 @@
     </div>
     {% if not user %}
     <div class="form-group">
-      <label for="password">Temporary password</label>
+      <label for="password">{{ t('temporary_password') }}</label>
       <input type="text" id="password" name="password" required minlength="8" placeholder="At least 8 characters">
-      <div class="form-hint">Share this with the employee securely. They can change it after logging in.</div>
+      <div class="form-hint">{{ t('temp_password_hint') }}</div>
     </div>
     {% endif %}
     <div class="flex gap-8">
-      <button type="submit" class="btn btn-primary">{{ 'Save changes' if user else 'Create user' }}</button>
-      <a href="{{ url_for('admin.users') }}" class="btn btn-ghost">Cancel</a>
+      <button type="submit" class="btn btn-primary">{{ t('save_changes') if user else t('create_user') }}</button>
+      <a href="{{ url_for('admin.users') }}" class="btn btn-ghost">{{ t('cancel') }}</a>
     </div>
   </form>
 </div>

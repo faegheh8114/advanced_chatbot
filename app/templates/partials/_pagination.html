@@ -1,9 +1,9 @@
 {% if pagination and pagination.pages > 1 %}
 <nav class="pagination">
   <a class="page-btn {% if not pagination.has_prev %}disabled{% endif %}"
-     href="{{ url_for_page(pagination.prev_num) if pagination.has_prev else '#' }}">&laquo; Prev</a>
-  <span class="page-info">Page {{ pagination.page }} of {{ pagination.pages }} &middot; {{ pagination.total }} total</span>
+     href="{{ url_for_page(pagination.prev_num) if pagination.has_prev else '#' }}">&laquo; {{ t('prev') }}</a>
+  <span class="page-info">{{ t('page_of', page=pagination.page, pages=pagination.pages, total=pagination.total) }}</span>
   <a class="page-btn {% if not pagination.has_next %}disabled{% endif %}"
-     href="{{ url_for_page(pagination.next_num) if pagination.has_next else '#' }}">Next &raquo;</a>
+     href="{{ url_for_page(pagination.next_num) if pagination.has_next else '#' }}">{{ t('next') }} &raquo;</a>
 </nav>
 {% endif %}
