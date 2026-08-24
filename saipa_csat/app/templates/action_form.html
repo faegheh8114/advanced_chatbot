@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}اقدام اصلاحی جدید{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>ثبت اقدام اصلاحی</h1><p>هر فیلد باید به داده واقعی متصل باشد، نه توصیه کلی.</p></div></div>
+<div class="card" style="max-width:720px;">
+  <form method="post" action="/actions/new">
+    <div class="form-group"><label>عنوان</label><input type="text" name="title" value="{{ prefill.title or '' }}" required></div>
+    <div class="form-group"><label>مسئله (Problem)</label><textarea name="problem" required>{{ prefill.problem or '' }}</textarea></div>
+    <div class="form-group"><label>شواهد (Evidence)</label><textarea name="evidence" required>{{ prefill.evidence or '' }}</textarea></div>
+    <div class="form-group"><label>علت ریشه‌ای (Root Cause)</label><input type="text" name="root_cause" value="{{ prefill.root_cause or '' }}" required></div>
+    <div class="form-group"><label>اقدام پیشنهادی (Action)</label><textarea name="action" required>{{ prefill.action or '' }}</textarea></div>
+    <div class="grid grid-2">
+      <div class="form-group"><label>مسئول اجرا (Owner)</label><input type="text" name="owner" value="{{ prefill.owner or '' }}" required></div>
+      <div class="form-group"><label>مهلت انجام (Deadline)</label><input type="date" name="deadline" value="{{ prefill.deadline or '' }}"></div>
+    </div>
+    <div class="grid grid-3">
+      <div class="form-group"><label>شاخص پایش (KPI)</label><input type="text" name="kpi_name" value="{{ prefill.kpi_name or '' }}" required></div>
+      <div class="form-group"><label>مقدار پایه</label><input type="number" step="0.1" name="baseline_value" value="{{ prefill.baseline_value or '' }}"></div>
+      <div class="form-group"><label>مقدار هدف</label><input type="number" step="0.1" name="target_value" value="{{ prefill.target_value or '' }}"></div>
+    </div>
+    <input type="hidden" name="related_question_code" value="{{ prefill.related_question_code or '' }}">
+    <input type="hidden" name="related_reason" value="{{ prefill.related_reason or '' }}">
+    <button type="submit" class="btn btn-primary">ثبت اقدام</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}ورود{% endblock %}
+{% block bare_content %}
+<div class="login-page">
+  <div class="login-card">
+    <h1>سامانه رضایت مشتری</h1>
+    <p class="subtitle">نمایندگی سایپا مشایخ — کد ۳۲۹۹</p>
+    {% if error %}<div class="login-error">{{ error }}</div>{% endif %}
+    <form method="post" action="/login">
+      <div class="form-group">
+        <label>نام کاربری</label>
+        <input type="text" name="username" required autofocus>
+      </div>
+      <div class="form-group">
+        <label>رمز عبور</label>
+        <input type="password" name="password" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">ورود</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

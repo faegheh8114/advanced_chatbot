@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}ثبت نتیجه شرکت{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>ثبت نتیجه رسمی ماهانه شرکت</h1><p>این اطلاعات هرگز به‌صورت خودکار تغییر داده نمی‌شوند و مبنای مقایسه قرار می‌گیرند.</p></div></div>
+<div class="card" style="max-width:760px;">
+  <form method="post" action="/comparison/company-result/new">
+    <div class="grid grid-3">
+      <div class="form-group"><label>ماه (مثال: 1404-05)</label><input type="text" name="year_month" placeholder="YYYY-MM" required></div>
+      <div class="form-group"><label>CSI کلی شرکت</label><input type="number" step="0.1" name="csi" min="0" max="10"></div>
+      <div class="form-group"><label>CSAT کلی شرکت (%)</label><input type="number" step="0.1" name="csat" min="0" max="100"></div>
+    </div>
+    <div class="section-divider">امتیاز شرکت به تفکیک سؤال (اختیاری)</div>
+    <div class="grid grid-3">
+      {% for code in questions %}
+      <div class="form-group">
+        <label>{{ QUESTION_BY_CODE[code].short_label }} ({{ code }})</label>
+        <input type="number" step="0.1" min="0" max="10" name="score_{{ code }}">
+      </div>
+      {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-primary">ثبت</button>
+  </form>
+</div>
+{% endblock %}

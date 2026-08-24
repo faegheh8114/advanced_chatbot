@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}مقایسه با شرکت{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>مقایسه نتایج نمایندگی با نتایج رسمی شرکت</h1><p>مقایسه ماهانه شاخص کلی و شاخص‌های تفکیکی</p></div>
+  {% if user.role == 'admin' %}<a href="/comparison/company-result/new" class="btn btn-primary">+ ثبت نتیجه ماهانه شرکت</a>{% endif %}
+</div>
+
+<div class="card">
+  <form method="get" class="filters">
+    <select name="year_month" onchange="this.form.submit()">
+      {% for m in months %}<option value="{{ m }}" {{ 'selected' if m==year_month }}>{{ m }}</option>{% endfor %}
+    </select>
+  </form>
+
+  {% if not data %}
+  <div class="empty-state">برای این ماه هنوز نتیجه رسمی شرکت ثبت نشده است.</div>
+  {% else %}
+  <table>
+    <thead><tr><th>شاخص</th><th>شرکت</th><th>نمایندگی</th><th>اختلاف</th></tr></thead>
+    <tbody>
+    {% for r in data.rows %}
+      <tr>
+        <td>{{ r.label }}</td>
+        <td>{{ r.company if r.company is not none else '-' }}</td>
+        <td>{{ r.dealership if r.dealership is not none else '-' }}</td>
+        <td>
+          {% if r.diff is not none %}
+          <span class="{{ 'delta-pos' if r.diff >= 0 else 'delta-neg' }}">{{ '+' if r.diff > 0 else '' }}{{ r.diff }}</span>
+          {% else %}-{% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+
+{% if data %}
+<div class="grid grid-2">
+  <div class="card">
+    <h2>بزرگ‌ترین شکاف‌های منفی (نمایندگی ضعیف‌تر)</h2>
+    <table>
+      <thead><tr><th>شاخص</th><th>اختلاف</th></tr></thead>
+      <tbody>
+      {% for r in data.largest_negative_gaps %}
+        <tr><td>{{ r.label }}</td><td><span class="delta-neg">{{ r.diff }}</span></td></tr>
+      {% else %}<tr><td colspan="2"><div class="empty-state">داده‌ای موجود نیست.</div></td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h2>نقاط قوت نسبت به شرکت</h2>
+    <table>
+      <thead><tr><th>شاخص</th><th>اختلاف</th></tr></thead>
+      <tbody>
+      {% for r in data.largest_positive_gaps if r.diff > 0 %}
+        <tr><td>{{ r.label }}</td><td><span class="delta-pos">+{{ r.diff }}</span></td></tr>
+      {% else %}<tr><td colspan="2"><div class="empty-state">در این ماه نمایندگی در هیچ شاخصی از شرکت بهتر عمل نکرده است.</div></td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<div class="card">
+  <h2>روند مقایسه‌ای CSI در طول زمان</h2>
+  <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+</div>
+
+<script src="/static/js/chart.umd.min.js"></script>
+<script>
+const trend = {{ trend_rows | tojson }};
+new Chart(document.getElementById('trendChart'), {
+  type: 'line',
+  data: {
+    labels: trend.map(t => t.month),
+    datasets: [
+      { label: 'شرکت', data: trend.map(t => t.company_csi), borderColor: '#0f766e', backgroundColor: '#0f766e22', tension: .3 },
+      { label: 'نمایندگی', data: trend.map(t => t.dealership_csi), borderColor: '#b8202e', backgroundColor: '#b8202e22', tension: .3 },
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 10 } } }
+});
+</script>
+{% endblock %}

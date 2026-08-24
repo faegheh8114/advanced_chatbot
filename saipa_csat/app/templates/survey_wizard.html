@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block title %}پرسش‌نامه رضایت‌سنجی{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>تماس رضایت‌سنجی — {{ customer.full_name }}</h1>
+    <p>پرسش‌های زیر عیناً همان پرسش‌های رسمی شرکت هستند؛ لطفاً متن سؤال را دقیقاً برای مشتری بخوانید.</p>
+  </div>
+</div>
+
+<div class="progress-bar"><div class="progress-bar-fill" id="progressFill"></div></div>
+
+<form method="post" action="/surveys/new" id="surveyForm">
+  <input type="hidden" name="customer_id" value="{{ customer.id }}">
+
+  <div class="card" id="metaCard">
+    <h2>اطلاعات تماس</h2>
+    <div class="grid grid-2">
+      <div class="form-group">
+        <label>تاریخ تماس / مراجعه</label>
+        <input type="date" name="survey_date" value="{{ today }}" required>
+      </div>
+    </div>
+    <div class="section-divider">مشخصات جمعیت‌شناختی مشتری (در صورت نیاز به‌روزرسانی)</div>
+    <div class="grid grid-4">
+      <div class="form-group">
+        <label>جنسیت</label>
+        <select name="gender">
+          <option value="">بدون تغییر</option>
+          <option value="مرد" {{ 'selected' if customer.gender=='مرد' }}>مرد</option>
+          <option value="زن" {{ 'selected' if customer.gender=='زن' }}>زن</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>سن</label>
+        <input type="number" name="age" value="{{ customer.age or '' }}">
+      </div>
+      <div class="form-group">
+        <label>میزان تحصیلات</label>
+        <input type="text" name="education" value="{{ customer.education or '' }}">
+      </div>
+      <div class="form-group">
+        <label>شغل</label>
+        <input type="text" name="job" value="{{ customer.job or '' }}">
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider">پرسش‌های رسمی شرکت (Q1 - Q18)</div>
+
+  {% for q in questions %}
+  <div class="question-step {{ 'conditional' if q.conditional_on }}"
+       data-code="{{ q.code }}"
+       {% if q.conditional_on %}data-conditional-on="{{ q.conditional_on }}" data-conditional-value="{{ 'yes' if q.conditional_value else 'no' }}"{% endif %}>
+    <span class="qnum">سؤال {{ q.code }}</span>
+    <p class="qtext">{{ q.text }}</p>
+    {% if q.interpretation %}<p class="qhint">{{ q.interpretation }}</p>{% endif %}
+
+    {% if q.qtype == SCORE_0_10 %}
+      <div class="scale-0-10">
+        {% for i in range(0, 11) %}
+        <label><input type="radio" name="q_{{ q.code }}" value="{{ i }}"> {{ i }}</label>
+        {% endfor %}
+      </div>
+      <div class="scale-legend"><span>۰ = کمترین رضایت</span><span>۱۰ = صد درصد رضایت</span></div>
+
+    {% elif q.qtype == CHOICE %}
+      <div class="radio-row">
+        {% for opt in q.options %}
+        <label class="radio-pill"><input type="radio" name="q_{{ q.code }}" value="{{ opt }}"> {{ opt }}</label>
+        {% endfor %}
+      </div>
+
+    {% elif q.qtype == YES_NO %}
+      <div class="radio-row">
+        <label class="radio-pill"><input type="radio" name="q_{{ q.code }}" value="yes"> بله</label>
+        <label class="radio-pill"><input type="radio" name="q_{{ q.code }}" value="no"> خیر</label>
+      </div>
+
+    {% elif q.qtype == DATETIME %}
+      <input type="datetime-local" name="q_{{ q.code }}">
+
+    {% elif q.qtype == TEXT %}
+      <textarea name="q_{{ q.code }}" placeholder="در صورت وجود، نظر مشتری را عیناً یادداشت کنید..."></textarea>
+    {% endif %}
+
+    <div style="display:flex; justify-content:space-between; margin-top:18px;">
+      <button type="button" class="btn btn-outline step-prev">مرحله قبل</button>
+      <button type="button" class="btn btn-primary step-next">مرحله بعد</button>
+      <button type="submit" class="btn btn-primary step-submit" style="display:none;">ثبت پرسش‌نامه</button>
+    </div>
+  </div>
+  {% endfor %}
+</form>
+
+<script>
+const allSteps = Array.from(document.querySelectorAll('.question-step'));
+const form = document.getElementById('surveyForm');
+const progressFill = document.getElementById('progressFill');
+let cursor = 0;
+
+function isVisible(step) {
+  const cond = step.dataset.conditionalOn;
+  if (!cond) return true;
+  const val = form.querySelector(`input[name="q_${cond}"]:checked`);
+  return val && val.value === step.dataset.conditionalValue;
+}
+
+function visibleSteps() {
+  return allSteps.filter(isVisible);
+}
+
+function render() {
+  const visible = visibleSteps();
+  allSteps.forEach(s => s.style.display = 'none');
+  if (cursor >= visible.length) cursor = visible.length - 1;
+  if (cursor < 0) cursor = 0;
+  const current = visible[cursor];
+  if (current) current.style.display = 'block';
+  progressFill.style.width = (visible.length ? ((cursor + 1) / visible.length) * 100 : 0) + '%';
+
+  allSteps.forEach(s => {
+    s.querySelector('.step-prev').style.visibility = (visible[0] === current) ? 'hidden' : 'visible';
+    const isLast = visible[visible.length - 1] === current;
+    s.querySelector('.step-next').style.display = isLast ? 'none' : 'inline-flex';
+    s.querySelector('.step-submit').style.display = isLast ? 'inline-flex' : 'none';
+  });
+}
+
+function currentRequiresAnswer(step) {
+  const qtype = step.querySelector('.scale-0-10, .radio-row, textarea, input[type=datetime-local]');
+  return !step.querySelector('textarea'); // free text (Q18) is optional
+}
+
+function hasAnswer(step) {
+  const code = step.dataset.code;
+  const radio = form.querySelector(`input[name="q_${code}"]:checked`);
+  if (radio) return true;
+  const dt = form.querySelector(`input[type=datetime-local][name="q_${code}"]`);
+  if (dt) return !!dt.value;
+  return !currentRequiresAnswer(step);
+}
+
+document.querySelectorAll('.step-next').forEach(btn => btn.addEventListener('click', () => {
+  const visible = visibleSteps();
+  const current = visible[cursor];
+  if (!hasAnswer(current)) {
+    alert('لطفاً پیش از ادامه، پاسخ این سؤال را ثبت کنید.');
+    return;
+  }
+  cursor++;
+  render();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}));
+
+document.querySelectorAll('.step-prev').forEach(btn => btn.addEventListener('click', () => {
+  cursor--;
+  render();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}));
+
+form.addEventListener('submit', (e) => {
+  const visible = visibleSteps();
+  const current = visible[cursor];
+  if (!hasAnswer(current)) {
+    e.preventDefault();
+    alert('لطفاً پیش از ثبت نهایی، پاسخ این سؤال را ثبت کنید.');
+  }
+});
+
+render();
+</script>
+{% endblock %}

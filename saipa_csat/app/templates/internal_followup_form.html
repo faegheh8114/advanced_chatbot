@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}پیگیری داخلی{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>داده‌های داخلی نمایندگی — {{ survey.customer.full_name }}</h1>
+    <p>این بخش جدا از پرسش‌نامه رسمی است و صرفاً برای مدیریت داخلی نارضایتی استفاده می‌شود.</p>
+  </div>
+</div>
+
+<div class="card" style="max-width:720px;">
+  <h2>سؤالات دارای نمره پایین</h2>
+  <div class="tag-list" style="margin-bottom:16px;">
+    {% for lq in low_questions %}
+    <span class="tag">{{ lq.label }}: <b>{{ lq.value }}</b></span>
+    {% endfor %}
+  </div>
+
+  <form method="post" action="/surveys/{{ survey.id }}/followup">
+    <div class="form-group">
+      <label>۱. علت اصلی نارضایتی</label>
+      <select name="main_reason">
+        <option value="">انتخاب کنید</option>
+        {% for r in reasons %}
+        <option value="{{ r }}" {{ 'selected' if r == suggested_reason }}>{{ r }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>۲. توضیح مشتری (متن آزاد)</label>
+      <textarea name="customer_explanation"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>۳. آیا مشکل قابل اقدام است؟</label>
+      <div class="radio-row">
+        <label class="radio-pill"><input type="radio" name="is_actionable" value="yes"> بله</label>
+        <label class="radio-pill"><input type="radio" name="is_actionable" value="no"> خیر</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>۴. چه اقدامی انجام شد؟</label>
+      <select name="action_taken_type">
+        <option value="">انتخاب کنید</option>
+        {% for a in action_types %}<option value="{{ a }}">{{ a }}</option>{% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>۵. شرح اقدام</label>
+      <textarea name="action_description"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>۶. آیا مشتری نیاز به پیگیری مجدد دارد؟</label>
+      <div class="radio-row">
+        <label class="radio-pill"><input type="radio" name="needs_followup" value="yes"> بله</label>
+        <label class="radio-pill"><input type="radio" name="needs_followup" value="no"> خیر</label>
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="form-group">
+        <label>۷. تاریخ پیگیری</label>
+        <input type="date" name="followup_date" min="{{ today }}">
+      </div>
+      <div class="form-group">
+        <label>۹. نمره رضایت پس از پیگیری (اختیاری، ۰ تا ۱۰)</label>
+        <input type="number" name="followup_score" min="0" max="10" step="1">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>۸. نتیجه پیگیری</label>
+      <select name="followup_result">
+        <option value="">هنوز مشخص نیست</option>
+        {% for s in result_statuses %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">ثبت داده داخلی</button>
+  </form>
+</div>
+{% endblock %}

@@ -19,3 +19,8 @@ Thumbs.db
 
 # Packaging artifacts (do not commit build zips)
 *.zip
+
+# Saipa CSAT app (saipa_csat/)
+saipa_csat/saipa_csat.db
+saipa_csat/uploads/
+saipa_csat/*.db

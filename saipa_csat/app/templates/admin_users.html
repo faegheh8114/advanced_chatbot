@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}مدیریت کاربران{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>مدیریت کاربران</h1><p>مدیران دسترسی کامل دارند؛ کارشناسان تماس فقط به ثبت تماس و پیگیری دسترسی دارند.</p></div></div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h2>کاربران فعلی</h2>
+    <table>
+      <thead><tr><th>نام کاربری</th><th>نام</th><th>نقش</th><th>وضعیت</th><th></th></tr></thead>
+      <tbody>
+      {% for u in users %}
+        <tr>
+          <td>{{ u.username }}</td><td>{{ u.full_name }}</td>
+          <td>{{ 'مدیر سیستم' if u.role == 'admin' else 'کارشناس تماس' }}</td>
+          <td>{% if u.is_active %}<span class="badge badge-success">فعال</span>{% else %}<span class="badge badge-muted">غیرفعال</span>{% endif %}</td>
+          <td>
+            {% if u.id != user.id %}
+            <form method="post" action="/admin/users/{{ u.id }}/toggle"><button class="btn btn-outline btn-sm">{{ 'غیرفعال کردن' if u.is_active else 'فعال کردن' }}</button></form>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h2>افزودن کاربر جدید</h2>
+    <form method="post" action="/admin/users">
+      <div class="form-group"><label>نام کاربری</label><input type="text" name="username" required></div>
+      <div class="form-group"><label>نام کامل</label><input type="text" name="full_name" required></div>
+      <div class="form-group"><label>رمز عبور</label><input type="password" name="password" required></div>
+      <div class="form-group"><label>نقش</label>
+        <select name="role"><option value="staff">کارشناس تماس</option><option value="admin">مدیر سیستم</option></select>
+      </div>
+      <button type="submit" class="btn btn-primary">افزودن کاربر</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

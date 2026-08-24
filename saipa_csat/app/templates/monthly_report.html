@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}گزارش ماهانه مدیریت{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>گزارش ماهانه مدیریت — {{ year_month }}</h1><p>خلاصه‌ای قابل‌فهم برای مدیریت نمایندگی، بدون نیاز به دانش فنی</p></div>
+  <form method="get" class="filters"><input type="text" name="year_month" value="{{ year_month }}" placeholder="YYYY-MM"><button class="btn btn-outline btn-sm" type="submit">اعمال</button></form>
+</div>
+
+<div class="card">
+  <h2>۱ تا ۳. رضایت کلی، CSI و CSAT</h2>
+  <div class="grid grid-3">
+    <div class="kpi"><span class="label">تعداد مشتریان بررسی‌شده</span><span class="value">{{ overview.n_customers }}</span></div>
+    <div class="kpi"><span class="label">CSI</span><span class="value">{{ overview.csi if overview.csi is not none else '-' }}</span></div>
+    <div class="kpi"><span class="label">CSAT</span><span class="value">{{ overview.csat if overview.csat is not none else '-' }}%</span></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>۴. مقایسه با نتیجه رسمی شرکت</h2>
+  {% if comparison %}
+  <table>
+    <thead><tr><th>شاخص</th><th>شرکت</th><th>نمایندگی</th><th>اختلاف</th></tr></thead>
+    <tbody>
+    {% for r in comparison.rows[:6] %}
+      <tr><td>{{ r.label }}</td><td>{{ r.company if r.company is not none else '-' }}</td><td>{{ r.dealership if r.dealership is not none else '-' }}</td>
+      <td><span class="{{ 'delta-pos' if r.diff and r.diff>=0 else 'delta-neg' }}">{{ r.diff if r.diff is not none else '-' }}</span></td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">نتیجه رسمی شرکت برای این ماه ثبت نشده است.</div>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2>۵. بزرگ‌ترین شکاف‌های منفی</h2>
+  {% if comparison %}
+  <ul>{% for r in comparison.largest_negative_gaps %}<li>{{ r.label }}: <span class="delta-neg">{{ r.diff }}</span></li>{% endfor %}</ul>
+  {% else %}<div class="empty-state">داده مقایسه‌ای موجود نیست.</div>{% endif %}
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h2>۶. مهم‌ترین شکایات</h2>
+    <ul>{% for r in reasons[:5] %}<li>{{ r.reason }} — {{ r.count }} مورد ({{ r.pct }}%)</li>{% else %}<li>موردی ثبت نشده.</li>{% endfor %}</ul>
+  </div>
+  <div class="card">
+    <h2>۷. علل ریشه‌ای (پایین‌ترین شاخص‌های رسمی)</h2>
+    <ul>{% for l in lowest %}<li>{{ l.label }}: میانگین {{ l.avg }} (تعداد پاسخ {{ l.n }})</li>{% else %}<li>داده‌ای موجود نیست.</li>{% endfor %}</ul>
+  </div>
+</div>
+
+<div class="card">
+  <h2>۸. اقدامات اصلاحی باز</h2>
+  <table>
+    <thead><tr><th>عنوان</th><th>مسئول</th><th>مهلت</th><th>وضعیت</th></tr></thead>
+    <tbody>
+    {% for a in open_actions %}<tr><td>{{ a.title }}</td><td>{{ a.owner }}</td><td>{{ a.deadline or '-' }}</td><td>{{ a.status }}</td></tr>
+    {% else %}<tr><td colspan="4"><div class="empty-state">اقدام بازی وجود ندارد.</div></td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>۹. نتیجه اقدامات تکمیل‌شده</h2>
+  <table>
+    <thead><tr><th>عنوان</th><th>پایه</th><th>فعلی</th><th>هدف</th><th>نتیجه</th></tr></thead>
+    <tbody>
+    {% for r in action_results %}
+      <tr><td>{{ r.action.title }}</td><td>{{ r.effect.baseline if r.effect.baseline is not none else '-' }}</td>
+      <td>{{ r.effect.latest if r.effect.latest is not none else '-' }}</td><td>{{ r.effect.target if r.effect.target is not none else '-' }}</td>
+      <td>{% if r.effect.target_achieved %}<span class="badge badge-success">هدف محقق شد</span>{% elif r.effect.improvement is not none and r.effect.improvement > 0 %}<span class="badge badge-warning">بهبود جزئی</span>{% else %}<span class="badge badge-danger">بدون بهبود</span>{% endif %}</td></tr>
+    {% else %}<tr><td colspan="5"><div class="empty-state">اقدام تکمیل‌شده‌ای وجود ندارد.</div></td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>۱۰. موارد حل‌نشده</h2>
+  <table>
+    <thead><tr><th>مشتری</th><th>علت</th><th>نتیجه</th></tr></thead>
+    <tbody>
+    {% for f in unresolved %}
+      <tr><td>{{ f.survey.customer.full_name if f.survey else '-' }}</td><td>{{ f.main_reason or '-' }}</td><td><span class="badge badge-danger">{{ f.followup_result }}</span></td></tr>
+    {% else %}<tr><td colspan="3"><div class="empty-state">مورد حل‌نشده‌ای وجود ندارد.</div></td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>۱۱. اقدامات پیشنهادی بعدی</h2>
+  {% for s in recommendations %}
+  <div class="insight-card">
+    <div class="title">{{ s.title }}</div>
+    <div class="meta">مسئله: {{ s.problem }}</div>
+    <div class="meta">شواهد: {{ s.evidence }}</div>
+    <div class="meta">اقدام: {{ s.action }} | مسئول: {{ s.owner }} | مهلت پیشنهادی: {{ s.deadline }}</div>
+  </div>
+  {% else %}
+  <div class="empty-state">پیشنهادی موجود نیست.</div>
+  {% endfor %}
+</div>
+{% endblock %}

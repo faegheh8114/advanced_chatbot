@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}ورود اطلاعات اکسل{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>ورود نتایج رسمی شرکت از اکسل</h1><p>فایل اکسل شرکت را بارگذاری کنید تا پیش‌نمایش و اعتبارسنجی نمایش داده شود.</p></div></div>
+<div class="card" style="max-width:600px;">
+  <form method="post" action="/import" enctype="multipart/form-data">
+    <div class="form-group">
+      <label>فایل اکسل (xlsx)</label>
+      <input type="file" name="file" accept=".xlsx,.xls" required>
+    </div>
+    <button type="submit" class="btn btn-primary">بارگذاری و پیش‌نمایش</button>
+  </form>
+  <p class="hint">داده وارد شده با برچسب «ورود از اکسل شرکت» ذخیره شده و هرگز جایگزین داده‌های تماس مستقیم نمی‌شود.</p>
+</div>
+{% endblock %}

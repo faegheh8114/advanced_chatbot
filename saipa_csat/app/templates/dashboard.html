@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block title %}داشبورد مدیریت{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>داشبورد مدیریت رضایت مشتری</h1><p>سایپا مشایخ — کد نمایندگی ۳۲۹۹ · بر اساس داده‌های تماس مستقیم</p></div>
+  <div style="display:flex; gap:8px;">
+    <a href="/export/surveys" class="btn btn-outline btn-sm">خروجی اکسل تماس‌ها</a>
+    <a href="/customers/new" class="btn btn-primary btn-sm">+ تماس جدید</a>
+  </div>
+</div>
+
+<!-- 1. Overview -->
+<div class="grid grid-4">
+  <div class="card kpi"><span class="label">تعداد مشتریان بررسی‌شده</span><span class="value">{{ overview.n_customers }}</span></div>
+  <div class="card kpi"><span class="label">CSI</span><span class="value">{{ overview.csi if overview.csi is not none else '-' }}</span></div>
+  <div class="card kpi"><span class="label">CSAT</span><span class="value">{{ overview.csat if overview.csat is not none else '-' }}%</span></div>
+  <div class="card kpi"><span class="label">درصد رضایت (CSI≥۷)</span><span class="value">{{ overview.satisfaction_pct if overview.satisfaction_pct is not none else '-' }}%</span></div>
+</div>
+<div class="grid grid-4">
+  <div class="card kpi"><span class="label">درصد نارضایتی (CSI<۶)</span><span class="value" style="color:var(--danger)">{{ overview.dissatisfaction_pct if overview.dissatisfaction_pct is not none else '-' }}%</span></div>
+  <div class="card kpi"><span class="label">شکایات حل‌نشده</span><span class="value">{{ overview.unresolved_complaints }}</span></div>
+  <div class="card kpi"><span class="label">پیگیری‌های سررسیدشده</span><span class="value">{{ overview.followups_due }}</span></div>
+  <div class="card kpi"><span class="label">تماس‌های با نمره پایین</span><span class="value">{{ overview.low_score_surveys }}</span></div>
+</div>
+
+<!-- 2. Company vs dealership -->
+<div class="card">
+  <h2>مقایسه با نتیجه رسمی شرکت {% if latest_company_month %}({{ latest_company_month }}){% endif %}</h2>
+  {% if comparison %}
+  <div class="grid grid-3">
+    <div class="kpi"><span class="label">CSI شرکت</span><span class="value">{{ comparison.rows[0].company if comparison.rows else '-' }}</span></div>
+    <div class="kpi"><span class="label">CSI نمایندگی</span><span class="value">{{ comparison.rows[0].dealership if comparison.rows else '-' }}</span></div>
+    <div class="kpi"><span class="label">اختلاف</span>
+      <span class="value {{ 'delta-pos' if comparison.rows and comparison.rows[0].diff and comparison.rows[0].diff>=0 else 'delta-neg' }}">
+        {{ comparison.rows[0].diff if comparison.rows else '-' }}
+      </span>
+    </div>
+  </div>
+  <a href="/comparison" class="btn btn-outline btn-sm" style="margin-top:10px;">مشاهده جزئیات مقایسه</a>
+  {% else %}
+  <div class="empty-state">هنوز نتیجه ماهانه شرکتی ثبت نشده است. <a href="/comparison/company-result/new">ثبت نتیجه</a></div>
+  {% endif %}
+</div>
+
+<!-- 3. Question by question + 4. causes -->
+<div class="grid grid-2">
+  <div class="card">
+    <h2>عملکرد به تفکیک سؤال</h2>
+    <div class="chart-wrap"><canvas id="questionChart"></canvas></div>
+  </div>
+  <div class="card">
+    <h2>علل اصلی نارضایتی (داده داخلی)</h2>
+    {% if reasons %}
+    <div class="chart-wrap"><canvas id="reasonChart"></canvas></div>
+    {% else %}
+    <div class="empty-state">هنوز موردی ثبت نشده است.</div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- 5. Trend -->
+<div class="card">
+  <h2>روند رضایت در طول زمان</h2>
+  <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+</div>
+
+<!-- 6. Segments -->
+<div class="grid grid-2">
+  <div class="card">
+    <h3>میانگین CSI به تفکیک جنسیت</h3>
+    <table>
+      <thead><tr><th>گروه</th><th>میانگین CSI</th><th>تعداد</th></tr></thead>
+      <tbody>{% for s in segment_gender %}<tr><td>{{ s.key }}</td><td>{{ s.avg }}</td><td>{{ s.n }}</td></tr>{% else %}<tr><td colspan="3"><div class="empty-state">داده‌ای نیست.</div></td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h3>میانگین CSI به تفکیک تحصیلات</h3>
+    <table>
+      <thead><tr><th>گروه</th><th>میانگین CSI</th><th>تعداد</th></tr></thead>
+      <tbody>{% for s in segment_education %}<tr><td>{{ s.key }}</td><td>{{ s.avg }}</td><td>{{ s.n }}</td></tr>{% else %}<tr><td colspan="3"><div class="empty-state">داده‌ای نیست.</div></td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 7 & 9. Actions -->
+<div class="grid grid-3">
+  <div class="card kpi"><span class="label">اقدامات اصلاحی باز</span><span class="value">{{ open_actions_count }}</span></div>
+  <div class="card kpi"><span class="label">اقدامات تکمیل‌شده</span><span class="value">{{ completed_actions_count }}</span></div>
+  <div class="card kpi"><span class="label">اقدامات با بهبود اندازه‌گیری‌شده</span><span class="value" style="color:var(--success)">{{ improved_actions_count }}</span></div>
+</div>
+
+<!-- 8. Follow-up center shortcut -->
+<div class="card">
+  <h2>مرکز پیگیری</h2>
+  <p>مشاهده موارد سررسید امروز، عقب‌افتاده و حل‌نشده در <a href="/followups">مرکز پیگیری</a>.</p>
+</div>
+
+<!-- 10. Insights -->
+<div class="card">
+  <h2>تحلیل‌های داده‌محور</h2>
+  {% for c in correlations %}
+  <div class="insight-card">
+    <div class="title">{{ c.description }}</div>
+    <div class="meta">{{ c.note }}</div>
+  </div>
+  {% endfor %}
+
+  {% if suggestions %}
+  <h3 style="margin-top:18px;">پایین‌ترین شاخص‌ها و پیشنهاد اقدام</h3>
+  {% for s in suggestions %}
+  <div class="insight-card">
+    <div class="title">{{ s.title }}</div>
+    <div class="meta">{{ s.evidence }}</div>
+    <div class="meta">اقدام پیشنهادی: {{ s.action }} | مسئول: {{ s.owner }}</div>
+  </div>
+  {% endfor %}
+  {% endif %}
+</div>
+
+<script src="/static/js/chart.umd.min.js"></script>
+<script>
+const questionData = {{ question_avgs | tojson }};
+const labels = Object.keys(questionData).map(k => questionData[k].label + ' (' + k + ')');
+const values = Object.keys(questionData).map(k => questionData[k].avg);
+
+new Chart(document.getElementById('questionChart'), {
+  type: 'bar',
+  data: { labels, datasets: [{ label: 'میانگین امتیاز', data: values, backgroundColor: '#b8202e' }] },
+  options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { x: { min: 0, max: 10 } } }
+});
+
+{% if reasons %}
+new Chart(document.getElementById('reasonChart'), {
+  type: 'bar',
+  data: {
+    labels: {{ reasons | map(attribute='reason') | list | tojson }},
+    datasets: [{ label: 'تعداد موارد', data: {{ reasons | map(attribute='count') | list | tojson }}, backgroundColor: '#0f766e' }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y' }
+});
+{% endif %}
+
+const trend = {{ trend | tojson }};
+new Chart(document.getElementById('trendChart'), {
+  type: 'line',
+  data: {
+    labels: trend.map(t => t.month),
+    datasets: [
+      { label: 'CSI', data: trend.map(t => t.csi), borderColor: '#b8202e', backgroundColor: '#b8202e22', tension: .3 },
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 10 } } }
+});
+</script>
+{% endblock %}

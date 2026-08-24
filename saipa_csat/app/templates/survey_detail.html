@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}جزئیات تماس{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>{{ survey.customer.full_name }} — {{ survey.survey_date }}</h1>
+    <p>ثبت‌شده توسط {{ survey.staff.full_name if survey.staff else '-' }}</p>
+  </div>
+  <a href="/customers/{{ survey.customer_id }}" class="btn btn-outline">بازگشت به مشتری</a>
+</div>
+
+<div class="grid grid-3">
+  <div class="card kpi"><span class="label">CSI</span><span class="value">{{ survey.csi if survey.csi is not none else '-' }}</span></div>
+  <div class="card kpi"><span class="label">CSAT</span><span class="value">{{ survey.csat if survey.csat is not none else '-' }}%</span></div>
+  <div class="card kpi"><span class="label">وضعیت</span><span class="value">
+    {% if survey.is_low_score %}<span class="badge badge-danger">نیازمند پیگیری</span>{% else %}<span class="badge badge-success">مطلوب</span>{% endif %}
+  </span></div>
+</div>
+
+<div class="card">
+  <h2>پاسخ‌های رسمی</h2>
+  <table>
+    <thead><tr><th>کد</th><th>سؤال</th><th>پاسخ</th></tr></thead>
+    <tbody>
+    {% for q in questions %}
+      {% set a = answers.get(q.code) %}
+      {% if a %}
+      <tr>
+        <td>{{ q.code }}</td>
+        <td>{{ q.short_label }}</td>
+        <td>
+          {% if a.value_numeric is not none %}{{ a.value_numeric }} / ۱۰
+          {% elif a.value_bool is not none %}{{ 'بله' if a.value_bool else 'خیر' }}
+          {% elif a.value_datetime is not none %}{{ a.value_datetime }}
+          {% elif a.value_text %}{{ a.value_text }}
+          {% else %}-{% endif %}
+        </td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if survey.is_low_score %}
+<div class="card">
+  <h2>داده‌های داخلی نمایندگی (پیگیری نمره پایین)</h2>
+  {% if survey.internal_followup %}
+    {% set fu = survey.internal_followup %}
+    <div class="grid grid-2">
+      <div><b>علت اصلی نارضایتی:</b> {{ fu.main_reason or '-' }}</div>
+      <div><b>قابل اقدام:</b> {{ 'بله' if fu.is_actionable else ('خیر' if fu.is_actionable is not none else '-') }}</div>
+      <div><b>اقدام انجام‌شده:</b> {{ fu.action_taken_type or '-' }}</div>
+      <div><b>نیاز به پیگیری:</b> {{ 'بله' if fu.needs_followup else ('خیر' if fu.needs_followup is not none else '-') }}</div>
+      <div><b>تاریخ پیگیری:</b> {{ fu.followup_date or '-' }}</div>
+      <div><b>نتیجه پیگیری:</b> {{ fu.followup_result or '-' }}</div>
+    </div>
+    {% if fu.customer_explanation %}<p><b>توضیح مشتری:</b> {{ fu.customer_explanation }}</p>{% endif %}
+    <a href="/surveys/{{ survey.id }}/followup" class="btn btn-outline btn-sm">ویرایش پیگیری</a>
+  {% else %}
+    <p>این تماس دارای نمره پایین است اما هنوز داده داخلی پیگیری ثبت نشده.</p>
+    <a href="/surveys/{{ survey.id }}/followup" class="btn btn-primary btn-sm">تکمیل فرم پیگیری داخلی</a>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

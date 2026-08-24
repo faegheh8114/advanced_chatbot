@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}سامانه رضایت مشتری{% endblock %} | سایپا مشایخ ۳۲۹۹</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/style.css">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+{% if user %}
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-badge">CS</div>
+      <div class="brand-text">
+        <strong>سایپا مشایخ</strong>
+        <span>کد نمایندگی ۳۲۹۹</span>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="/" class="{{ 'active' if request.url.path == '/' else '' }}">داشبورد مدیریت</a>
+      <a href="/customers" class="{{ 'active' if request.url.path.startswith('/customers') else '' }}">مشتریان و تماس‌ها</a>
+      <a href="/followups" class="{{ 'active' if request.url.path.startswith('/followups') else '' }}">مرکز پیگیری</a>
+      <a href="/actions" class="{{ 'active' if request.url.path.startswith('/actions') else '' }}">اقدامات اصلاحی</a>
+      <a href="/comparison" class="{{ 'active' if request.url.path.startswith('/comparison') else '' }}">مقایسه با شرکت</a>
+      <a href="/reports" class="{{ 'active' if request.url.path.startswith('/reports') else '' }}">گزارش ماهانه</a>
+      {% if user.role == 'admin' %}
+      <a href="/import" class="{{ 'active' if request.url.path.startswith('/import') else '' }}">ورود اطلاعات اکسل</a>
+      <a href="/admin/users" class="{{ 'active' if request.url.path.startswith('/admin') else '' }}">مدیریت کاربران</a>
+      {% endif %}
+    </nav>
+    <form action="/logout" method="post" class="logout-form">
+      <div class="user-chip">
+        <span>{{ user.full_name }}</span>
+        <small>{{ 'مدیر سیستم' if user.role == 'admin' else 'کارشناس تماس' }}</small>
+      </div>
+      <button type="submit" class="btn btn-ghost btn-sm">خروج</button>
+    </form>
+  </aside>
+  <main class="content">
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% else %}
+{% block bare_content %}{% endblock %}
+{% endif %}
+</body>
+</html>

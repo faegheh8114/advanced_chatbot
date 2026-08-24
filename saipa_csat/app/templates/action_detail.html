@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ a.title }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>{{ a.title }}</h1><p>ایجادشده در {{ a.created_at.date() }}</p></div>
+  <form method="post" action="/actions/{{ a.id }}/status" style="display:flex; gap:8px;">
+    <select name="status" onchange="this.form.submit()">
+      {% for st in statuses %}<option value="{{ st }}" {{ 'selected' if st==a.status }}>{{ st }}</option>{% endfor %}
+    </select>
+  </form>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h2>شرح اقدام</h2>
+    <div class="row"><b>مسئله:</b> {{ a.problem }}</div>
+    <div class="row"><b>شواهد:</b> {{ a.evidence }}</div>
+    <div class="row"><b>علت ریشه‌ای:</b> {{ a.root_cause }}</div>
+    <div class="row"><b>اقدام:</b> {{ a.action }}</div>
+    <div class="row"><b>مسئول:</b> {{ a.owner }}</div>
+    <div class="row"><b>مهلت:</b> {{ a.deadline or '-' }}</div>
+  </div>
+
+  <div class="card">
+    <h2>پایش KPI: {{ a.kpi_name }}</h2>
+    <div class="grid grid-3" style="margin-bottom:14px;">
+      <div class="kpi"><span class="label">پایه</span><span class="value">{{ effect.baseline if effect.baseline is not none else '-' }}</span></div>
+      <div class="kpi"><span class="label">آخرین اندازه‌گیری</span><span class="value">{{ effect.latest if effect.latest is not none else '-' }}</span></div>
+      <div class="kpi"><span class="label">هدف</span><span class="value">{{ effect.target if effect.target is not none else '-' }}</span></div>
+    </div>
+    {% if effect.improvement is not none %}
+    <p>تغییر نسبت به پایه:
+      <span class="{{ 'delta-pos' if effect.improvement > 0 else 'delta-neg' }}">{{ '+' if effect.improvement > 0 else '' }}{{ effect.improvement }}</span>
+      {% if effect.target_achieved %}<span class="badge badge-success">هدف محقق شد</span>
+      {% elif effect.target_achieved is not none %}<span class="badge badge-warning">هدف هنوز محقق نشده</span>{% endif %}
+    </p>
+    {% endif %}
+
+    <form method="post" action="/actions/{{ a.id }}/measure" class="grid grid-3" style="align-items:end;">
+      <div class="form-group"><label>تاریخ</label><input type="date" name="measured_date" value="{{ today }}" required></div>
+      <div class="form-group"><label>مقدار</label><input type="number" step="0.1" name="measured_value" required></div>
+      <div class="form-group"><label>یادداشت</label><input type="text" name="note"></div>
+      <button type="submit" class="btn btn-primary" style="grid-column: span 3;">ثبت اندازه‌گیری جدید</button>
+    </form>
+
+    <table style="margin-top:16px;">
+      <thead><tr><th>تاریخ</th><th>مقدار</th><th>یادداشت</th></tr></thead>
+      <tbody>
+      {% for h in effect.history %}
+        <tr><td>{{ h.date }}</td><td>{{ h.value }}</td><td>{{ h.note or '-' }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

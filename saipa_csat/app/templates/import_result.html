@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}نتیجه ورود اطلاعات{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>ورود اطلاعات با موفقیت انجام شد</h1></div></div>
+<div class="card" style="max-width:500px;">
+  <div class="row"><b>رکوردهای ایجادشده:</b> {{ result.created }}</div>
+  <div class="row"><b>رکوردهای نادیده گرفته‌شده (تکراری/نامعتبر):</b> {{ result.skipped }}</div>
+  <a href="/import" class="btn btn-outline" style="margin-top:14px;">ورود فایل جدید</a>
+</div>
+{% endblock %}

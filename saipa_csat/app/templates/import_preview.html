@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}پیش‌نمایش ورود اطلاعات{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>پیش‌نمایش و نگاشت ستون‌ها</h1><p>ستون‌های فایل اکسل را به فیلدهای سامانه نگاشت کنید و اعتبارسنجی را بررسی نمایید.</p></div></div>
+
+<div class="card">
+  <h2>نتیجه اعتبارسنجی</h2>
+  <div class="grid grid-4" style="margin-bottom:14px;">
+    <div class="kpi"><span class="label">کل ردیف‌ها</span><span class="value">{{ validation.n_rows }}</span></div>
+    <div class="kpi"><span class="label">معتبر</span><span class="value" style="color:var(--success)">{{ validation.n_valid_rows }}</span></div>
+    <div class="kpi"><span class="label">دارای خطا</span><span class="value" style="color:var(--danger)">{{ validation.n_invalid_rows }}</span></div>
+    <div class="kpi"><span class="label">وضعیت</span><span class="value">{{ 'قابل ثبت' if validation.can_commit else 'نیاز به اصلاح' }}</span></div>
+  </div>
+  {% if validation.errors %}
+    {% for e in validation.errors %}<div class="login-error">{{ e }}</div>{% endfor %}
+  {% endif %}
+  {% if validation.row_issues_preview %}
+  <details><summary>مشاهده جزئیات خطاهای سطری ({{ validation.n_invalid_rows }}) — این ردیف‌ها در صورت ثبت نهایی نادیده گرفته می‌شوند</summary>
+    <table>
+      <thead><tr><th>ردیف</th><th>مشکلات</th></tr></thead>
+      <tbody>
+      {% for ri in validation.row_issues_preview %}
+        <tr><td>{{ ri.row }}</td><td>{{ ri.issues | join('، ') }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </details>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2>نگاشت ستون‌ها</h2>
+  <form method="post" action="/import/preview/{{ import_id }}">
+    <table>
+      <thead><tr><th>ستون فایل اکسل</th><th>نگاشت به</th></tr></thead>
+      <tbody>
+      {% for col in columns %}
+      <tr>
+        <td>{{ col }}</td>
+        <td>
+          <select name="map_{{ loop.index0 }}">
+            <option value="">— نادیده گرفتن —</option>
+            {% for f in mappable_fields %}
+            <option value="{{ f }}" {{ 'selected' if mapping.get(col) == f }}>{{ f }}</option>
+            {% endfor %}
+          </select>
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <button type="submit" class="btn btn-outline" style="margin-top:14px;">اعمال نگاشت و اعتبارسنجی مجدد</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>پیش‌نمایش ۱۰ ردیف اول</h2>
+  <div style="overflow-x:auto;">
+  <table>
+    <thead><tr>{% for col in columns %}<th>{{ col }}</th>{% endfor %}</tr></thead>
+    <tbody>
+    {% for row in preview_rows %}
+      <tr>{% for col in columns %}<td>{{ row.get(col, '') }}</td>{% endfor %}</tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<form method="post" action="/import/commit/{{ import_id }}">
+  {% for col in columns %}<input type="hidden" name="map_{{ loop.index0 }}" value="{{ mapping.get(col, '') }}">{% endfor %}
+  <button type="submit" class="btn btn-primary" {{ 'disabled' if not validation.can_commit }}>تأیید نهایی و ثبت در سامانه</button>
+</form>
+{% endblock %}

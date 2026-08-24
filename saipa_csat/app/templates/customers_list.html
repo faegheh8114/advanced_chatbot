@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}مشتریان{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>مشتریان و تماس‌ها</h1>
+    <p>جست‌وجو یا افزودن مشتری برای شروع تماس و تکمیل پرسش‌نامه رضایت‌سنجی</p>
+  </div>
+  <a href="/customers/new" class="btn btn-primary">+ مشتری جدید / تماس جدید</a>
+</div>
+
+<div class="card">
+  <form method="get" class="filters">
+    <input type="text" name="q" placeholder="جست‌وجو بر اساس نام یا شماره تماس..." value="{{ q }}">
+    <button type="submit" class="btn btn-outline btn-sm">جست‌وجو</button>
+  </form>
+  <table>
+    <thead><tr><th>نام مشتری</th><th>تلفن</th><th>خودرو</th><th>تعداد تماس‌ها</th><th></th></tr></thead>
+    <tbody>
+    {% for c in customers %}
+      <tr>
+        <td>{{ c.full_name }}</td>
+        <td>{{ c.phone }}</td>
+        <td>{{ c.vehicle_model or '-' }}</td>
+        <td>{{ c.surveys|length }}</td>
+        <td style="display:flex; gap:8px;">
+          <a href="/customers/{{ c.id }}" class="btn btn-outline btn-sm">مشاهده</a>
+          <a href="/surveys/new?customer_id={{ c.id }}" class="btn btn-primary btn-sm">تماس جدید</a>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5"><div class="empty-state">مشتری‌ای یافت نشد.</div></td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

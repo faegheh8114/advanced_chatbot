@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}اقدامات اصلاحی{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>مرکز اقدامات اصلاحی</h1>
+    <p>هر اقدام باید به داده واقعی متصل باشد: مسئله، شواهد، علت ریشه‌ای، اقدام، مسئول، مهلت و KPI.</p>
+  </div>
+  <a href="/actions/new" class="btn btn-primary">+ اقدام جدید</a>
+</div>
+
+{% if suggestions %}
+<div class="card">
+  <h2>پیشنهادهای مبتنی بر داده</h2>
+  <p style="color:var(--text-muted); font-size:12.5px; margin-top:-8px;">بر اساس پایین‌ترین شاخص‌های رسمی و علل نارضایتی ثبت‌شده تولید شده‌اند.</p>
+  {% for s in suggestions %}
+  <div class="insight-card">
+    <div class="title">{{ s.title }}</div>
+    <div class="meta">مسئله: {{ s.problem }}</div>
+    <div class="meta">شواهد: {{ s.evidence }}</div>
+    <div class="meta">علت ریشه‌ای: {{ s.root_cause }} | مسئول پیشنهادی: {{ s.owner }} | مهلت پیشنهادی: {{ s.deadline }}</div>
+    <form method="get" action="/actions/new" style="margin-top:10px;">
+      {% for k, v in s.items() %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endfor %}
+      <button formaction="javascript:void(0)" type="button" class="btn btn-outline btn-sm use-suggestion"
+        data-suggestion='{{ s | tojson | e }}'>تبدیل به اقدام اصلاحی</button>
+    </form>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="filters">
+    <form method="get" style="display:flex; gap:10px;">
+      <select name="status" onchange="this.form.submit()">
+        <option value="">همه وضعیت‌ها</option>
+        {% for st in statuses %}<option value="{{ st }}" {{ 'selected' if st==status_filter }}>{{ st }}</option>{% endfor %}
+      </select>
+    </form>
+  </div>
+  {% for it in items %}
+  {% set a = it.action %}
+  {% set e = it.effect %}
+  <div class="action-card">
+    <div style="display:flex; justify-content:space-between;">
+      <b>{{ a.title }}</b>
+      <span class="badge {{ 'badge-success' if a.status=='تکمیل شده' else 'badge-warning' if a.status=='در حال اجرا' else 'badge-muted' }}">{{ a.status }}</span>
+    </div>
+    <div class="row"><b>مسئول:</b> {{ a.owner }}</div>
+    <div class="row"><b>مهلت:</b> {{ a.deadline or '-' }}</div>
+    <div class="row"><b>KPI:</b> {{ a.kpi_name }} — پایه: {{ e.baseline if e.baseline is not none else '-' }} ← فعلی: {{ e.latest if e.latest is not none else '-' }} (هدف: {{ e.target if e.target is not none else '-' }})</div>
+    {% if e.improvement is not none %}
+    <div class="row"><b>نتیجه:</b>
+      <span class="{{ 'delta-pos' if e.improvement > 0 else 'delta-neg' }}">{{ '+' if e.improvement > 0 else '' }}{{ e.improvement }}</span>
+      {% if e.target_achieved %}<span class="badge badge-success" style="margin-right:8px;">هدف محقق شد</span>{% endif %}
+    </div>
+    {% endif %}
+    <a href="/actions/{{ a.id }}" class="btn btn-outline btn-sm" style="margin-top:8px;">جزئیات و ثبت اندازه‌گیری</a>
+  </div>
+  {% else %}
+  <div class="empty-state">هنوز اقدام اصلاحی ثبت نشده است.</div>
+  {% endfor %}
+</div>
+
+<script>
+document.querySelectorAll('.use-suggestion').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const s = JSON.parse(btn.dataset.suggestion);
+    const params = new URLSearchParams(s).toString();
+    window.location.href = '/actions/new?' + params;
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}مشتری جدید{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>ثبت مشتری جدید</h1>
+    <p>اطلاعات مشتری را وارد کنید، سپس به پرسش‌نامه رسمی رضایت‌سنجی هدایت می‌شوید.</p>
+  </div>
+</div>
+<div class="card" style="max-width:640px;">
+  <form method="post" action="/customers/new">
+    <div class="grid grid-2">
+      <div class="form-group">
+        <label>نام و نام خانوادگی *</label>
+        <input type="text" name="full_name" required>
+      </div>
+      <div class="form-group">
+        <label>شماره تماس *</label>
+        <input type="tel" name="phone" required>
+      </div>
+      <div class="form-group">
+        <label>مدل خودرو</label>
+        <input type="text" name="vehicle_model">
+      </div>
+      <div class="form-group">
+        <label>پلاک خودرو</label>
+        <input type="text" name="vehicle_plate">
+      </div>
+    </div>
+
+    <div class="section-divider">مشخصات جمعیت‌شناختی (اختیاری)</div>
+    <div class="grid grid-4">
+      <div class="form-group">
+        <label>جنسیت</label>
+        <select name="gender">
+          <option value="">انتخاب نشده</option>
+          <option value="مرد">مرد</option>
+          <option value="زن">زن</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>سن</label>
+        <input type="number" name="age" min="10" max="100">
+      </div>
+      <div class="form-group">
+        <label>میزان تحصیلات</label>
+        <select name="education">
+          <option value="">انتخاب نشده</option>
+          <option>زیر دیپلم</option>
+          <option>دیپلم</option>
+          <option>کاردانی</option>
+          <option>کارشناسی</option>
+          <option>کارشناسی ارشد و بالاتر</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>شغل</label>
+        <input type="text" name="job">
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">ادامه به پرسش‌نامه</button>
+  </form>
+</div>
+{% endblock %}

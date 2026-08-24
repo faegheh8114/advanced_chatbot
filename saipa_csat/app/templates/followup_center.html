@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}مرکز پیگیری{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>مرکز پیگیری مشتریان</h1><p>پیگیری موارد نارضایتی و پیگیری‌های عقب‌افتاده</p></div></div>
+
+{% macro fu_table(rows, empty_text) %}
+<table>
+  <thead><tr><th>مشتری</th><th>مسئله</th><th>نمره اولیه</th><th>اقدام انجام‌شده</th><th>کارشناس رسیدگی</th><th>تاریخ پیگیری</th><th>وضعیت</th><th>آخرین نمره</th><th></th></tr></thead>
+  <tbody>
+  {% for f in rows %}
+    <tr>
+      <td><a href="/customers/{{ f.survey.customer_id }}">{{ f.survey.customer.full_name }}</a></td>
+      <td>{{ f.main_reason or '-' }}</td>
+      <td>{{ f.survey.csi if f.survey.csi is not none else '-' }}</td>
+      <td>{{ f.action_taken_type or '-' }}</td>
+      <td>{{ f.survey.staff.full_name if f.survey.staff else '-' }}</td>
+      <td>{{ f.followup_date or '-' }}</td>
+      <td>
+        {% if f.followup_result == 'حل شد' %}<span class="badge badge-success">{{ f.followup_result }}</span>
+        {% elif f.followup_result in ['حل نشد','نیازمند اقدام بیشتر','مشتری پاسخ نداد'] %}<span class="badge badge-danger">{{ f.followup_result }}</span>
+        {% elif f.followup_result %}<span class="badge badge-warning">{{ f.followup_result }}</span>
+        {% else %}<span class="badge badge-muted">در انتظار</span>{% endif %}
+      </td>
+      <td>{{ f.followup_score if f.followup_score is not none else '-' }}</td>
+      <td><a href="/surveys/{{ f.survey_id }}/followup" class="btn btn-outline btn-sm">ویرایش</a></td>
+    </tr>
+  {% else %}
+    <tr><td colspan="9"><div class="empty-state">{{ empty_text }}</div></td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endmacro %}
+
+<div class="card">
+  <h2>پیگیری‌های امروز ({{ due_today|length }})</h2>
+  {{ fu_table(due_today, "پیگیری‌ای برای امروز وجود ندارد.") }}
+</div>
+
+<div class="card">
+  <h2>پیگیری‌های عقب‌افتاده ({{ overdue|length }})</h2>
+  {{ fu_table(overdue, "پیگیری عقب‌افتاده‌ای وجود ندارد.") }}
+</div>
+
+<div class="card">
+  <h2>مشتریان اخیراً ناراضی</h2>
+  {{ fu_table(recently_dissatisfied, "موردی ثبت نشده است.") }}
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h2>حل‌شده ({{ resolved|length }})</h2>
+    {{ fu_table(resolved, "موردی ثبت نشده است.") }}
+  </div>
+  <div class="card">
+    <h2>حل‌نشده ({{ unresolved|length }})</h2>
+    {{ fu_table(unresolved, "موردی ثبت نشده است.") }}
+  </div>
+</div>
+{% endblock %}
