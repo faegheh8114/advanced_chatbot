@@ -29,6 +29,18 @@ and basic NLP techniques.
 | Frontend | HTML, CSS, vanilla JavaScript |
 | Fonts | Sora (headings), Inter (body) |
 
+
+## Screenshots
+
+### Chatbot Greeting
+![Chatbot Greeting](screenshots/screan1.png)
+
+### Chatbot Capabilities
+![Chatbot Capabilities](screenshots/screan2.png)
+
+### Pricing Intent Example
+![Pricing Response](screenshots/screan3.png)
+
 ##  Project Structure
 
 ```
