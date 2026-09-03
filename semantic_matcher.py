@@ -1,34 +1,15 @@
 """
-Optional semantic (embedding-based) intent matcher.
+Optional semantic intent matcher using sentence embeddings.
 
-This is a *second opinion* layered on top of the rule-based matching in
-chatbot.py. It is only loaded when both are true:
-
-  1. the SEMANTIC_MATCHING environment variable is set to "1", and
-  2. the `sentence-transformers` package is installed.
-
-Both gates exist on purpose: `sentence-transformers` pulls in PyTorch,
-which is a large dependency (several hundred MB) and noticeably slower
-to import/load than the rest of this project. On a memory-constrained
-host (e.g. Render's free tier) that can be the difference between a
-service that starts and one that gets OOM-killed. Keeping it opt-in
-means the app is small and fast by default, while still supporting the
-semantic layer for anyone who deploys somewhere with more headroom.
-
-The embedding model is loaded once (at process/app startup) and reused
-for every request - never re-loaded or re-downloaded per request. Intent
-pattern embeddings are likewise computed once, at load time, not on
-every call to best_match().
+Enabled only when SEMANTIC_MATCHING=1 and sentence-transformers is installed.
+The model and intent embeddings are loaded once and reused across requests.
 """
 import logging
 import os
 
 logger = logging.getLogger(__name__)
 
-# A small multilingual sentence-embedding model that covers both English
-# and Persian, which is what this chatbot needs. "MiniLM" variants trade
-# some accuracy for a much smaller footprint than larger multilingual
-# models (e.g. LaBSE), which matters for deployment size.
+# Multilingual model used for English and Persian intent matching.
 DEFAULT_MODEL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
 
 
@@ -50,10 +31,7 @@ class SemanticMatcher:
                 self._tags.append(intent["tag"])
                 patterns.append(pattern)
 
-        # Precompute once: this is the "cache precomputed intent
-        # embeddings" step from the design - encoding is comparatively
-        # expensive, so we never want to do it per-request for the
-        # (fixed) set of intent patterns.
+       # Precompute pattern embeddings once; they are reused for each request.
         self._pattern_embeddings = (
             self._model.encode(patterns, convert_to_tensor=True) if patterns else None
         )
@@ -73,12 +51,7 @@ class SemanticMatcher:
 
 
 def load_semantic_matcher(intents, model_name=DEFAULT_MODEL_NAME):
-    """Build a SemanticMatcher if enabled and available, else return None.
-
-    Returning None (rather than raising) is deliberate: the semantic layer
-    is an enhancement, not a requirement, so any problem loading it should
-    degrade to rule-based-only matching instead of taking the app down.
-    """
+    """Build a SemanticMatcher when enabled and available."""
     if os.environ.get("SEMANTIC_MATCHING", "0") != "1":
         return None
     try:
