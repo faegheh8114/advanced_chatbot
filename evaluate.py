@@ -1,12 +1,8 @@
 """
-Evaluate the chatbot's intent classifier against data/intent_test.json.
+Evaluate the chatbot intent classifier on a labeled test dataset.
 
-Runs each example through Chatbot.classify() - the same rule-based (and,
-if enabled, semantic) pipeline used by the live app - and reports accuracy,
-per-class precision/recall/F1, their macro averages, and a confusion
-matrix. Metrics are computed from scratch with the standard library only
-(no scikit-learn), since this is a small dataset and pulling in another
-heavyweight dependency isn't warranted just to compute a few ratios.
+Reports accuracy, per-class precision/recall/F1, macro averages,
+and a confusion matrix.
 
 Usage:
     python evaluate.py
@@ -61,11 +57,7 @@ def compute_metrics(pairs, labels):
         denom = precision[label] + recall[label]
         f1[label] = (2 * precision[label] * recall[label] / denom) if denom else 0.0
 
-    # Macro average: every class counts equally, regardless of how many
-    # examples it has. Appropriate here because the dataset is small and
-    # intentionally imbalanced (many more "unknown" examples than any
-    # single intent) - a micro/weighted average would mostly just reflect
-    # how well "unknown" is handled and hide weak individual intents.
+    # Macro average gives each intent equal weight.
     macro_precision = sum(precision.values()) / len(labels)
     macro_recall = sum(recall.values()) / len(labels)
     macro_f1 = sum(f1.values()) / len(labels)
