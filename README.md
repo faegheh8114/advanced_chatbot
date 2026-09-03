@@ -2,9 +2,10 @@
 
 A lightweight, bilingual chatbot built with Flask.
 
-It is a rule-based conversational chatbot with a custom intent matching system. It can understand different ways of asking the same question, handle minor typos, and maintain a brief conversation history for each user.
+It is a rule-based conversational chatbot with a custom intent matching system. It can understand different ways of asking the same question, handle minor typos, and maintain short-term conversation context for each user.
 
 The goal of this project was to understand how chatbot systems work by building the matching logic instead of relying on external APIs.
+
 
 ## Live Demo
 
@@ -46,7 +47,7 @@ To achieve this, I enhanced the matching system by incorporating various techniq
 
 ## Features
 
-Custom Intent Matching
+### Custom Intent Matching
 
 The chatbot uses a custom matching system written in Python.
 
@@ -58,13 +59,13 @@ It combines:
 
 This allows the chatbot to recognize different versions of similar questions.
 
-Conversation context:
+### Conversation Context
 
 The application uses Flask sessions to keep a small amount of conversation state.
 
 Each user has a separate session, so conversations do not interfere with each other.
 
-Bilingual Support:
+### Bilingual Support
 
 The chatbot supports English and Persian messages and responds in the same language.
 
@@ -80,31 +81,31 @@ The project includes a simple chat interface with message bubbles.
 
 ## How the Matching Works
 
-For every incoming message, the chatbot calculates a score based on available patterns.
+The chatbot calculates a score for every incoming message based on available patterns.
 
 The scoring process includes:
 
-1. Substring matching: Checks if a known phrase exists in the user's message.
+1. Substring matching verifies if a known phrase is present in the user's message.
 
-2. Token Overlap: Compares shared words between the user's message and known patterns.
+2. Token Overlap: The system compares shared words between the user's message and known patterns.
 
-3. Fuzzy Similarity: Uses the difflib.SequenceMatcher class to detect similar phrases and minor typos.
+3. Fuzzy Similarity: Use the difflib.SequenceMatcher class to detect similar phrases and minor typos.
 
 The chatbot selects the intent with the highest score. If no intent receives a reliable score, the chatbot returns a fallback response.
 
 ## Challenges and Solutions
 
-False Matches with Short or Common Words
+### False Matches with Short or Common Words
 
-After adding fuzzy matching, I noticed something strange. Very short inputs, such as "hi," "ok," or "no," (as well as similarly short Persian words) would sometimes match the wrong intent. Due to substring overlap and character-level similarity, short words received an unrealistically high score against patterns with which they had little in common.
+After adding fuzzy matching, it became clear that very short inputs such as "hi," "ok," or "no" could sometimes match the wrong intent. Short words can produce misleading similarity scores when compared with longer patterns.
 
-I fixed this by making the scoring stricter for short inputs so that fuzzy similarity alone could no longer be enough to select an intent.
+I fixed this by making the matching rules stricter for short inputs. This prevents fuzzy similarity alone from selecting an intent.
 
 ### Getting deployment right
 
-The app ran fine locally, but preparing it for production required some adjustments. I had to go through the Flask setup, requirements, and the run command to ensure that everything matched what Render expected. Most of this involved carefully reading through the configurations rather than fixing a single bug. After a few rounds of fixing things, the app deployed and ran correctly.
+The app ran correctly locally, but deployment required adjustments to the Flask configuration, dependencies, and production run command. After testing and fixing the configuration, the app deployed successfully on Render.
 
-Most of the debugging came from reading error messages and testing things directly in the code, with the occasional search when a Flask or deployment error needed more context.
+
 
 ### Managing user sessions
 
@@ -153,67 +154,99 @@ advanced_chatbot/
 │
 └── tests/
     └── test_chatbot.py
+```
+##  Installation
 
-##Installation
 Clone the repository:
+
+```bash
 git clone https://github.com/faegheh8114/advanced_chatbot.git
 cd advanced_chatbot
+```
+
 Create a virtual environment:
+
+```bash
 python -m venv venv
-Activate the environment:
-Windows:
+```
+
+Activate the environment.
+
+**Windows:**
+
+```bash
 venv\Scripts\activate
+```
+
 Install dependencies:
+
+```bash
 pip install -r requirements.txt
+```
+
 Run the application:
+
+```bash
 python app.py
-Then, open:
+```
 
+Then open:
+
+```text
 http://127.0.0.1:5000
+```
 
-Running Tests:
+## Running Tests
 
 Run the test suite with:
-pytest
 
-Future Improvements
+```bash
+pytest
+```
+
+
+## Future Improvements
 
 Possible improvements for future versions:
 
-Store conversation history in a database
-Experiment with semantic matching using embeddings.
-Add more complex conversation flows
-Expand the intent dataset.
+- Store conversation history in a database
+- Experiment with semantic matching using embeddings
+- Add more complex conversation flows
+- Expand the intent dataset
 
 
-What I Learned:
 
-The hardest part of this project was the intent-matching logic itself. Initially, I assumed that simple text comparison would suffice, but I quickly realized how much people vary their phrasing compared to what's stored in the intents file. I rewrote the matching logic several times, trying to balance two conflicting goals: capturing different phrasings of the same question without opening the door to incorrect matches.
 
-Managing session state was its own smaller challenge. Keeping each user's conversation isolated took more care than I expected.
+## What I Learned
 
-If I started over, I would plan the project structure more thoroughly before writing code.
+The intent-matching logic was the hardest part of this project. I initially assumed simple text comparison would be enough, but different ways of phrasing the same question made matching more challenging than expected.
 
-Add tests earlier instead of after the fact
-Keep the matching logic separate from response generation from the start.
-Structure the intent data more deliberately.
+I also learned that improving recall can easily introduce false matches, so the matching system needs a balance between flexibility and reliability.
 
-Even so, this process helped me understand how a chatbot works under the hood and why some approaches that seem reasonable can fail in practice.
+If I started the project again, I would:
 
-Why I Built This
+* Plan the project structure earlier
+* Add tests from the beginning
+* Keep the matching logic separate from response generation
+* Structure the intent data more deliberately
 
-I built this project because I wanted to understand how chatbots work instead of just using existing APIs.
+This project gave me a better understanding of how rule-based chatbots work and highlighted the limitations of simple text matching.
 
-Building the intent matching system myself helped me grasp the challenges of language processing, particularly how slight variations in wording can alter the outcome entirely.
 
-This project began as a simple rule-based chatbot but evolved into a deeper exploration of matching strategies, testing, and improving reliability.
+## Why I Built This
 
-Limitations
+I built this project to understand how chatbots work rather than relying on an external API.
+
+Building the intent-matching system myself helped me understand the challenges of handling different phrasings and balancing flexible matching with reliable results.
+
+The project started as a simple rule-based chatbot and gradually evolved into an exploration of matching strategies, testing, and reliability.
+
+## Limitations
 
 This chatbot is intentionally designed as a rule-based system.
 
 Unlike large language models, it does not generate new answers. Instead, it selects responses based on predefined intents and the matching logic implemented in the project.
 
-License
+### License
 
 This open-source project is available for learning and portfolio purposes.
