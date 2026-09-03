@@ -12,15 +12,8 @@ app = Flask(__name__)
 
 logging.basicConfig(level=logging.INFO)
 
-# --- Secret key -------------------------------------------------------------
-# A hard-coded secret key would let anyone who can read this repository
-# forge session cookies for any deployment that didn't override it. Render
-# sets the RENDER environment variable on every service it runs, so we use
-# that (together with an explicit FLASK_ENV=production) to require a real
-# SECRET_KEY in anything that looks like production, while still letting
-# local development work out of the box with a key that's random per
-# process (so it's never checked into source, but you don't have to set
-# anything to run `python app.py` locally).
+# Use an environment variable in production instead of storing secrets in code.
+# For local development, generate a temporary key automatically.
 _looks_like_production = (
     os.environ.get("RENDER") is not None
     or os.environ.get("FLASK_ENV") == "production"
@@ -39,37 +32,24 @@ if not app.secret_key:
         "production."
     )
 
-# Debug mode must never be on in production: it exposes an interactive
-# debugger/stack traces to anyone who can trigger an error. Default to off;
-# opt in explicitly for local development only.
+# Disable debug mode in production to avoid exposing error details.
 DEBUG = os.environ.get("FLASK_DEBUG", "0") == "1" and not _looks_like_production
 
-# Requests with a message longer than this are rejected outright rather
-# than silently truncated, so the client knows why nothing sensible came
-# back. Matches chatbot.MAX_MESSAGE_LENGTH.
+# Prevent extremely long inputs from reaching the chatbot logic.
 MAX_MESSAGE_LENGTH = 500
 
-# Loaded and validated once at startup (not per-request/per-session): a
-# broken intents.json should fail fast and loudly in the logs rather than
-# surfacing as a confusing error on someone's first message. The intents
-# list and (if enabled) the semantic matcher are then shared read-only by
-# every per-session Chatbot instance below.
+# Load intents once when the app starts instead of reading the file on every request.
 try:
     _intents = load_intents()
 except IntentConfigError as exc:
     app.logger.critical("Failed to load chatbot configuration: %s", exc)
     raise
 
-# The semantic matcher (if SEMANTIC_MATCHING=1 and sentence-transformers is
-# installed) wraps a large embedding model. It is loaded exactly once here,
-# at process startup, and shared by every per-session Chatbot below -
-# never re-loaded per request or per session.
+# Load the semantic model once and reuse it to avoid unnecessary overhead.
 _semantic_matcher = load_semantic_matcher(_intents)
 
-# One Chatbot instance per user session, so conversation context
-# (fallback streak, last intent) doesn't leak between different visitors.
-# Bounded and LRU-evicted so long-running deployments don't accumulate an
-# unbounded number of abandoned sessions in memory.
+# Keep a separate chatbot instance for each user session.
+# Limit stored sessions to prevent unlimited memory growth.
 _MAX_SESSIONS = 500
 _bot_sessions = collections.OrderedDict()
 
@@ -105,8 +85,7 @@ def get_bot_response():
         bot = get_bot_for_session()
         response = bot.get_response(user_text)
     except Exception:
-        # Full detail always goes to the logs; the client only ever gets a
-        # generic message so internal errors/stack traces are never exposed.
+        # Log the real error internally while returning a safe message to users.
         app.logger.exception("Error while generating chatbot response")
         return jsonify({"error": "Something went wrong on our end. Please try again."}), 500
 
