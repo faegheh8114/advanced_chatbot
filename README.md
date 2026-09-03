@@ -17,7 +17,7 @@ The first request may take around 30 seconds because the free Render instance ne
 
 ## Screenshots
 
-Chat interface:
+### Chat interface
 
 ![Chat interface](screenshots/screen1.png)
 
@@ -36,10 +36,10 @@ The chatbot receives a user message, compares it with predefined intents, select
 The first version of this project used simple matching, but it quickly became clear that users do not always ask questions in exactly the same way.
 
 For example:
-
+```
 "What is the price?"
-
 "How much does it cost?"
+```
 
 Both questions should elicit the same response.
 
