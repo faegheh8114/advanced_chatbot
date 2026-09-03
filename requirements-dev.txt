@@ -1,0 +1,4 @@
+# Only needed to run the test suite locally / in CI - not required to run
+# the app itself, so it's kept out of requirements.txt (and off Render).
+-r requirements.txt
+pytest==8.3.3
