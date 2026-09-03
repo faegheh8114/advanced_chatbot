@@ -27,7 +27,7 @@ The first request can take around 30 seconds since the free Render instance need
 ![Intent matching example](screenshots/screen3.png)
 
 ## Project Overview
-The chatbot receives the user's message, then compares it with the intents that were defined before, and picks the closest one. The first version just did simple matching, but that wasn't enough because users ask the same question in different ways. For example:
+he chatbot receives the text, then compares it with the intents that were introduced before, and chooses the closest one. The first step was simple matching, but it was not enough because users would ask different types of questions for the same thing. For example:
 ```
 "What is the price?"
 "How much does it cost?"
@@ -42,41 +42,41 @@ To handle this, I improved the matching system by combining multiple techniques 
 
 The chatbot uses a custom matching system written in Python.
 
-I combined three ways of matching: exact match, token overlap, and fuzzy matching using difflib. One method alone wasn't enough — the main reason was typos, and also that different people would phrase the same question in different ways but mean the same thing. How these three methods work together is explained in the "How the Matching Works" section below.
+I mixed three ways: exact match, token overlap, and fuzzy matching with difflib. The main reason was typos — many people would ask different types of questions but mean one thing. How these three methods work together is explained in the "How the Matching Works" section below.
 ### Conversation Context
 
 The application keeps a small amount of conversation state using Flask sessions.
 
-Flask's default session mechanism stores signed session data on the client side rather than maintaining a server-side session store. Since this project only needs a small amount of non-sensitive conversation context, that was an acceptable tradeoff. If the app needed sensitive data, larger conversation histories, or multi-instance state management, I'd move this to a server-side store such as Redis.
+Flask's default session mechanism stores signed session data on the client side, rather than maintaining a server-side session store. For this project I only store a small amount of non-sensitive conversation context, so that was acceptable. If the application needed sensitive data, large conversation histories, or more complex multi-instance state management, I would move the state to a server-side store such as Redis.
 
 Each user has a separate session, so conversations do not interfere with each other.
 ### Bilingual Support
 
 The chatbot supports both English and Persian messages and responds in the same language.
 
-Language detection uses a lightweight Unicode-based check rather than an external language-detection library: the input is checked for characters in the Arabic-script Unicode range, which is enough to distinguish Persian from English for this project. Once the intent is identified, the chatbot picks the corresponding Persian or English response. A full language-detection model would have been unnecessary complexity for a project that only needs to tell two languages apart.
+I used a lightweight Unicode-based language detection approach rather than an external language-detection library. The chatbot checks whether the input contains characters from the Arabic-script Unicode range, which is sufficient for distinguishing Persian from English in this project. Then, after identifying the intent, it selects the corresponding Persian or English response. I chose this approach because the project only needed to distinguish between two supported languages, so using a full language-detection model would have added unnecessary complexity.
 
 ### Web Chat Interface
 
-The project includes a simple chat interface with message bubbles, avatars, timestamps, and a typing indicator, so the conversation feels responsive rather than just a sequence of plain messages.
+The project includes a simple chat interface with message bubbles, avatars, timestamps, and a typing indicator, so it feels responsive rather than just displaying a sequence of messages.
 
-The main challenge here was coordinating the bubbles, timestamps, avatars, and typing indicator with the JavaScript request/response flow. I kept the interface relatively simple since the main focus of the project was the chatbot and intent-matching logic, not frontend design — I refined the UI until the interaction felt clear and natural, while keeping the frontend separate from the matching logic.
+The main challenge was coordinating the message bubbles, timestamps, avatars, and typing indicator with the JavaScript request/response flow. I kept the interface relatively simple because the main focus of the project was the chatbot and intent-matching system, not frontend design. I refined the UI until the interaction felt clear and natural, while keeping the frontend separate from the matching logic.
 
 ## How the Matching Works
 
-The three matching methods don't run as a weighted average — they work as a decision hierarchy, since each one measures something different.
+I don't use a weighted average of the three methods. They work as a decision hierarchy.
 
-First, the chatbot checks for a phrase-level substring match. If a known pattern appears as a complete phrase in the user's message, that's treated as a high-confidence match with a score of 1.0. A substring match is strong evidence of an exact phrase, so there's no need to check anything else once it's found.
+First, I check for a phrase-level substring match. If a known pattern appears as a complete phrase in the user's message, I treat it as a high-confidence match with a score of 1.0. If there is no substring match, I calculate both token-overlap and fuzzy-similarity scores, and use the stronger of the two. The final score then has to pass a confidence threshold of 0.78 before the intent is accepted.
 
-If there's no substring match, the chatbot calculates both a token-overlap score and a fuzzy-similarity score (using difflib.SequenceMatcher) and takes the stronger of the two. These two are better suited for reordered words and small spelling differences than an exact substring ever could be. The final score then has to clear a confidence threshold of 0.78 before an intent is accepted; anything below that falls back to a default response.
+I chose this approach because the three methods measure different things. A substring match is strong evidence of an exact phrase, while token overlap and fuzzy similarity are more useful for reordered words and small spelling differences.
 
-The threshold itself came from testing rather than a formula — I evaluated the classifier against a labeled test set and landed on 0.78 as the cutoff, then added regression tests for the false-positive cases that showed up with lower-confidence matches.
+If two intents get similar scores, I use deterministic tie-breaking rules instead of choosing randomly. The chatbot first compares the matching score, and when the scores are equal, it uses the matched pattern length and then the intent tag to make the result deterministic. This means the same input produces the same result every time.
 
-A simple example: the input "helo" instead of "hello" has no substring match since a character is missing, but fuzzy matching still catches the high character-level similarity and classifies it correctly. On the other hand, substring matching wins when the exact phrase shows up inside a longer message — "hi there, quick question for you" is recognized directly because "hi" is an exact pattern, without needing fuzzy matching at all.
-## Challenges and Solutions
+The 0.78 threshold was chosen empirically rather than from a specific mathematical formula. I used it as a confidence cutoff and then evaluated the classifier on a labeled test set. I also added regression tests for cases where lower-confidence matching could produce false positives.
+
+A simple example is the input "helo" instead of "hello". Substring matching would not find the exact pattern because one character is missing. Fuzzy matching can still recognize the high character-level similarity and classify it as a greeting. On the other hand, substring matching is stronger when the user includes the exact phrase inside a longer message. For example, "hi there, quick question for you" can be recognized directly because "hi" is an exact pattern.
 
 ### False Matches with Short or Common Words
-
 Once I added fuzzy matching, I noticed something odd: very short inputs like "hi", "ok", or "no" (and similarly short Persian words) sometimes matched the wrong intent. Because of substring overlap and character-level similarity, short words picked up an unrealistically high score against patterns they had almost nothing to do with.
 
 I fixed this by making the scoring stricter for short inputs, so fuzzy similarity alone could no longer be enough to select an intent on its own.
@@ -86,7 +86,6 @@ I fixed this by making the scoring stricter for short inputs, so fuzzy similarit
 The app ran fine locally, but getting it ready for production took some adjusting. I had to go through the Flask setup, requirements, and the run command to make sure everything matched what Render expected. Most of this was reading through configs carefully rather than one single bug — after a few rounds of fixing things, it deployed and ran correctly.
 
 Most of the debugging along the way came from reading error messages and testing things directly in the code, with the occasional search when a Flask or deployment error needed more context.
-
 ### Managing user sessions
 A chatbot should keep each user's conversation separate. Flask sessions were added to store short-term context and prevent different users from affecting each other's conversations.
 ## Evaluation
@@ -185,12 +184,13 @@ pytest
 
 Possible improvements for future versions:
 
-- Make the matching clearer and more understandable when the chatbot replies to users
-- Improve the intent dataset and add a proper semantic matching layer using sentence embeddings, to handle more complex     paraphrases that rule-based matching may miss
-- Move conversation state from the current in-memory store to something like Redis, if deploying with multiple workers or if conversations need to persist
+First, I would try to develop the matching so it's clear and understandable when it's texting to users.
 
-I wouldn't replace the whole system with an LLM right away — I'd start by making the parts of the current architecture that cause problems more reliable and able to handle more load.
+A good next step would be to improve the intent dataset and add a proper semantic matching layer using sentence embeddings. This would help the chatbot handle more complex paraphrases that rule-based matching may miss.
 
+I would also move the conversation state from the current in-memory store to something like Redis if I wanted to deploy it with multiple workers or keep conversations persistent.
+
+So I wouldn't replace the whole system with an LLM right away. I would start by making the parts of the current architecture that are causing problems more reliable and able to handle more work.
 ## What I Learned
 
 The hardest part of this project was the intent-matching logic itself. I started out assuming simple text comparison would be enough, but quickly realized how much people vary their phrasing compared to what's actually stored in the intents file. I rewrote the matching logic several times trying to balance two things that pull in opposite directions: catching different phrasings of the same question, without opening the door to wrong matches.
@@ -215,11 +215,11 @@ This project started as a simple rule-based chatbot, but gradually became a deep
 
 ## Limitations
 
-There are some things this project doesn't cover.
+There are some things that this doesn't cover.
 
-This chatbot is intentionally designed as a rule-based system. It doesn't generate new answers like large language models do — instead, it selects responses based on predefined intents and the matching logic described above.
+This chatbot is designed to follow rules. It doesn't come up with new answers like large language models do. Instead, it chooses responses based on predefined intentions and the matching logic used in the project.
 
-I chose not to use an LLM or an external API for this version because the main goal was to understand and build the intent-matching process myself, not to rely on an existing solution. Semantic matching using embeddings would be a good next step for handling more complex paraphrasing — that's covered in Future Improvements above.
+For this version, I chose not to use an LLM or external API because the main goal was to understand and build the intent-matching process myself. Using embedding-based semantic matching would be a good next step for dealing with more complex paraphrases. This would let us keep the current rule-based layer for matches that are easy to predict and test.
 ## License
 
 This project is open source and available for learning and portfolio purposes.
