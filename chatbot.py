@@ -9,46 +9,20 @@ from semantic_matcher import load_semantic_matcher
 
 logger = logging.getLogger(__name__)
 
-# --- Confidence thresholds --------------------------------------------------
-# A known pattern appearing whole inside the user's message is treated as
-# certain - there's no ambiguity to weigh against other candidates, so it
-# short-circuits the rest of the scoring pipeline. This is deliberately
-# one-directional: patterns are short, curated keyword signatures, so
-# finding one intact inside a longer message is meaningful, but a short
-# message merely being a fragment of some longer pattern is not (see
-# _rule_based_score) - that case is scored by the normal token-overlap /
-# fuzzy path below instead, like any other partial match.
+# Confidence thresholds used by the matching pipeline.
 SUBSTRING_MATCH_CONFIDENCE = 1.0
-
-# Minimum combined confidence required to accept an intent instead of
-# falling back. Chosen by running evaluate.py against data/intent_test.json
-# and picking the lowest threshold that didn't introduce false positives
-# on the "unknown"/out-of-scope examples in that set - see evaluate.py and
-# the project report for the measured accuracy/precision/recall at this
-# value. It was 0.78 before this refactor and is kept unchanged so existing
-# behavior isn't disturbed without evidence a different number is better.
+# Minimum confidence required to accept a matched intent.
+# Validated against the current intent evaluation set.
 INTENT_CONFIDENCE_THRESHOLD = 0.78
 
-# Below this many characters, difflib's character-level ratio becomes an
-# unreliable signal: on very short strings, one or two incidentally shared
-# characters already produce a high ratio even between unrelated words
-# (e.g. "you" vs the pattern "yo" scores 0.8 purely on shared characters,
-# despite being different words). Patterns shorter than this are still
-# matched normally through the exact/substring and token-overlap paths -
-# this only withholds the *fuzzy* signal for them, since fuzzy matching is
-# meant to catch typos of a word, and there isn't enough signal in one or
-# two characters to distinguish "typo" from "coincidentally similar".
+# Skip fuzzy matching for very short patterns, where character similarity
+# is too noisy to be useful.
 MIN_FUZZY_PATTERN_LENGTH = 3
 
-# Requests longer than this are truncated before matching. difflib's
-# similarity ratio is roughly O(n*m) in the length of the two strings, so
-# without a cap a single very long message would be needlessly slow to
-# score against every pattern.
+# Limit input length to keep matching predictable and fast.
 MAX_MESSAGE_LENGTH = 500
 
-# Short replies that only make sense as an answer to a question the bot
-# just asked (e.g. "Which one?"), not as a new topic on their own. Used by
-# the contextual follow-up mechanism below.
+# Short replies that refer back to the previous intent
 _CONTEXT_REFERENCE_PHRASES = {
     "yes", "yeah", "yep", "sure", "ok", "okay",
     "that one", "this one", "the first one", "first one",
@@ -100,29 +74,8 @@ def load_intents(intents_file="intents.json"):
 
 class Chatbot:
     """
-    A hybrid rule-based / semantic intent-matching chatbot.
-
-    Classification pipeline, per message:
-      1. Normalization - lowercase, strip punctuation, collapse whitespace
-         (keeping Persian/Arabic-script letters).
-      2. Candidate matching - every intent's patterns are compared against
-         the normalized text.
-      3. Rule-based scoring - substring match, token overlap, and difflib
-         fuzzy similarity (see _rule_based_score).
-      4. Semantic scoring (only if the optional semantic layer is loaded) -
-         cosine similarity between sentence embeddings.
-      5. The two scores are combined into one confidence value.
-      6. Confidence threshold - below INTENT_CONFIDENCE_THRESHOLD, the
-         message is treated as unrecognized.
-      7. Intent (with a random response for variety) or fallback.
-
-    The bot also tracks light conversation state - the last recognized
-    intent, how many times in a row it failed to understand the user, and
-    (for intents that ask a clarifying question) a "pending context" tag
-    so a short follow-up like "the second one" can be resolved using what
-    was just being discussed instead of being treated as a fresh, unrelated
-    message.
-    """
+Hybrid rule-based and semantic intent-matching chatbot.
+"""
 
     FALLBACK_RESPONSES_EN = [
         "Sorry, I didn't quite catch that. Could you rephrase?",
@@ -162,34 +115,22 @@ class Chatbot:
         confidence_threshold=INTENT_CONFIDENCE_THRESHOLD,
         semantic_matcher=_UNSET,
     ):
-        # `intents` lets callers (the Flask app, tests) share one already-
-        # loaded/validated intents list across many Chatbot instances
-        # instead of re-reading and re-validating the file every time.
+       # Reuse preloaded intents when provided.
         self.intents = intents if intents is not None else load_intents(intents_file)
         self._intents_by_tag = {intent["tag"]: intent for intent in self.intents}
         self.confidence_threshold = confidence_threshold
 
-        # Likewise, the semantic matcher wraps a large embedding model that
-        # must be loaded once and shared, not rebuilt per session. Passing
-        # semantic_matcher=None explicitly opts out of it for this instance.
+        # Load the semantic matcher once and reuse it when possible.
         if semantic_matcher is self._UNSET:
             semantic_matcher = load_semantic_matcher(self.intents)
         self.semantic_matcher = semantic_matcher
 
-        # Per-instance conversation state. In the web app, app.py keeps one
-        # Chatbot per browser session so this never leaks between visitors.
+        # Conversation state for this chatbot instance.
         self.last_intent = None
         self.fallback_streak = 0
         self.pending_context = None  # tag of an intent awaiting clarification
 
-    # Arabic-script punctuation (comma, semicolon, question mark, percent,
-    # decimal/thousands separators). These fall inside the same Unicode
-    # block as Persian letters (U+0600-U+06FF), so a naive "keep everything
-    # in that block" filter would leave them in the normalized text - e.g.
-    # "khubi?" (Persian, with a trailing Arabic question mark) would stay one
-    # token instead of becoming "khubi" (transliterated for this comment), silently
-    # breaking token-overlap matching against clean patterns. Stripped
-    # explicitly before the general keep-letters-and-digits pass below.
+    # Arabic/Persian punctuation removed during input normalization.
     _ARABIC_PUNCTUATION_RE = re.compile(r"[\u060C\u061B\u061F\u066A\u066B\u066C\u0640]")
 
     @staticmethod
@@ -210,42 +151,13 @@ class Chatbot:
 
     @staticmethod
     def _contains_as_phrase(needle, haystack):
-        """Whether `needle` appears in `haystack` as a whole phrase - at the
-        start/end of the string or surrounded by spaces - rather than as a
-        raw substring. Without this, a short pattern like "yo" would count
-        as a match inside unrelated words such as "you" or "your", since
-        plain `in` checks don't respect word boundaries."""
+       """Check whether a pattern appears as a complete phrase."""
         if not needle:
             return False
         return re.search(rf"(?:^|\s){re.escape(needle)}(?:\s|$)", haystack) is not None
 
     def _rule_based_score(self, user_input_clean, user_tokens, pattern_clean):
-        """Score one (message, pattern) pair using substring / token-overlap
-        / fuzzy matching. Returns a value in [0, 1].
-
-        Only *forward* containment - a known pattern appearing inside the
-        user's message (e.g. pattern "hi" inside "hi there, quick
-        question") - is treated as an instant, maximally confident match.
-        Patterns are short, curated keyword signatures, so finding one
-        intact inside a longer message is a strong signal.
-
-        The reverse is deliberately NOT given the same automatic
-        confidence: a short message merely being a fragment of some
-        longer, more specific pattern (e.g. "you" is a substring of "how
-        are you") says little about what the user meant - "you" is a
-        fragment of dozens of unrelated sentences. That case instead falls
-        through to token overlap / fuzzy similarity below, which score it
-        in proportion to how much of the pattern the message actually
-        covers - a one-word fragment of a four-word pattern scores low,
-        while a message missing only one filler word still scores high
-        enough to pass the normal confidence threshold - a direct
-        consequence of using the same scoring the pipeline already uses
-        for partial matches, no extra threshold needed.
-
-        The one exception is the fuzzy (character-similarity) signal
-        against very short patterns, which is withheld below
-        MIN_FUZZY_PATTERN_LENGTH - see that constant's comment.
-        """
+       """Score a message against one pattern using phrase, token, and fuzzy matching."""
         if not pattern_clean:
             return 0.0
         if self._contains_as_phrase(pattern_clean, user_input_clean):
@@ -259,17 +171,7 @@ class Chatbot:
 
     @staticmethod
     def _is_better_candidate(candidate, current_best):
-        """Compare two (score, pattern_length, tag) candidates.
-
-        Ties are broken deterministically instead of silently favoring
-        whichever intent happens to appear first in intents.json:
-        1. Higher score wins.
-        2. On a tied score, the longer matched pattern wins - it's more
-           specific, so it carries more information than a short one.
-        3. If that's still tied, the alphabetically first intent tag wins.
-           This case is rare in practice, but it guarantees a stable,
-           reproducible result rather than depending on iteration order.
-        """
+       """Compare candidates with deterministic tie-breaking."""
         score, pattern_len, tag = candidate
         best_score, best_len, best_tag = current_best
         if score != best_score:
@@ -296,16 +198,14 @@ class Chatbot:
         return best_intent, best_candidate[0]
 
     def _best_match(self, user_input_clean):
-        """Run the full candidate-matching + scoring pipeline and return
-        (intent, confidence) for the best match, or (None, 0.0)."""
+       """Return the best matching intent and its confidence."""
         if not user_input_clean:
             return None, 0.0
 
         user_tokens = set(user_input_clean.split())
         best_intent, confidence = self._best_rule_match(user_input_clean, user_tokens)
 
-        # A substring hit is already maximally confident; the semantic
-        # layer can't add anything, so skip it.
+       # Exact phrase matches do not need semantic scoring.
         if confidence >= SUBSTRING_MATCH_CONFIDENCE or self.semantic_matcher is None:
             return best_intent, confidence
 
@@ -314,21 +214,16 @@ class Chatbot:
             return best_intent, confidence
 
         if best_intent is not None and semantic_intent["tag"] == best_intent["tag"]:
-            # Both layers agree - take the more confident of the two as the
-            # combined score.
+           # Both matchers agree; keep the stronger score.
             confidence = max(confidence, semantic_score)
         elif semantic_score > confidence:
-            # The layers disagree and the semantic layer is more confident -
-            # trust it, since it can recognize paraphrases the rule-based
-            # patterns don't literally contain.
+            # Prefer the semantic result when it has the stronger score.
             best_intent, confidence = semantic_intent, semantic_score
 
         return best_intent, confidence
 
     def classify(self, user_input):
-        """Pure classification: return (intent_tag_or_None, confidence)
-        without any randomness or conversation-state side effects. Used by
-        evaluate.py and the test suite so results are reproducible."""
+       """Classify input without changing conversation state."""
         if not isinstance(user_input, str) or not user_input.strip():
             return None, 0.0
         user_input_clean = self.clean_input(user_input[:MAX_MESSAGE_LENGTH])
@@ -345,10 +240,7 @@ class Chatbot:
         is_fa = self._is_persian(user_input)
         user_input_clean = self.clean_input(user_input)
 
-        # Contextual follow-up: a short reference like "the second one"
-        # can't be classified as a topic on its own, but if it directly
-        # follows an intent that asked a clarifying question, resolve it
-        # using that topic instead of treating it as unrecognized.
+      # Resolve short follow-ups using the pending intent context.
         if self.pending_context and user_input_clean in _CONTEXT_REFERENCE_PHRASES:
             intent = self._intents_by_tag.get(self.pending_context)
             self.pending_context = None
