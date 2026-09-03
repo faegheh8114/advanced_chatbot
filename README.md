@@ -27,11 +27,7 @@ The first request can take around 30 seconds since the free Render instance need
 ![Intent matching example](screenshots/screen3.png)
 
 ## Project Overview
-The chatbot receives a user message, compares it with predefined intents, selects the closest match, and returns an appropriate response.
-
-The first version of this project used simple matching, but it quickly became clear that users do not always ask questions in the exact same way.
-
-For example:
+The chatbot receives the user's message, then compares it with the intents that were defined before, and picks the closest one. The first version just did simple matching, but that wasn't enough because users ask the same question in different ways. For example:
 ```
 "What is the price?"
 "How much does it cost?"
@@ -46,14 +42,7 @@ To handle this, I improved the matching system by combining multiple techniques 
 
 The chatbot uses a custom matching system written in Python.
 
-It combines:
-
-- Exact phrase matching
-- Token overlap scoring
-- Fuzzy similarity matching using Python's difflib
-
-This helps the chatbot recognize different versions of similar questions.
-
+I combined three ways of matching: exact match, token overlap, and fuzzy matching using difflib. One method alone wasn't enough — the main reason was typos, and also that different people would phrase the same question in different ways but mean the same thing. How these three methods work together is explained in the "How the Matching Works" section below.
 ### Conversation Context
 
 The application keeps a small amount of conversation state using Flask sessions.
@@ -196,10 +185,11 @@ pytest
 
 Possible improvements for future versions:
 
-- Store conversation history in a database
-- Experiment with semantic matching using embeddings
-- Add more complex conversation flows
-- Expand the intent dataset
+- Make the matching clearer and more understandable when the chatbot replies to users
+- Improve the intent dataset and add a proper semantic matching layer using sentence embeddings, to handle more complex     paraphrases that rule-based matching may miss
+- Move conversation state from the current in-memory store to something like Redis, if deploying with multiple workers or if conversations need to persist
+
+I wouldn't replace the whole system with an LLM right away — I'd start by making the parts of the current architecture that cause problems more reliable and able to handle more load.
 
 ## What I Learned
 
@@ -225,9 +215,11 @@ This project started as a simple rule-based chatbot, but gradually became a deep
 
 ## Limitations
 
-This chatbot is intentionally built as a rule-based system.
+There are some things this project doesn't cover.
 
-It does not generate new answers like large language models. Instead, it selects responses based on predefined intents and the matching logic implemented in the project.
+This chatbot is intentionally designed as a rule-based system. It doesn't generate new answers like large language models do — instead, it selects responses based on predefined intents and the matching logic described above.
+
+I chose not to use an LLM or an external API for this version because the main goal was to understand and build the intent-matching process myself, not to rely on an existing solution. Semantic matching using embeddings would be a good next step for handling more complex paraphrasing — that's covered in Future Improvements above.
 ## License
 
 This project is open source and available for learning and portfolio purposes.
