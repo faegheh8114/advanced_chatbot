@@ -57,7 +57,7 @@ The main challenge was coordinating the message bubbles, timestamps, avatars and
 ## How the Matching works
 
 I do not use a weighted average of the three methods. They work as a decision hierarchy. 
-First, I check for a phrase-level substring match , I calculate both token-overlap and fuzzy-similarity score and use the stronger of the two. The final score then has to pass a confidence threshold of 0.78 before the intent is accepted.
+First, I check for a phrase-level substring match. If a known pattern appears as a complete phrase in the user's message +, I treat it as a high-confidence match with a score of 1.0. If threre is no substring match, I calculate both token-overlap and fuzzy-similarity score and use the stronger of the two. The final score then has to pass a confidence threshold of 0.78 before the intent is accepted.
 
 I chose this approach because the three methods measure different things. A substring match is strong evidence of an exact phrase, while token overlap and fuzzy similarity are more useful for reordered words and small spelling differences.
 
@@ -78,6 +78,7 @@ I fixed this by making the score stricter for short input, so fuzzy similarity a
 ### Getting deployment right
 
 The app ran fine locally , but getting it ready for production took some adjusting. I had to go through the flask setup, requirements; expected . Most of this was reading through configs carefully rather than one single bug. After a few rounds of fixing things, it deployed and ran correctly.
+Most of the debugging along the way came from reading error message and testing things durectly in the code, with the occasional search when  a flask or deployment error needed more context.
 
 ### Managing user sessions 
 A chatbot should keep each user's conversation separate . Flask sessions were added to store short-term context and prevent different users from affecting each other's conversation.
