@@ -27,7 +27,7 @@ The first request can take around 30 seconds since the free Render instance need
 ![Intent matching example](screenshots/screen3.png)
 
 ## Project Overview
-he chatbot receives the text, then compares it with the intents that were introduced before, and chooses the closest one. The first step was simple matching, but it was not enough because users would ask different types of questions for the same thing. For example:
+The chatbot receives the text, then compares it with the intents that were introduced before, and chooses the closest one. The first step was simple matching, but it was not enough because users would ask different types of questions for the same thing. For example:
 ```
 "What is the price?"
 "How much does it cost?"
