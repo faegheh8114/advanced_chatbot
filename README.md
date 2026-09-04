@@ -88,7 +88,7 @@ A chatbot should keep each user's conversation separate . Flask sessions were ad
 The chatbot was evaluated using the project’s evaluation script.
  Result:
 
-Metric | Score |
+| Metric | Score |
 |--------|-------| 
 | Accuracy | 92.4% |
  | Macro Precision | 97.4% | 
