@@ -27,14 +27,16 @@ The chatbot receives the text, then comparecompares it with the intents that wer
 
 For example:
 
+```
 "What is the price?"
- "How much does it cost?" 
+"How much does it cost?"
+```
  
 Both questions should lead to the same intent. 
 To handelhandle this, I improved the matching system by combining multiple techniques such as substring matching, token overlap, and fuzzy similarity.
 
 ## Features
-###Custom Intent Matching
+### Custom Intent Matching
 The chatbot uses a custom matching system written in Python.
 I mixed three ways: exact match , token overlap,and fuzzy matching with difflib. The main reason was typos. Many people would ask different types of questions but mean one thing. How these three methods work together is explained in the "How the Matching Works" section below.
 
@@ -85,7 +87,8 @@ A chatbot should keep each user's conversation separate . Flask sessions were ad
 The chatbot was evaluated using the project’s evaluation script.
  Result:
 
-Metric | Score | |--------|-------| 
+Metric | Score |
+|--------|-------| 
 | Accuracy | 92.4% |
  | Macro Precision | 97.4% | 
 | Macro Recall | 92.3% |
@@ -95,7 +98,8 @@ Metric | Score | |--------|-------|
 
 ## Tech Stack
 
- | Area | Technology | |------|------------| 
+ | Area | Technology |
+ |------|------------| 
 | Backend | Python, Flask |
  | Frontend | HTML, CSS, JavaScript |
 | Matching Logic | difflib and custom scoring |
@@ -104,7 +108,7 @@ Metric | Score | |--------|-------|
  | Deployment | Render | 
 
 ## Project Structure
-
+```text
 advanced_chatbot/
 │
 ├── app.py
@@ -121,42 +125,57 @@ advanced_chatbot/
 │
 └── tests/
     └── test_chatbot.py
+```
 
 
 ## Installation
 
 Clone the repository:
 
+```bash
 git clone https://github.com/faegheh8114/advanced_chatbot.git
 cd advanced_chatbot
+```
 
 Create a virtual environment:
 
+```bash
 python -m venv venv
+```
 
 Activate the environment.
 
-Windows:
+**Windows:**
 
+```bash
 venv\Scripts\activate
+```
 
 Install dependencies:
 
+```bash
 pip install -r requirements.txt
+```
 
 Run the application:
 
+```bash
 python app.py
+```
 
 Then open:
 
+```text
 http://127.0.0.1:5000
+```
 
 ## Running Tests
 
 Run the test suite with:
 
+```bash
 pytest
+```
 
  ## future Improvement
 Possible improvement for future version:
@@ -187,4 +206,4 @@ For this version , I chose not to use an LLM or external API because the main go
 
 ## License 
 
-This projec
+This project is open source and available for learning and portfolio purposes.
