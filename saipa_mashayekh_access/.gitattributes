@@ -1,0 +1,5 @@
+# Keep Windows line endings byte-for-byte: VBA LoadFromText/Import and
+# Windows Script Host expect CRLF. ui_fa.txt is UTF-8 with BOM.
+*.bas -text
+*.vbs -text
+src/ui_fa.txt -text

@@ -1,0 +1,419 @@
+﻿# متن‌های فارسی برنامه (UTF-8)
+# قالب هر خط:  کلید=متن      \n یعنی خط جدید ، {0} و {1} جای مقدار هستند.
+# این فایل هنگام نصب در جدول tblUIText ریخته می‌شود؛ برای تغییر متن‌ها، این فایل را ویرایش و Setup را دوباره اجرا کنید.
+
+# ---------- عمومی ----------
+app.title=سامانه یکپارچه نمایندگی سایپا مشایخ
+app.company=نمایندگی سایپا مشایخ
+app.subtitle=شکایات مشتریان  |  اتوماسیون اداری  |  مدیریت ارتباط با مشتری
+seed.admin_name=مدیر سیستم
+
+# ---------- نصب (Setup.vbs) ----------
+setup.title=نصب سامانه سایپا مشایخ
+setup.confirm=برنامه به‌صورت خودکار نصب می‌شود.\n\nفایل اطلاعات: {0}\n({1})\n\nمحل نصب برنامه: {2}\n\nادامه می‌دهید؟
+setup.data_new=فایل اطلاعات جدید ساخته می‌شود
+setup.data_existing=فایل اطلاعات موجود استفاده می‌شود و هیچ داده‌ای پاک نمی‌شود
+setup.no_access=Microsoft Access روی این رایانه پیدا نشد.\nبرای نصب، Microsoft Access (نسخه ۲۰۱۰ یا جدیدتر، ترجیحاً Microsoft 365) لازم است.
+setup.runtime_only=روی این رایانه فقط Access Runtime نصب است و ساخت برنامه با آن ممکن نیست.\nیک بار Setup را روی رایانه‌ای که Access کامل دارد اجرا کنید؛ پس از آن، روی رایانه‌های دیگر هم نصب می‌شود.
+setup.fe_locked=برنامه در حال اجراست. لطفاً برنامه سایپا مشایخ را ببندید و دوباره Setup را اجرا کنید.
+setup.working=در حال ساخت برنامه... این کار حدود یک دقیقه طول می‌کشد. لطفاً تا پایان، پنجره Access را نبندید.
+setup.failed=نصب کامل نشد:\n{0}
+setup.done=نصب با موفقیت انجام شد.\n\nیک میانبر روی دسکتاپ ساخته شد.\nنام کاربری: admin\nرمز عبور اولیه: admin\n(در اولین ورود، تغییر رمز الزامی است)\n\nبرنامه الان باز شود؟
+setup.done_upgrade=برنامه به‌روزرسانی شد و اطلاعات قبلی حفظ شد.\n\nبرنامه الان باز شود؟
+setup.warnings=هشدارهای نصب (برنامه کار می‌کند):
+setup.shortcut=سامانه سایپا مشایخ
+
+# ---------- برچسب‌ها ----------
+lbl.username=نام کاربری
+lbl.password=رمز عبور
+lbl.old_password=رمز فعلی
+lbl.new_password=رمز جدید
+lbl.new_password2=تکرار رمز جدید
+lbl.version=نسخه
+lbl.search=جستجو:
+lbl.shamsi=شمسی
+lbl.user_line=کاربر: {0}   |   نقش: {1}
+lbl.no_comment=بدون توضیح
+lbl.phase_plan=برنامه اقدام
+lbl.phase_result=نتیجه اجرا
+
+# ---------- دکمه‌ها ----------
+btn.login=ورود
+btn.exit=خروج
+btn.ok=تأیید
+btn.cancel=انصراف
+btn.find=جستجو
+btn.all=نمایش همه
+btn.new=جدید
+btn.save=ذخیره
+btn.delete=حذف
+btn.close=بستن
+btn.view=مشاهده
+btn.excel=خروجی اکسل
+btn.vehicles=خودروهای مشتری
+btn.complaints=شکایات
+btn.crm=تماس‌ها و پیگیری
+btn.services=سوابق سرویس
+btn.actions=اقدامات اصلاحی
+btn.history=تاریخچه
+btn.new_task=ثبت وظیفه
+btn.close_complaint=مختومه کردن
+btn.submit_plan=ارسال برنامه برای تأیید
+btn.approve_plan=تأیید برنامه
+btn.reject_plan=رد برنامه
+btn.submit_result=ارسال نتیجه برای تأیید
+btn.approve_result=تأیید نتیجه
+btn.reject_result=رد نتیجه
+btn.followup_done=پیگیری انجام شد
+btn.task_done=انجام شد
+btn.attach=پیوست فایل
+btn.open_attachment=باز کردن پیوست
+btn.set_password=تعیین رمز
+
+# ---------- منوی اصلی ----------
+menu.customers=پرونده مشتریان
+menu.vehicles=خودروها
+menu.complaints=ثبت و پیگیری شکایات
+menu.actions=اقدامات اصلاحی
+menu.approvals=کارتابل تأیید مدیر
+menu.crm=ارتباط با مشتری (CRM)
+menu.letters=اتوماسیون اداری (نامه‌ها)
+menu.tasks=کارتابل وظایف
+menu.services=سرویس خودرو
+menu.reports=گزارش‌ها
+menu.users=کاربران
+menu.lookups=تنظیم فهرست‌ها
+menu.backup=پشتیبان‌گیری
+menu.relink=تغییر محل فایل اطلاعات
+menu.chpwd=تغییر رمز عبور
+menu.logout=خروج از حساب
+menu.exit=خروج از برنامه
+
+# ---------- کاشی‌های داشبورد ----------
+tile.OPEN=شکایات باز
+tile.OVERDUE=شکایات معوق
+tile.PENDING=در انتظار تأیید مدیر
+tile.FOLLOWUP=پیگیری‌های امروز
+tile.MYTASKS=وظایف باز من
+tile.LETTERS=نامه‌های باز
+
+# ---------- عنوان فرم‌ها ----------
+ttl.customers=پرونده مشتریان
+ttl.vehicles=خودروها
+ttl.complaints=شکایات مشتریان
+ttl.actions=اقدامات اصلاحی و تأیید مدیر
+ttl.crm=ارتباط با مشتری و پیگیری
+ttl.tasks=کارتابل وظایف
+ttl.letters=مکاتبات اداری
+ttl.services=سرویس خودرو
+ttl.users=کاربران سامانه
+ttl.lookups=فهرست‌های پایه
+ttl.reports=گزارش‌ها
+ttl.change_password=تغییر رمز عبور
+ttl.complaint_history=تاریخچه شکایت
+ttl.letter_history=تاریخچه نامه
+
+# ---------- گزارش‌ها ----------
+rpt.qryRptOpenComplaints=شکایات باز
+rpt.qryRptOverdueComplaints=شکایات معوق (گذشته از مهلت)
+rpt.qryRptPendingApprovals=موارد در انتظار تأیید مدیر
+rpt.qryRptComplaintsByStatus=آمار شکایات بر اساس وضعیت
+rpt.qryRptComplaintsByMonth=آمار ماهانه شکایات
+rpt.qryRptFollowUps=پیگیری‌های سررسیدشده مشتریان
+rpt.qryRptOverdueTasks=وظایف معوق
+rpt.qryRptOpenLetters=نامه‌های باز
+rpt.qryRptServiceDue=یادآوری سرویس خودروها
+rpt.qryRptServicesByType=آمار سرویس‌ها بر اساس نوع
+rpt.qryRptCustomers=فهرست مشتریان و خلاصه سوابق
+
+# ---------- ستون‌های گزارش ----------
+col.id=شماره
+col.action_id=شماره اقدام
+col.created=تاریخ ثبت
+col.customer=مشتری
+col.mobile=موبایل
+col.plate=پلاک
+col.subject=موضوع
+col.status=وضعیت
+col.priority=اولویت
+col.owner=کارشناس مسئول
+col.due=مهلت
+col.age=روزهای باز بودن
+col.phase=مرحله
+col.text=شرح
+col.sent_at=تاریخ ارسال
+col.count=تعداد
+col.month=ماه
+col.closed=مختومه
+col.followup=تاریخ پیگیری
+col.channel=روش ارتباط
+col.user=کاربر
+col.result=نتیجه
+col.title=عنوان
+col.assignee=مسئول
+col.days_late=روزهای تأخیر
+col.letter_no=شماره نامه
+col.direction=نوع نامه
+col.date=تاریخ
+col.sender=فرستنده
+col.receiver=گیرنده
+col.model=مدل
+col.odometer=کیلومتر فعلی
+col.next_mileage=کیلومتر سرویس بعدی
+col.last_service=آخرین سرویس
+col.service=نوع سرویس
+col.total_cost=جمع هزینه (ریال)
+col.city=شهر
+col.vehicles=تعداد خودرو
+col.complaints=تعداد شکایت
+col.open_complaints=شکایات باز
+col.event=رویداد
+col.old=مقدار قبلی
+col.new=مقدار جدید
+col.details=توضیحات
+
+# ---------- فیلدها ----------
+f.CustomerID=شماره مشتری
+f.FullName=نام و نام خانوادگی
+f.Mobile=موبایل
+f.Phone=تلفن ثابت
+f.NationalCode=کد ملی
+f.CityText=شهر
+f.AddressText=نشانی
+f.Notes=توضیحات
+f.CreatedAt=تاریخ ثبت
+f.CreatedBy=ثبت‌کننده
+f.VehicleID=خودرو
+f.PlateNumber=شماره پلاک
+f.VIN=شماره شاسی (VIN)
+f.ModelName=مدل خودرو
+f.ColorText=رنگ
+f.ProductionYear=سال ساخت
+f.Odometer=کیلومتر
+f.SaleDate=تاریخ فروش
+f.WarrantyEnd=پایان گارانتی
+f.ComplaintID=شماره شکایت
+f.ChannelCode=روش دریافت/تماس
+f.SubjectText=موضوع
+f.ComplaintText=شرح شکایت
+f.RootCause=عارضه‌یابی (علت ریشه‌ای)
+f.PriorityCode=اولویت
+f.OwnerUserID=کارشناس مسئول
+f.DueAt=مهلت
+f.StatusCode=وضعیت
+f.SatisfactionCode=رضایت مشتری
+f.ClosedAt=تاریخ مختومه
+f.ActionID=شماره اقدام
+f.PlanText=برنامه اقدام اصلاحی
+f.PlanStatus=وضعیت برنامه
+f.PlannedAt=تاریخ ارسال برنامه
+f.PlanApprovedBy=تأییدکننده برنامه
+f.ExecutionText=شرح نتیجه اجرا
+f.ResultStatus=وضعیت نتیجه
+f.ExecutedAt=تاریخ ارسال نتیجه
+f.ResultApprovedBy=تأییدکننده نتیجه
+f.InteractionID=شماره تماس
+f.DetailText=شرح تماس
+f.ContactAt=تاریخ تماس
+f.FollowUpAt=تاریخ پیگیری بعدی
+f.FollowUpDone=پیگیری انجام شد
+f.ResultText=نتیجه
+f.UserID=کاربر
+f.TaskID=شماره وظیفه
+f.TitleText=عنوان کار
+f.DescriptionText=شرح وظیفه
+f.AssignedTo=مسئول
+f.CompletedAt=تاریخ انجام
+f.LetterID=شماره سیستمی نامه
+f.LetterNo=شماره نامه
+f.DirectionCode=نوع نامه
+f.LetterAt=تاریخ نامه
+f.SenderText=فرستنده
+f.ReceiverText=گیرنده
+f.BodyText=متن/خلاصه نامه
+f.AttachmentPath=فایل پیوست
+f.ServiceID=شماره سرویس
+f.ServiceName=نوع سرویس
+f.ServiceAt=تاریخ سرویس
+f.Mileage=کیلومتر هنگام سرویس
+f.NextMileage=کیلومتر سرویس بعدی
+f.CostAmount=هزینه (ریال)
+f.UserName=نام کاربری
+f.RoleCode=نقش
+f.IsActive=فعال
+f.MustChangePwd=تغییر رمز در ورود بعد
+f.LastLoginAt=آخرین ورود
+f.LookupID=شماره
+f.Category=دسته
+f.Code=کد
+f.TitleFa=عنوان فارسی
+f.SortOrder=ترتیب
+
+# ---------- پیام‌ها ----------
+err.prefix=خطا:
+err.login_required=ابتدا وارد سامانه شوید.
+msg.login_empty=نام کاربری و رمز عبور را وارد کنید.
+msg.login_wrong=نام کاربری یا رمز عبور اشتباه است.
+msg.user_inactive=این حساب کاربری غیرفعال است. با مدیر سیستم تماس بگیرید.
+msg.no_password=برای این کاربر هنوز رمز تعیین نشده است. از مدیر سیستم بخواهید رمز تعیین کند.
+msg.must_change_pwd=برای امنیت حساب، لطفاً رمز عبور خود را تغییر دهید.
+msg.pwd_short=رمز عبور باید دست‌کم {0} نویسه باشد.
+msg.pwd_mismatch=رمز جدید و تکرار آن یکسان نیستند.
+msg.pwd_same=رمز جدید باید با رمز فعلی متفاوت باشد.
+msg.old_pwd_wrong=رمز فعلی اشتباه است.
+msg.pwd_changed=رمز عبور با موفقیت تغییر کرد.
+msg.pwd_set=رمز تعیین شد. کاربر در اولین ورود باید رمز را تغییر دهد.
+msg.no_permission=شما مجوز انجام این کار را ندارید.
+msg.user_no_delete=کاربران حذف نمی‌شوند تا سوابق آن‌ها حفظ شود؛ به‌جای حذف، تیک «فعال» را بردارید.
+msg.save_first=ابتدا رکورد را کامل و ذخیره کنید.
+msg.saved=ذخیره شد.
+msg.not_found=موردی پیدا نشد.
+msg.confirm_delete=این رکورد برای همیشه حذف شود؟
+msg.delete_related=این رکورد سوابق وابسته دارد (مثلاً خودرو، شکایت یا سرویس) و قابل حذف نیست.
+msg.confirm_submit=برای تأیید مدیر ارسال شود؟ پس از ارسال، متن تا تصمیم مدیر قابل ویرایش نیست.
+msg.complaint_required=شکایت مربوط را انتخاب کنید.
+msg.plan_required=متن برنامه اقدام اصلاحی را بنویسید.
+msg.result_required=شرح نتیجه اجرا را بنویسید.
+msg.state_changed=وضعیت این مورد تغییر کرده است (احتمالاً کاربر دیگری آن را تغییر داده). فرم را دوباره باز کنید.
+msg.sent_for_approval=برای تأیید مدیر ارسال شد.
+msg.action_not_found=اقدام اصلاحی پیدا نشد.
+msg.complaint_not_found=شکایت پیدا نشد.
+msg.plan_not_pending=برنامه در انتظار تأیید نیست.
+msg.plan_not_approved=ابتدا باید برنامه اقدام تأیید شود.
+msg.result_not_pending=نتیجه در انتظار تأیید نیست.
+msg.reason_required=برای رد کردن، نوشتن دلیل الزامی است.
+msg.decision_saved=تصمیم شما ثبت شد.
+msg.already_closed=این شکایت قبلاً مختومه شده است.
+msg.close_with_pending=برای این شکایت اقدامی در انتظار تأیید وجود دارد. با این حال مختومه شود؟
+msg.complaint_closed=شکایت مختومه شد.
+msg.attached=فایل پیوست شد.
+msg.no_attachment=این نامه پیوست ندارد.
+msg.file_missing=فایل پیدا نشد:\n{0}
+msg.be_not_found=فایل اطلاعات در دسترس نیست:\n{0}\n\nاگر اطلاعات روی سرور است، اتصال شبکه را بررسی کنید.\nدر غیر این صورت، در پنجره بعد محل فایل اطلاعات (SaipaMashayekh_Data.accdb) را انتخاب کنید.
+msg.be_retry=اتصال برقرار نشد. دوباره تلاش می‌کنید؟
+msg.relink_failed=اتصال به فایل اطلاعات انجام نشد:\n{0}
+msg.relink_ok=برنامه به این فایل اطلاعات متصل شد:\n{0}
+msg.current_be=فایل اطلاعات فعلی:\n{0}\n\nدر پنجره بعد فایل جدید را انتخاب کنید.
+msg.backup_done=نسخه پشتیبان ساخته شد:\n{0}
+msg.update_needed=نسخه فایل اطلاعات جدیدتر از این برنامه است. لطفاً برنامه را با Setup جدید به‌روزرسانی کنید.
+val.mobile=شماره موبایل باید ۱۱ رقم و با ۰۹ شروع شود (مثال: 09121234567). لطفاً بررسی کنید.
+val.ncode=کد ملی معتبر نیست. لطفاً بررسی کنید.
+
+# ---------- پرسش‌ها ----------
+prm.approve_comment=توضیح تأیید (اختیاری):
+prm.reject_reason=دلیل رد (الزامی):
+prm.close_comment=توضیح مختومه کردن شکایت (اختیاری):
+prm.new_password=رمز جدید برای «{0}» را وارد کنید:
+dlg.pick_be=انتخاب فایل اطلاعات سایپا مشایخ
+dlg.pick_attachment=انتخاب فایل پیوست
+
+# ---------- رویدادهای تاریخچه ----------
+ev.plan_submitted=ارسال برنامه اقدام برای تأیید
+ev.result_submitted=ارسال نتیجه اجرا برای تأیید
+ev.decision=تصمیم مدیر
+ev.closed_by_manager=مختومه شدن توسط مدیر
+ev.letter_status=تغییر وضعیت نامه
+ev.letter_attached=پیوست فایل
+
+# ---------- تقویم ----------
+wd.1=یکشنبه
+wd.2=دوشنبه
+wd.3=سه‌شنبه
+wd.4=چهارشنبه
+wd.5=پنجشنبه
+wd.6=جمعه
+wd.7=شنبه
+jm.1=فروردین
+jm.2=اردیبهشت
+jm.3=خرداد
+jm.4=تیر
+jm.5=مرداد
+jm.6=شهریور
+jm.7=مهر
+jm.8=آبان
+jm.9=آذر
+jm.10=دی
+jm.11=بهمن
+jm.12=اسفند
+
+# ---------- فهرست‌های پایه (lk.دسته.کد=عنوان) ----------
+# کدها انگلیسی‌اند و در برنامه استفاده می‌شوند؛ عنوان‌ها را می‌توان از منوی «تنظیم فهرست‌ها» تغییر داد.
+lk.Role.ADMIN=مدیر سیستم
+lk.Role.MANAGER=مدیر
+lk.Role.EXPERT=کارشناس
+lk.Role.STAFF=کاربر
+
+lk.ComplaintStatus.NEW=جدید
+lk.ComplaintStatus.PLAN_PENDING=در انتظار تأیید برنامه
+lk.ComplaintStatus.IN_PROGRESS=در حال اجرا
+lk.ComplaintStatus.RESULT_PENDING=در انتظار تأیید نتیجه
+lk.ComplaintStatus.NEEDS_REVISION=نیازمند اصلاح
+lk.ComplaintStatus.CLOSED=مختومه
+
+lk.PlanStatus.DRAFT=پیش‌نویس
+lk.PlanStatus.PENDING=در انتظار تأیید
+lk.PlanStatus.APPROVED=تأیید شده
+lk.PlanStatus.REJECTED=رد شده
+
+lk.ResultStatus.NONE=ثبت نشده
+lk.ResultStatus.PENDING=در انتظار تأیید
+lk.ResultStatus.APPROVED=تأیید شده
+lk.ResultStatus.REJECTED=رد شده
+
+lk.Priority.LOW=کم
+lk.Priority.NORMAL=عادی
+lk.Priority.HIGH=زیاد
+lk.Priority.URGENT=فوری
+
+lk.Channel.PHONE=تلفن
+lk.Channel.INPERSON=حضوری
+lk.Channel.SMS=پیامک
+lk.Channel.MESSENGER=پیام‌رسان
+lk.Channel.WEB=وب‌سایت
+lk.Channel.LETTER=نامه
+lk.Channel.HQ=ارجاع از شرکت سایپا
+
+lk.TaskStatus.OPEN=باز
+lk.TaskStatus.INPROGRESS=در حال انجام
+lk.TaskStatus.DONE=انجام شد
+lk.TaskStatus.CANCELLED=لغو شد
+
+lk.LetterDirection.IN=وارده
+lk.LetterDirection.OUT=صادره
+lk.LetterDirection.INTERNAL=داخلی
+
+lk.LetterStatus.NEW=جدید
+lk.LetterStatus.REFERRED=ارجاع شده
+lk.LetterStatus.INPROGRESS=در حال رسیدگی
+lk.LetterStatus.ANSWERED=پاسخ داده شده
+lk.LetterStatus.ARCHIVED=بایگانی
+
+lk.Satisfaction.VERY_HAPPY=بسیار راضی
+lk.Satisfaction.HAPPY=راضی
+lk.Satisfaction.NEUTRAL=بی‌نظر
+lk.Satisfaction.UNHAPPY=ناراضی
+
+lk.ServiceType.PERIODIC=سرویس دوره‌ای
+lk.ServiceType.OIL=تعویض روغن و فیلتر
+lk.ServiceType.BRAKE=ترمز
+lk.ServiceType.TIRE=لاستیک و بالانس
+lk.ServiceType.ELECTRIC=برق خودرو
+lk.ServiceType.ENGINE=تعمیر موتور
+lk.ServiceType.GEARBOX=گیربکس
+lk.ServiceType.BODY=بدنه و رنگ
+lk.ServiceType.WARRANTY=تعمیر گارانتی
+lk.ServiceType.OTHER=سایر
+
+lk.VehicleModel.SAINA=ساینا
+lk.VehicleModel.SAINA_S=ساینا S
+lk.VehicleModel.QUIK=کوییک
+lk.VehicleModel.QUIK_S=کوییک S
+lk.VehicleModel.QUIK_R=کوییک R
+lk.VehicleModel.SHAHIN=شاهین
+lk.VehicleModel.TIBA=تیبا
+lk.VehicleModel.TIBA2=تیبا ۲
+lk.VehicleModel.ATLAS=اطلس
+lk.VehicleModel.ARIA=آریا
+lk.VehicleModel.PRIDE=پراید
+lk.VehicleModel.ARISUN=آریسان
+lk.VehicleModel.OTHER=سایر
