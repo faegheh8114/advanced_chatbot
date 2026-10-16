@@ -1,0 +1,35 @@
+<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>انتقال اطلاعات تابلوی قدیمی | سایپا مشایخ</title><style>
+*{box-sizing:border-box}body{margin:0;background:#eef2f6;color:#203040;font:15px Tahoma,Arial}header{background:#203749;color:#fff;padding:16px 24px}h1{font-size:20px;margin:0}main{max-width:760px;margin:20px auto;padding:0 16px}.panel{background:#fff;border:1px solid #d8e0e8;border-radius:11px;padding:18px;margin-bottom:14px}h2{font-size:16px;margin:0 0 12px}.stats{display:flex;gap:10px;flex-wrap:wrap}.stat{background:#f4f7fa;border:1px solid #d9e2eb;border-radius:9px;padding:10px 16px;min-width:140px}.stat strong{font-size:22px;display:block}.stat span{color:#53697a;font-size:12px}label{display:block;font-weight:bold;font-size:13px;margin:12px 0 6px}input[type=text]{width:100%;font:inherit;padding:10px;border:1px solid #c7d3df;border-radius:7px;direction:ltr;text-align:left}.check{display:flex;gap:8px;align-items:center;font-weight:normal;margin-top:12px}button{border:0;background:#285775;color:#fff;border-radius:7px;padding:10px 15px;cursor:pointer;font:inherit;margin:12px 0 0 6px}button.ok{background:#237c4d}button.alt{background:#e5ecf3;color:#233a4b}.msg{margin-top:14px;padding:12px;border-radius:8px;display:none;line-height:1.9}.msg.good{display:block;background:#dcf3e5;color:#16683a}.msg.bad{display:block;background:#fbe2e2;color:#8a2525}.notice{font-size:13px;color:#5d7083;line-height:2}
+</style></head><body><header><h1>انتقال اطلاعات تابلوی قدیمی به سرور مشترک</h1></header><main>
+<div class="panel"><h2>۱. اطلاعات پیدا شده در این مرورگر</h2><div class="stats"><div class="stat"><strong id="nCars">۰</strong><span>پذیرش</span></div><div class="stat"><strong id="nTasks">۰</strong><span>ردیف تعمیر</span></div><div class="stat"><strong id="nWorkers">۰</strong><span>تعمیرکار</span></div></div><p class="notice" id="found"></p></div>
+<div class="panel"><h2>۲. ارسال به سرور</h2><label>آدرس سرور (همان آدرسی که پنجره سرور نشان می‌دهد)</label><input type="text" id="server" placeholder="http://192.168.1.10:8080"><label class="check"><input type="checkbox" id="skip" checked> دو پذیرش نمونه اولیه برنامه (۱۰۲۵ و ۱۰۲۶) منتقل نشوند</label><button class="ok" onclick="send()">ارسال اطلاعات به سرور</button><button class="alt" onclick="download()">فقط دانلود فایل پشتیبان</button><div id="msg" class="msg"></div>
+<p class="notice">اطلاعات این سیستم پاک نمی‌شود و ارسال را می‌توان چند بار تکرار کرد؛ پذیرش‌های تکراری دوباره اضافه نمی‌شوند. اگر روی چند سیستم جداگانه اطلاعات ثبت کرده‌اید، این کار را روی هر کدام انجام دهید تا همه در سرور جمع شوند.</p></div>
+</main><script>
+const KEY='mashayekh_control_board_v8',$=id=>document.getElementById(id),fa=v=>String(v).replace(/[0-9]/g,d=>'۰۱۲۳۴۵۶۷۸۹'[+d]);
+let data=null;try{data=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(data&&Array.isArray(data.cars)){
+ $('nCars').textContent=fa(data.cars.length);$('nTasks').textContent=fa(data.cars.reduce((n,c)=>n+(c.tasks||[]).length,0));$('nWorkers').textContent=fa((data.workers||[]).length);
+ $('found').textContent='اطلاعات تابلوی قبلی در این مرورگر پیدا شد.';
+}else{
+ $('found').innerHTML='<b style="color:#a83f3f">در این مرورگر اطلاعاتی از تابلوی قبلی پیدا نشد.</b><br>این فایل را در <b>همان پوشه‌ای</b> بگذارید که فایل تابلوی قبلی (saipa_mashayekh_control_board_v21.html) در آن است و با <b>همان مرورگری</b> باز کنید که تابلو را با آن استفاده می‌کردید. در فایرفاکس، نام این فایل را دقیقاً هم‌نام فایل قبلی کنید (فایل قبلی را جای دیگری نگه دارید) و دوباره باز کنید.';
+}
+try{$('server').value=localStorage.getItem('mashayekh_server')||''}catch(e){}
+function show(t,good){const m=$('msg');m.className='msg '+(good?'good':'bad');m.innerHTML=t}
+async function send(){
+ if(!data){show('اطلاعاتی برای ارسال وجود ندارد.');return}
+ let url=$('server').value.trim().replace(/\/+$/,'');if(!url){show('آدرس سرور را وارد کنید.');return}
+ if(!/^https?:\/\//i.test(url))url='http://'+url;
+ try{localStorage.setItem('mashayekh_server',url)}catch(e){}
+ try{
+  const r=await fetch(url+'/api/op',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({op:'import',payload:{data,skipSamples:$('skip').checked}})});
+  const j=await r.json();
+  if(!j.ok)throw new Error(j.error);
+  show('انتقال انجام شد. '+fa(j.result.added)+' پذیرش جدید به سرور اضافه شد.<br>از این به بعد تابلو را فقط از آدرس <b>'+url+'</b> باز کنید.',true);
+ }catch(e){show('ارسال انجام نشد: '+(e.message||e)+'<br>روشن بودن پنجره سرور و درست بودن آدرس را بررسی کنید. اگر باز هم نشد، «دانلود فایل پشتیبان» را بزنید و فایل را در تابلوی جدید از صفحه «فهرست تعمیرکاران» ← «افزودن اطلاعات از فایل» وارد کنید.')}
+}
+function download(){
+ if(!data){show('اطلاعاتی برای دانلود وجود ندارد.');return}
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,1)],{type:'application/json'}));a.download='mashayekh_board_old_data.json';a.click();
+ show('فایل پشتیبان دانلود شد. آن را در تابلوی جدید از صفحه «فهرست تعمیرکاران» ← «افزودن اطلاعات از فایل پشتیبان» وارد کنید.',true);
+}
+</script></body></html>

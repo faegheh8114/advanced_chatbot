@@ -1,0 +1,181 @@
+<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>تابلوی کنترل تعمیرات نسخه ۲۲ (شبکه) | سایپا مشایخ</title><style>
+*{box-sizing:border-box}body{margin:0;background:#eef2f6;color:#203040;font:14px Tahoma,Arial}header{background:#203749;color:#fff;padding:14px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}h1{font-size:19px;margin:0}h2{font-size:16px;margin:0 0 12px}button{border:0;background:#285775;color:white;border-radius:7px;padding:9px 13px;cursor:pointer;font:inherit}button:hover{filter:brightness(.92)}button.alt{background:#e5ecf3;color:#233a4b}button.ok{background:#237c4d}button.warn{background:#b97416}button.danger{background:#a83f3f}button:disabled{opacity:.45;cursor:default}nav{display:flex;gap:7px;flex-wrap:wrap;padding:12px 18px;background:white;border-bottom:1px solid #d9e1e9}.active{background:#123a56}main{padding:14px 18px}.panel{background:white;border:1px solid #d8e0e8;border-radius:11px;padding:15px;margin-bottom:14px}.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}.stat{background:white;border:1px solid #d9e2eb;border-radius:9px;padding:11px 17px;min-width:150px}.stat strong{font-size:22px;display:block}.stat span{color:#53697a;font-size:12px}.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.tools input{max-width:300px}input,select,textarea{font:inherit;padding:9px;border:1px solid #c7d3df;border-radius:7px;background:white;min-width:0}textarea{width:100%;min-height:58px}label{display:block;font-size:12px;font-weight:bold;margin-bottom:5px}.fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.field input,.field select{width:100%}.tablewrap{overflow:auto;max-height:calc(100vh - 270px);border:1px solid #cbd6e0;border-radius:8px;background:white}.board{width:100%;border-collapse:separate;border-spacing:0;min-width:960px;font-size:12px}.board th{position:sticky;top:0;background:#dae4ee;z-index:2;text-align:right;padding:10px 8px;border-bottom:2px solid #bccbd9}.board td{padding:7px 8px;border-bottom:1px solid #dfe6ed;vertical-align:middle}.board tr:hover td{background:#f7faff}.board .ident{font-weight:bold;white-space:nowrap}.board .muted{font-size:11px;color:#65798b}.board .job{font-weight:bold}.board .working td:nth-child(5){border-right:5px solid #317bd1;background:#e8f2ff}.board .shortage td:nth-child(5){border-right:5px solid #e29a28;background:#fff0d9}.board .done td:nth-child(5){border-right:5px solid #32905d;background:#e7f6eb}.tag{display:inline-block;border-radius:6px;padding:5px 8px;white-space:nowrap;font-weight:bold}.tag.working{background:#e0eeff;color:#1d5b9e}.tag.shortage{background:#ffecd0;color:#995709}.tag.done{background:#dcf3e5;color:#16683a}.board button{font-size:11px;padding:6px 8px;margin:2px}.formtask{display:grid;grid-template-columns:2fr 1fr auto;gap:8px;align-items:end;padding:9px;background:#f4f7fa;border-radius:8px;margin:7px 0}.formtask input,.formtask select{width:100%}.hidden{display:none!important}.notice{font-size:12px;color:#65788b;line-height:1.9}.bar{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.partsrow{display:grid;grid-template-columns:2fr 1fr auto;gap:8px;margin:8px 0}.partsrow input{width:100%}.modalback{position:fixed;inset:0;background:#1425369c;z-index:10;display:grid;place-items:center;padding:15px}.modal{background:white;border-radius:12px;padding:20px;width:min(620px,100%);max-height:90vh;overflow:auto}.modal h2{margin-bottom:15px}.modal .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}.small{font-size:12px}.printonly{display:none}@media(max-width:720px){.fields{grid-template-columns:repeat(2,1fr)}.formtask{grid-template-columns:1fr 1fr}.formtask .del{grid-column:1/-1}.tablewrap{max-height:65vh}header{padding:12px}main{padding:10px}}@media print{nav,.tools,.actions,button,.notice{display:none!important}.tablewrap{max-height:none;overflow:visible}.board{min-width:0;font-size:10px}header{print-color-adjust:exact}}
+
+/* نسخه ۱۰: گروه‌بندی مستقل هر خودرو و ساعت ظریف‌تر */
+#clock{font-size:11px;font-weight:normal;opacity:.82;letter-spacing:0}
+.board .entry-clock{font-size:10px;font-weight:normal;color:#64788a;white-space:nowrap}
+.board .entry-date{font-size:11px;color:#425a6c;white-space:nowrap}
+.board tr.car-first td{border-top:9px solid #eef2f6}
+.board tr.car-first:first-child td{border-top:0}
+.board td.car-info{background:#f2f6fa!important;border-right:4px solid #617f9c;vertical-align:top;padding:10px 8px}
+.board tr.car-last td{border-bottom:2px solid #b8c8d6}
+.board .car-no{font-size:13px;font-weight:bold}
+.board .car-plate{font-size:13px;font-weight:bold}
+.board .job{font-size:12px}
+@media(max-width:720px){.board{min-width:860px}}
+
+/* نسخه ۱۳: مرزبندی بسیار واضح هر پذیرش و استفاده حداکثری از مانیتور */
+body{font-size:15px}header{padding:16px 24px}h1{font-size:23px}
+main{padding:10px 12px;max-width:none;width:100%}
+.panel{padding:12px;margin-bottom:8px}
+.tablewrap{max-height:calc(100vh - 240px);width:100%;border:2px solid #aabaca}
+.board{min-width:1100px;font-size:14px;width:100%}
+.board th{font-size:14px;padding:13px 10px;background:#cad9e8;border-bottom:3px solid #839ab0}
+.board td{padding:11px 10px;border-bottom:1px solid #d2dce5}
+.board tr.car-first td{border-top:17px solid #667e96!important}
+.board tr.car-first:first-child td{border-top:5px solid #667e96!important}
+.board tr.car-last td{border-bottom:5px solid #667e96!important}
+.board td.car-info{background:#e6eef6!important;border-right:3px solid #718ba4;vertical-align:middle;padding:14px 12px}
+.board .car-no,.board .car-plate{font-size:17px;font-weight:800}
+.board .job{font-size:14px}
+.board .entry-date{font-size:11px}.board .entry-clock{font-size:10px}
+.board button{font-size:12px;padding:8px 10px}
+.stats{margin-bottom:8px}.stat{padding:7px 14px;min-width:140px}.stat strong{font-size:23px}
+#view-board>.panel{border:2px solid #a7b8c8}
+@media(min-width:1400px){.board{font-size:16px}.board .job{font-size:16px}.board td{padding:13px 12px}.board th{font-size:16px}}
+@media(max-width:720px){.board{min-width:1100px}.tablewrap{max-height:calc(100vh - 220px)}}
+@media print{.board tr.car-first td{border-top:7px solid #667e96!important}}
+/* نسخه ۱۳: دکمه‌های کوچک و واضح */
+.board td:last-child{white-space:nowrap}
+.board td:last-child button{font-size:11px!important;padding:5px 7px!important;margin:1px!important;min-width:48px}
+.board .car-info button{font-size:10px!important;padding:4px 7px!important}
+
+/* نسخه ۱۳: تاکید بر پلاک و کوچک‌سازی اطلاعات فرعی */
+.board .car-plate{color:#c51f2b!important;font-size:27px!important;font-weight:900!important;line-height:1.45;white-space:nowrap}
+.board .car-no{font-size:12px!important;font-weight:700}
+.board .car-info .muted{font-size:10px!important}
+.board .entry-date{font-size:10px!important;font-weight:normal}
+.board .entry-clock{font-size:10px!important;font-weight:normal}
+.board td:nth-child(4),.board td:nth-child(5),.board td:nth-child(7){font-size:12px!important}
+.board .job{font-size:12px!important;font-weight:600}
+.board th{font-size:12px!important}
+.board .tag{font-size:11px;padding:4px 6px}
+@media(min-width:1400px){.board .job{font-size:12px!important}}
+/* نسخه ۱۴: درشت‌تر شدن شماره پذیرش و نام خودرو */
+.board .car-no{font-size:21px!important;font-weight:900!important;line-height:1.7}
+.board .car-info .muted{font-size:17px!important;font-weight:800!important;color:#243e56!important;line-height:1.6}
+#view-done .board th,#view-done .board td{border:1px solid #b9c7d5;padding:10px 12px;text-align:center;vertical-align:middle}#view-done .board .car-first td{border-top:4px solid #354c60}#view-done .board .car-last td{border-bottom:4px solid #354c60}#view-done .worker-cell{font-weight:700;white-space:nowrap}#view-done .done-time{font-size:12px;white-space:nowrap}#view-done .board{min-width:1050px}
+/* نسخه ۱۷: همسان‌سازی جدول مانیتور با فهرست اتمام‌یافته */
+#view-board .board{min-width:1120px;table-layout:auto}
+#view-board .board th:nth-child(1){width:10%}
+#view-board .board th:nth-child(2){width:13%}
+#view-board .board th:nth-child(3){width:10%}
+#view-board .board th:nth-child(4){width:12%}
+#view-board .board th:nth-child(5){width:12%}
+#view-board .board th:nth-child(6){width:19%}
+#view-board .board th:nth-child(7){width:10%}
+#view-board .board th:nth-child(8){width:14%}
+#view-board .board .working td:nth-child(6){border-right:4px solid #317bd1;background:#e8f2ff}
+#view-board .board .car-name{font-weight:800;font-size:16px}
+#view-board .board .done-time{color:#8495a4;font-size:12px}
+/* نسخه ۱۸: حذف ستون اتمام فقط از مانیتور و کوچک‌سازی شناسه خودرو */
+#view-board .board .car-plate{font-size:19px!important;line-height:1.3!important}
+#view-board .board .car-no{font-size:15px!important;line-height:1.4!important}
+#view-board .board .car-name{font-size:12px!important;font-weight:650!important}
+#view-board .board td{padding-top:8px;padding-bottom:8px}
+
+/* نسخه ۲۰: کاهش عرض ستون پلاک و انتقال فضای آزاد به نوع خودرو؛ شرح تعمیر بدون تغییر، بدون تغییر فضای شرح تعمیر */
+#view-board .board{table-layout:fixed;min-width:1120px;width:100%}
+#view-board .board th:nth-child(1){width:9%}
+#view-board .board th:nth-child(2){width:9%}
+#view-board .board th:nth-child(3){width:12%}
+#view-board .board th:nth-child(4){width:12%}
+#view-board .board th:nth-child(5){width:34%}
+#view-board .board th:nth-child(6){width:12%}
+#view-board .board th:nth-child(7){width:12%}
+#view-board .board th:nth-child(1),#view-board .board th:nth-child(2),#view-board .board th:nth-child(3),#view-board .board th:nth-child(4),#view-board .board th:nth-child(6),#view-board .board th:nth-child(7){padding-left:4px;padding-right:4px}
+#view-board .board td:not(:nth-child(5)){padding-left:4px;padding-right:4px}
+#view-board .board td:nth-child(5){padding-left:12px;padding-right:12px}
+/* نسخه ۲۱: فشرده‌سازی ستون‌های خودرو، ورود، شرح تعمیر و تعمیرکار */
+#view-board .board th:nth-child(3){width:9%}
+#view-board .board th:nth-child(4){width:9%}
+#view-board .board th:nth-child(5){width:30%}
+#view-board .board th:nth-child(6){width:9%}
+#view-board .board th:nth-child(7){width:25%}
+#view-board .board td:nth-child(3),#view-board .board td:nth-child(4),#view-board .board td:nth-child(6){padding-left:3px;padding-right:3px}
+#view-board .board td:nth-child(5){padding-left:8px;padding-right:8px}
+
+/* نسخه ۲۲: اطلاعات مشترک روی شبکه */
+.headinfo{display:flex;gap:14px;align-items:center}
+.conn{font-size:12px;font-weight:bold;padding:4px 10px;border-radius:20px;background:#ffffff1f;white-space:nowrap}
+.conn.on{color:#8ff0b4}.conn.off{color:#ffb3b3;background:#a83f3f}
+.offline-banner{background:#a83f3f;color:#fff;padding:10px 18px;font-weight:bold}
+</style></head><body><header><h1>تابلوی کنترلی تعمیرات سالن | نمایندگی سایپا مشایخ</h1><div class="headinfo"><span id="conn" class="conn">● در حال اتصال...</span><span id="clock"></span></div></header><div id="offline" class="offline-banner hidden">ارتباط با سرور قطع است؛ تا وصل شدن دوباره، تغییرات ثبت نمی‌شوند. (کامپیوتر سرور روشن و برنامه سرور باز باشد)</div><nav><button id="tab-board" onclick="showTab('board')">مانیتور کنترل سالن</button><button id="tab-shortage" class="alt" onclick="showTab('shortage')">کسری قطعات <span id="shortageBadge"></span></button><button id="tab-new" class="alt" onclick="showTab('new')">ثبت پذیرش</button><button id="tab-done" class="alt" onclick="showTab('done')">تعمیرات اتمام‌یافته</button><button id="tab-workers" class="alt" onclick="showTab('workers')">فهرست تعمیرکاران</button><button class="alt" onclick="exportCsv()">خروجی اکسل CSV</button></nav><main>
+<section id="view-board"><div class="stats"><div class="stat"><strong id="countCars">۰</strong><span>خودروهای داخل سالن</span></div><div class="stat"><strong id="countOpen">۰</strong><span>تعمیرات باز (شامل کسری)</span></div><div class="stat"><strong id="countParts">۰</strong><span>موارد کسری قطعه</span></div><div class="stat"><strong id="countDone">۰</strong><span>تعمیرات انجام‌شده امروز</span></div></div><div class="panel"><div class="bar"><h2>لیست کنترلی تعمیرات در حال انجام</h2><div class="tools"><input id="search" placeholder="جستجوی پلاک، پذیرش، تعمیرکار یا ایراد" oninput="render()"><button class="alt" onclick="render()">به‌روزرسانی</button><button class="alt" onclick="toggleFull()">تمام‌صفحه</button></div></div><div class="tablewrap"><table class="board"><thead><tr><th>پذیرش</th><th>پلاک</th><th>خودرو</th><th>تاریخ و ساعت ورود</th><th>شرح تعمیر</th><th>نام تعمیرکار</th><th>اقدام تعمیرکار / انبار</th></tr></thead><tbody id="boardBody"></tbody></table></div><p class="notice">هر ایراد یک ردیف مستقل دارد تا هیچ کاری فراموش نشود. تعمیرات دارای کسری در صفحه مستقل «کسری قطعات» نمایش داده می‌شوند. آبی: کار باز | نارنجی: کسری قطعه | سبز: اتمام کار. تا پایان تمام ایرادات، خودرو در سالن باقی می‌ماند.</p></div></section>
+<section id="view-new" class="hidden"><div class="panel"><h2 id="formTitle">ثبت پذیرش جدید</h2><div class="fields"><div class="field"><label>شماره پذیرش</label><input id="admission" required></div><div class="field"><label>پلاک خودرو</label><input id="plate" required></div><div class="field"><label>نوع خودرو</label><input id="car" placeholder="مثلاً شاهین"></div><div class="field"><label>تاریخ ورود</label><input id="entryDate" type="date"></div><div class="field"><label>ساعت ورود</label><input id="entryTime" type="time"></div></div><h2 style="margin-top:20px">شرح ایرادات و تعمیرکار مسئول هر ایراد</h2><div id="formTasks"></div><div class="tools"><button class="alt" onclick="addTaskField()">+ افزودن ایراد دیگر</button><button class="ok" onclick="saveAdmission()">ذخیره پذیرش</button><button class="alt" onclick="resetForm()">پاک کردن فرم</button><button id="delBtn" class="danger hidden" onclick="deleteAdmission()">حذف کامل این پذیرش</button></div><p class="notice">برای هر ایراد نام تعمیرکار را از فهرست انتخاب کنید. شماره پرسنلی نیاز نیست.</p></div></section>
+<section id="view-shortage" class="hidden"><div class="panel"><div class="bar"><h2>خودروهای دارای کسری قطعات — پیگیری انبار</h2><div class="tools"><input id="shortageSearch" placeholder="جستجوی پذیرش، پلاک، قطعه یا تعمیرکار" oninput="render()"><button class="alt" onclick="render()">به‌روزرسانی</button><button class="alt" onclick="toggleFull()">تمام‌صفحه</button></div></div><div class="tablewrap"><table class="board"><thead><tr><th>پذیرش</th><th>پلاک / خودرو</th><th>تاریخ و ساعت ورود</th><th>تعمیرکار</th><th>شرح ایراد / قطعات کسری</th><th>وضعیت</th><th>اقدام تعمیرکار / انبار</th></tr></thead><tbody id="shortageBody"></tbody></table></div><p class="notice">در این صفحه فقط تعمیرات دارای کسری قطعه دیده می‌شوند. با تأمین قطعه، «رفع کسری» را بزنید تا تعمیر دوباره در تابلوی در حال تعمیر ظاهر شود.</p></div></section>
+<section id="view-done" class="hidden"><div class="panel"><h2>فهرست خودروهای اتمام‌یافته</h2><div class="tablewrap"><table class="board"><thead><tr><th>پذیرش</th><th>پلاک</th><th>خودرو</th><th>تاریخ و ساعت ورود</th><th>تاریخ و ساعت اتمام</th><th>شرح تعمیر</th><th>نام تعمیرکار</th><th>ویرایش</th></tr></thead><tbody id="doneBody"></tbody></table></div></div></section>
+<section id="view-workers" class="hidden"><div class="panel"><h2>تعریف نام تعمیرکاران</h2><div class="tools"><input id="newWorker" placeholder="نام و نام خانوادگی تعمیرکار"><button onclick="addWorker()">افزودن تعمیرکار</button></div><div id="workerList"></div><p class="notice">این اسامی در فرم ثبت پذیرش قابل انتخاب خواهند بود.</p></div><div class="panel"><h2>پشتیبان و انتقال اطلاعات</h2><div class="tools"><a href="/api/export"><button class="alt">دانلود فایل پشتیبان (JSON)</button></a><button class="alt" onclick="$('importFile').click()">افزودن اطلاعات از فایل پشتیبان یا سیستم قدیمی</button><input id="importFile" type="file" accept=".json,application/json" class="hidden" onchange="importBackup(this)"></div><p class="notice">سرور هر روز به‌طور خودکار یک نسخه پشتیبان در پوشه data\backups نگه می‌دارد. افزودن از فایل، اطلاعات فعلی را پاک نمی‌کند؛ فقط پذیرش‌هایی که روی سرور نیستند اضافه می‌شوند.</p></div></section></main><div id="modalHost"></div>
+<script>
+
+const faDigits=v=>String(v??'').replace(/[0-9]/g,d=>'۰۱۲۳۴۵۶۷۸۹'[+d]);const faDate=v=>{if(!v)return '';if(/^\d{4}-\d{2}-\d{2}$/.test(v)){const [y,m,d]=v.split('-').map(Number);return new Intl.DateTimeFormat('fa-IR-u-ca-persian',{year:'numeric',month:'2-digit',day:'2-digit',timeZone:'UTC'}).format(new Date(Date.UTC(y,m-1,d)))}return faDigits(v)};
+let data={workers:[],cars:[]},version=-1,editingId=null;
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const now=()=>new Date().toLocaleString('fa-IR'),isDone=c=>c.tasks.length&&c.tasks.every(t=>t.status==='done'),current=()=>new Date().toISOString().slice(0,10);
+function showTab(tab){for(const k of ['board','shortage','new','done','workers']){$('view-'+k).classList.toggle('hidden',k!==tab);$('tab-'+k).className=k===tab?'active':'alt'}render()}
+
+/* ---------- ارتباط با سرور: همه سیستم‌ها یک اطلاعات مشترک دارند ---------- */
+// فهرست تعمیرکاران فرم ثبت با آخرین اطلاعات سرور به‌روز می‌شود (انتخاب فعلی حفظ می‌شود)
+function refreshWorkerSelects(){document.querySelectorAll('.formtask .worker').forEach(sel=>{const v=sel.value;sel.innerHTML=workerOptions(v);sel.value=v})}
+function applyState(s){data=s.data;version=s.version;render();refreshWorkerSelects()}
+function setOnline(on){const el=$('conn');el.textContent=on?'● متصل به سرور':'● قطع ارتباط';el.className='conn '+(on?'on':'off');$('offline').classList.toggle('hidden',on)}
+async function sync(){
+ try{
+  const v=await (await fetch('/api/version',{cache:'no-store'})).json();
+  if(v.version!==version){applyState(await (await fetch('/api/state',{cache:'no-store'})).json())}
+  setOnline(true)
+ }catch(e){setOnline(false)}
+}
+async function api(op,payload){
+ let j;
+ try{
+  const r=await fetch('/api/op',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({op,payload})});
+  j=await r.json();setOnline(true)
+ }catch(e){setOnline(false);alert('ارتباط با سرور برقرار نیست و این تغییر ذخیره نشد.\nروشن بودن کامپیوتر سرور و اتصال شبکه را بررسی کنید.');return null}
+ if(j.data)applyState(j)
+ if(!j.ok){alert(j.error||'خطا در ذخیره');return null}
+ return j.result||{}
+}
+
+function render(){
+ const query=($('search').value||'').trim().toLowerCase();
+ const rank={working:0,shortage:1,done:2};
+ const groups=data.cars.filter(c=>!isDone(c)).map(c=>({c,tasks:c.tasks.filter(t=>t.status==='working'&&[c.admission,c.plate,c.car,t.worker,t.repair].join(' ').toLowerCase().includes(query))})).filter(g=>g.tasks.length);
+ groups.sort((a,b)=>Math.min(...a.tasks.map(t=>rank[t.status]))-Math.min(...b.tasks.map(t=>rank[t.status]))||a.c.time.localeCompare(b.c.time));
+ $('boardBody').innerHTML=groups.map(({c,tasks})=>tasks.map((t,i)=>`<tr class="${t.status} ${i===0?'car-first':''} ${i===tasks.length-1?'car-last':''}">${i===0?`<td class="car-info" rowspan="${tasks.length}"><span class="car-no">${esc(c.admission)}</span><br><button class="alt" onclick="editAdmission('${c.id}')">ویرایش</button></td><td class="car-info" rowspan="${tasks.length}"><span class="car-plate">${esc(c.plate)}</span></td><td class="car-info car-name" rowspan="${tasks.length}">${esc(c.car)}</td><td class="car-info" rowspan="${tasks.length}"><span class="entry-date">${esc(faDate(c.date))}</span><div class="entry-clock">${esc(faDigits(c.time))}</div></td>`:''}<td class="job">${esc(t.repair)}</td><td class="worker-cell">${esc(t.worker)}</td><td><span class="tag working">در حال تعمیر</span> <button class="ok" onclick="finishTask('${c.id}','${t.id}')">اتمام</button><button class="warn" onclick="partsDialog('${c.id}','${t.id}')">کسری</button></td></tr>`).join('')).join('')||'<tr><td colspan="7">هیچ موردی در این فهرست وجود ندارد.</td></tr>';
+ const sq=($('shortageSearch').value||'').trim().toLowerCase();
+ const shortageGroups=data.cars.filter(c=>!isDone(c)).map(c=>({c,tasks:c.tasks.filter(t=>t.status==='shortage'&&[c.admission,c.plate,c.car,t.worker,t.repair,...(t.parts||[]).map(p=>p.name)].join(' ').toLowerCase().includes(sq))})).filter(g=>g.tasks.length);
+ $('shortageBody').innerHTML=shortageGroups.map(({c,tasks})=>tasks.map((t,i)=>`<tr class="shortage ${i===0?'car-first':''} ${i===tasks.length-1?'car-last':''}">${i===0?`<td class="ident car-info" rowspan="${tasks.length}"><span class="car-no">${esc(c.admission)}</span><br><button class="alt" onclick="editAdmission('${c.id}')">ویرایش</button></td><td class="car-info" rowspan="${tasks.length}"><span class="car-plate">${esc(c.plate)}</span><div class="muted">${esc(c.car)}</div></td><td class="car-info" rowspan="${tasks.length}"><span class="entry-date">${esc(faDate(c.date))}</span><div class="entry-clock">${esc(faDigits(c.time))}</div></td>`:''}<td><b>${esc(t.worker)}</b></td><td class="job">${esc(t.repair)}<div class="muted">قطعات کسری: ${(t.parts||[]).map(p=>esc(p.name)+' ('+esc(faDigits(p.qty))+' عدد)').join('، ')}</div></td><td><span class="tag shortage">کسری قطعه</span></td><td><button class="ok" onclick="resolveShortage('${c.id}','${t.id}')">رفع کسری</button><button class="warn" onclick="partsDialog('${c.id}','${t.id}')">ویرایش کسری</button><button class="alt" onclick="finishTask('${c.id}','${t.id}')">اتمام</button></td></tr>`).join('')).join('')||'<tr><td colspan="7">در حال حاضر کسری قطعه ثبت‌شده‌ای وجود ندارد.</td></tr>';
+ $('shortageBadge').textContent='('+faDigits(shortageGroups.reduce((n,g)=>n+g.tasks.length,0))+')';
+ const active=data.cars.filter(c=>!isDone(c));
+ $('countCars').textContent=active.length.toLocaleString('fa-IR');
+ $('countOpen').textContent=active.reduce((n,c)=>n+c.tasks.filter(t=>t.status!=='done').length,0).toLocaleString('fa-IR');
+ $('countParts').textContent=active.reduce((n,c)=>n+c.tasks.filter(t=>t.status==='shortage').length,0).toLocaleString('fa-IR');
+ $('countDone').textContent=data.cars.reduce((n,c)=>n+c.tasks.filter(t=>t.status==='done'&&t.finished?.startsWith(new Date().toLocaleDateString('fa-IR'))).length,0).toLocaleString('fa-IR');
+ $('doneBody').innerHTML=data.cars.filter(isDone).map(c=>c.tasks.map((t,i)=>`<tr class="${i===0?'car-first':''} ${i===c.tasks.length-1?'car-last':''}">${i===0?`<td rowspan="${c.tasks.length}" class="car-info"><span class="car-no">${esc(c.admission)}</span></td><td rowspan="${c.tasks.length}" class="car-info"><span class="car-plate">${esc(c.plate)}</span></td><td rowspan="${c.tasks.length}" class="car-info">${esc(c.car)}</td><td rowspan="${c.tasks.length}" class="car-info"><span class="entry-date">${esc(faDate(c.date))}</span><div class="entry-clock">${esc(faDigits(c.time))}</div></td>`:''}<td class="done-time">${esc(t.finished||'—')}</td><td class="job">${esc(t.repair)}</td><td class="worker-cell">${esc(t.worker)}</td>${i===0?`<td rowspan="${c.tasks.length}"><button class="alt" onclick="editAdmission('${c.id}')">ویرایش</button></td>`:''}</tr>`).join('')).join('')||'<tr><td colspan="8">موردی وجود ندارد.</td></tr>'
+ $('workerList').innerHTML=data.workers.map((w,i)=>`<div style="padding:9px;border-bottom:1px solid #e0e7ee">${esc(w)} <button class="alt" data-name="${esc(w)}" onclick="removeWorker(this.dataset.name)">حذف از فهرست</button></div>`).join('');
+}
+
+function getTask(c,t){const car=data.cars.find(x=>x.id===c);return car?.tasks.find(x=>x.id===t)||null}
+async function finishTask(c,t){const task=getTask(c,t);if(!task||!confirm('اتمام کار «'+task.repair+'» توسط «'+task.worker+'» ثبت شود؟'))return;const finished=now();if(await api('finishTask',{carId:c,taskId:t,finished}))alert('اتمام کار ثبت شد: '+finished)}
+async function resolveShortage(c,t){const task=getTask(c,t);if(!task||!confirm('قطعات این تعمیر تأمین شده و به فهرست در حال تعمیر منتقل شود؟'))return;await api('resolveShortage',{carId:c,taskId:t})}
+async function reopenTask(c,t){const task=getTask(c,t);if(!task||!confirm('وضعیت این تعمیر به انجام‌نشده برگردد؟'))return;await api('reopenTask',{carId:c,taskId:t})}
+function partsDialog(c,t){const task=getTask(c,t);if(!task)return;const parts=task.parts?.length?task.parts:[{name:'',qty:1}];$('modalHost').innerHTML=`<div class="modalback"><div class="modal"><h2>ثبت کسری قطعات — ${esc(task.repair)}</h2><div id="partsRows">${parts.map(p=>partField(p.name,p.qty)).join('')}</div><button class="alt" onclick="$('partsRows').insertAdjacentHTML('beforeend',partField('',1))">+ قطعه دیگر</button><div class="actions"><button class="alt" onclick="closeModal()">انصراف</button><button class="ok" onclick="saveParts('${c}','${t}')">ذخیره کسری قطعات</button></div></div></div>`}
+function partField(name,qty){return `<div class="partsrow"><input class="partname" placeholder="نام قطعه" value="${esc(name)}"><input class="partqty" type="number" min="1" value="${esc(qty)}"><button class="danger" onclick="this.parentNode.remove()">حذف</button></div>`}
+async function saveParts(c,t){const parts=[...document.querySelectorAll('#partsRows .partsrow')].map(r=>({name:r.querySelector('.partname').value.trim(),qty:Number(r.querySelector('.partqty').value)})).filter(p=>p.name&&p.qty>0);if(!parts.length){alert('نام و تعداد حداقل یک قطعه را وارد کنید.');return}if(await api('setParts',{carId:c,taskId:t,parts})){closeModal();alert('کسری قطعات ثبت شد.')}}
+function closeModal(){$('modalHost').innerHTML=''}
+function workerOptions(selected=''){const list=data.workers.includes(selected)||!selected?data.workers:[...data.workers,selected];return '<option value="">انتخاب تعمیرکار</option>'+list.map(w=>`<option value="${esc(w)}" ${w===selected?'selected':''}>${esc(w)}</option>`).join('')}
+function addTaskField(repair='',worker='',id=''){const div=document.createElement('div');div.className='formtask';div.dataset.id=id;div.innerHTML=`<div><label>شرح ایراد / تعمیر</label><input class="repair" value="${esc(repair)}" placeholder="شرح ایراد"></div><div><label>نام تعمیرکار</label><select class="worker">${workerOptions(worker)}</select></div><button class="danger del" onclick="this.parentNode.remove()">حذف ردیف</button>`;$('formTasks').append(div)}
+function resetForm(){editingId=null;$('formTitle').textContent='ثبت پذیرش جدید';$('delBtn').classList.add('hidden');['admission','plate','car'].forEach(k=>$(k).value='');$('entryDate').value=current();$('entryTime').value=new Date().toTimeString().slice(0,5);$('formTasks').innerHTML='';addTaskField()}
+async function saveAdmission(){const admission=$('admission').value.trim(),plate=$('plate').value.trim();if(!admission||!plate){alert('شماره پذیرش و پلاک را وارد کنید.');return}if(data.cars.some(c=>c.admission===admission&&c.id!==editingId)){alert('این شماره پذیرش قبلاً ثبت شده است.');return}const items=[...document.querySelectorAll('.formtask')].map(el=>({id:el.dataset.id||'',repair:el.querySelector('.repair').value.trim(),worker:el.querySelector('.worker').value}));if(!items.length||items.some(t=>!t.repair||!t.worker)){alert('برای هر ردیف، شرح ایراد و نام تعمیرکار را انتخاب کنید.');return}if(await api('saveAdmission',{id:editingId,admission,plate,car:$('car').value.trim(),date:$('entryDate').value,time:$('entryTime').value,items})){resetForm();showTab('board')}}
+function editAdmission(id){const c=data.cars.find(x=>x.id===id);if(!c)return;editingId=id;$('formTitle').textContent='ویرایش پذیرش '+c.admission;$('delBtn').classList.remove('hidden');['admission','plate','car'].forEach(k=>$(k).value=c[k]);$('entryDate').value=c.date;$('entryTime').value=c.time;$('formTasks').innerHTML='';c.tasks.forEach(t=>addTaskField(t.repair,t.worker,t.id));showTab('new')}
+async function deleteAdmission(){const c=data.cars.find(x=>x.id===editingId);if(!c||!confirm('پذیرش «'+c.admission+'» با همه ردیف‌های تعمیرش برای همیشه حذف شود؟'))return;if(await api('deleteAdmission',{carId:editingId})){resetForm();showTab('board')}}
+async function addWorker(){const w=$('newWorker').value.trim();if(!w)return;if(await api('addWorker',{name:w}))$('newWorker').value=''}
+async function removeWorker(name){if(!confirm('نام از فهرست انتخاب حذف شود؟ تعمیرات ثبت‌شده تغییر نمی‌کنند.'))return;await api('removeWorker',{name})}
+function importBackup(input){const f=input.files[0];input.value='';if(!f)return;const rd=new FileReader();rd.onload=async()=>{let d;try{d=JSON.parse(rd.result);if(d&&d.data&&d.data.cars)d=d.data;if(!d||!Array.isArray(d.cars))throw 0}catch(e){alert('این فایل، فایل پشتیبان معتبر تابلو نیست.');return}if(!confirm('اطلاعات این فایل ('+faDigits(d.cars.length)+' پذیرش) به اطلاعات سرور اضافه شود؟ هیچ اطلاعاتی پاک نمی‌شود.'))return;const r=await api('import',{data:d,skipSamples:true});if(r)alert(faDigits(r.added)+' پذیرش جدید اضافه شد.')};rd.readAsText(f,'utf-8')}
+function exportCsv(){const rows=[['پذیرش','پلاک','خودرو','تاریخ ورود','ساعت ورود','شرح تعمیر','تعمیرکار','وضعیت','قطعات کسری','تاریخ و ساعت اتمام']];data.cars.forEach(c=>c.tasks.forEach(t=>rows.push([c.admission,c.plate,c.car,c.date,c.time,t.repair,t.worker,t.status,t.parts?.map(p=>p.name+' '+p.qty).join('، '),t.finished])));const csv='﻿'+rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='گزارش-تعمیرات-مشایخ.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function toggleFull(){if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen?.()}
+function tick(){$('clock').textContent=now()}
+if(location.protocol==='file:'){document.querySelector('main').innerHTML='<div class="panel"><h2>این صفحه باید از آدرس سرور باز شود</h2><p class="notice">برای اینکه همه سیستم‌ها اطلاعات مشترک ببینند، این فایل را مستقیم باز نکنید. در مرورگر آدرسی را که پنجره سرور نشان می‌دهد وارد کنید؛ مثلاً http://192.168.1.10:8080</p></div>';setOnline(false)}
+else{resetForm();showTab('board');tick();sync();setInterval(tick,1000);setInterval(sync,3000);setInterval(render,30000)}
+</script></body></html>
