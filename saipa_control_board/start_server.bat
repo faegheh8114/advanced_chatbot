@@ -8,6 +8,9 @@ cd /d "%~dp0"
 title Saipa Mashayekh Board Server
 set PORT=8080
 
+if not exist "%~dp0server.ps1" goto notextracted
+if not exist "%~dp0board.html" goto notextracted
+
 rem One-time: let other computers on the network connect to this port.
 netsh advfirewall firewall show rule name=SaipaMashayekhBoard >nul 2>nul
 if errorlevel 1 (
@@ -21,5 +24,19 @@ echo.
 echo ============================================================
 echo  The server is NOT running now.
 echo  If there is a red error above, send a photo of this window.
+echo ============================================================
+pause
+exit /b
+
+:notextracted
+echo.
+echo ============================================================
+echo  The files are not extracted.
+echo  You opened this file directly inside the ZIP / WinRAR window.
+echo.
+echo  1. Close this window.
+echo  2. In WinRAR click "Extract To" and extract to a folder,
+echo     for example  D:\SaipaBoard
+echo  3. Open that folder and double-click start_server.bat there.
 echo ============================================================
 pause
