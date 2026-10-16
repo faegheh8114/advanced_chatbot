@@ -126,15 +126,59 @@ async function sync(){
   setOnline(true)
  }catch(e){setOnline(false)}
 }
+/* هر تغییر روی آخرین اطلاعات سرور اعمال می‌شود؛ اگر هم‌زمان سیستم دیگری ذخیره کرده باشد،
+   تغییر روی اطلاعات جدید دوباره اعمال می‌شود تا کار هیچ‌کس از بین نرود. */
+const nid=()=>String(Date.now())+Math.random().toString(36).slice(2,7);
+const tx=(v,n=500)=>String(v??'').trim().slice(0,n);
+function fail(m){throw new Error(m)}
+function findCar(d,id){return d.cars.find(c=>c.id===id)||fail('این پذیرش پیدا نشد؛ احتمالاً در سیستم دیگری حذف یا تغییر کرده است.')}
+function findTask(d,c,t){return findCar(d,c).tasks.find(x=>x.id===t)||fail('این ردیف تعمیر پیدا نشد؛ احتمالاً در سیستم دیگری تغییر کرده است.')}
+function cleanParts(parts){return (parts||[]).map(p=>({name:tx(p.name,200),qty:Math.floor(Number(p.qty))||0})).filter(p=>p.name&&p.qty>0)}
+const OPS={
+ saveAdmission(d,p){
+  const admission=tx(p.admission,50),plate=tx(p.plate,50);
+  if(!admission||!plate)fail('شماره پذیرش و پلاک را وارد کنید.');
+  if(d.cars.some(c=>c.admission===admission&&c.id!==p.id))fail('این شماره پذیرش قبلاً ثبت شده است.');
+  if(!p.items.length||p.items.some(i=>!tx(i.repair)||!tx(i.worker)))fail('برای هر ردیف، شرح ایراد و نام تعمیرکار را انتخاب کنید.');
+  let car=p.id?findCar(d,p.id):null;
+  if(!car){car={id:nid(),tasks:[]};d.cars.push(car)}
+  Object.assign(car,{admission,plate,car:tx(p.car,100),date:tx(p.date,20),time:tx(p.time,10)});
+  const old=new Map(car.tasks.map(t=>[t.id,t]));
+  car.tasks=p.items.map(i=>{const prev=old.get(i.id),repair=tx(i.repair),worker=tx(i.worker,100);
+   return prev&&prev.repair===repair&&prev.worker===worker?prev:{id:nid(),repair,worker,status:'working',parts:[],finished:''}});
+  return {id:car.id}},
+ deleteAdmission(d,p){const c=findCar(d,p.carId);d.cars.splice(d.cars.indexOf(c),1)},
+ finishTask(d,p){const t=findTask(d,p.carId,p.taskId);t.status='done';t.finished=p.finished},
+ setParts(d,p){const t=findTask(d,p.carId,p.taskId),parts=cleanParts(p.parts);if(!parts.length)fail('نام و تعداد حداقل یک قطعه را وارد کنید.');Object.assign(t,{parts,status:'shortage',finished:''})},
+ resolveShortage(d,p){const t=findTask(d,p.carId,p.taskId);t.status='working';t.parts=[]},
+ reopenTask(d,p){const t=findTask(d,p.carId,p.taskId);t.status='working';t.finished=''},
+ addWorker(d,p){const w=tx(p.name,100);if(w&&!d.workers.includes(w))d.workers.push(w)},
+ removeWorker(d,p){const i=d.workers.indexOf(p.name);if(i>=0)d.workers.splice(i,1)},
+ import(d,p){
+  const inc=p.data||{};let added=0;
+  for(const w of inc.workers||[]){const n=tx(w,100);if(n&&!d.workers.includes(n))d.workers.push(n)}
+  const ids=new Set(d.cars.map(c=>c.id));
+  for(const c of inc.cars||[]){
+   if(!c||!c.id||ids.has(c.id)||(p.skipSamples&&(c.id==='sample1'||c.id==='sample2')))continue;
+   d.cars.push({id:tx(c.id,60),admission:tx(c.admission,50),plate:tx(c.plate,50),car:tx(c.car,100),date:tx(c.date,20),time:tx(c.time,10),
+    tasks:(c.tasks||[]).map(t=>({id:tx(t.id,60)||nid(),repair:tx(t.repair),worker:tx(t.worker,100),status:['working','shortage','done'].includes(t.status)?t.status:'working',parts:cleanParts(t.parts),finished:tx(t.finished,60)}))});
+   ids.add(c.id);added++}
+  return {added}}
+};
 async function api(op,payload){
- let j;
- try{
-  const r=await fetch('/api/op',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({op,payload})});
-  j=await r.json();setOnline(true)
- }catch(e){setOnline(false);alert('ارتباط با سرور برقرار نیست و این تغییر ذخیره نشد.\nروشن بودن کامپیوتر سرور و اتصال شبکه را بررسی کنید.');return null}
- if(j.data)applyState(j)
- if(!j.ok){alert(j.error||'خطا در ذخیره');return null}
- return j.result||{}
+ for(let attempt=0;attempt<8;attempt++){
+  const draft=JSON.parse(JSON.stringify(data));let result;
+  try{result=OPS[op](draft,payload)||{}}catch(e){alert(e.message);return null}
+  let j;
+  try{
+   const r=await fetch('/api/save?base='+version,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(draft)});
+   j=await r.json();setOnline(true)
+  }catch(e){setOnline(false);alert('ارتباط با سرور برقرار نیست و این تغییر ذخیره نشد.\nروشن بودن کامپیوتر سرور و باز بودن پنجره سرور را بررسی کنید.');return null}
+  if(j.ok){applyState({data:draft,version:j.version});return result}
+  if(j.conflict){applyState(j);continue}
+  alert(j.error||'خطا در ذخیره');return null
+ }
+ alert('سیستم‌های دیگر هم‌زمان در حال ثبت هستند؛ لطفاً دوباره تلاش کنید.');return null
 }
 
 function render(){

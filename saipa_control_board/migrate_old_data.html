@@ -21,10 +21,18 @@ async function send(){
  if(!/^https?:\/\//i.test(url))url='http://'+url;
  try{localStorage.setItem('mashayekh_server',url)}catch(e){}
  try{
-  const r=await fetch(url+'/api/op',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({op:'import',payload:{data,skipSamples:$('skip').checked}})});
-  const j=await r.json();
-  if(!j.ok)throw new Error(j.error);
-  show('انتقال انجام شد. '+fa(j.result.added)+' پذیرش جدید به سرور اضافه شد.<br>از این به بعد تابلو را فقط از آدرس <b>'+url+'</b> باز کنید.',true);
+  let added=0,done=false;
+  for(let attempt=0;attempt<8&&!done;attempt++){
+   const st=await (await fetch(url+'/api/state',{cache:'no-store'})).json();
+   const d=st.data;added=0;
+   for(const w of data.workers||[]){const n=String(w??'').trim();if(n&&!d.workers.includes(n))d.workers.push(n)}
+   const ids=new Set(d.cars.map(c=>c.id));
+   for(const c of data.cars||[]){if(!c||!c.id||ids.has(c.id)||($('skip').checked&&(c.id==='sample1'||c.id==='sample2')))continue;d.cars.push(c);ids.add(c.id);added++}
+   const r=await (await fetch(url+'/api/save?base='+st.version,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)})).json();
+   if(r.ok)done=true;else if(!r.conflict)throw new Error(r.error||'خطا');
+  }
+  if(!done)throw new Error('سرور مشغول است، دوباره تلاش کنید');
+  show('انتقال انجام شد. '+fa(added)+' پذیرش جدید به سرور اضافه شد.<br>از این به بعد تابلو را فقط از آدرس <b>'+url+'</b> باز کنید.',true);
  }catch(e){show('ارسال انجام نشد: '+(e.message||e)+'<br>روشن بودن پنجره سرور و درست بودن آدرس را بررسی کنید. اگر باز هم نشد، «دانلود فایل پشتیبان» را بزنید و فایل را در تابلوی جدید از صفحه «فهرست تعمیرکاران» ← «افزودن اطلاعات از فایل» وارد کنید.')}
 }
 function download(){
